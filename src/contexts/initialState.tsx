@@ -1,5 +1,6 @@
 export type initialStateType = {
   user: {
+    photo: string;
     name: string;
     email: string;
   };
@@ -7,6 +8,7 @@ export type initialStateType = {
 
 const initialState: initialStateType = {
   user: {
+    photo: "",
     name: "",
     email: "",
   },

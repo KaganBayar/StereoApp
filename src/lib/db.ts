@@ -5,12 +5,12 @@ const prismaClientSingleton = () => {
 };
 
 export async function printAllUsers() {
-  const users = await prisma.user.findMany();
+  const users = await prisma.users.findMany();
   console.log(users);
 }
 
 export async function deleteAllUser() {
-  prisma.user.deleteMany();
+  prisma.users.deleteMany();
   console.log("All users deleted"); // bir tane bıraıyor nedense
 }
 

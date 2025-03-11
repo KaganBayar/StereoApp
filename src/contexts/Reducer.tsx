@@ -10,7 +10,7 @@ export default function reducer(state: initialStateType, action: actionType) {
     case "LOGIN":
       return { ...state, user: action.payload };
     case "LOGOUT":
-      return { ...state, user: { name: "", email: "" } };
+      return { ...state, user: { name: "", email: "", photos: "" } };
     default:
       return state;
   }

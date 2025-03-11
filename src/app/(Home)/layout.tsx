@@ -1,5 +1,9 @@
+"use client";
 import Sidebar from "../components/Sidebar";
 import Box from "../components/Box";
+import { DispatchContext } from "@/contexts/UserContext";
+import { useContext } from "react";
+import { findUserByEmail } from "@/lib/actions";
 
 interface Props {
   children: React.ReactNode;

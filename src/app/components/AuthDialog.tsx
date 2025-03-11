@@ -12,57 +12,81 @@ import { login, register } from "@/lib/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useContext } from "react";
 import { DispatchContext } from "@/contexts/UserContext";
-import UserContext from "@/contexts/UserContext";
 import { findUserByEmail } from "@/lib/actions";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { Loader2 } from "lucide-react";
+import { useActionState } from "react";
 
 export const AuthDialog = () => {
+  const emptyFormData = new FormData();
+  const [loginState, loginAction, loginPending] = useActionState(
+    handleLogin,
+    undefined
+  );
+  const [registerState, registerAction, registerPending] = useActionState(
+    handleRegister,
+    undefined
+  );
   const dispatch = useContext(DispatchContext);
-  const user = useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [loginOrRegister, setLoginOrRegister] = useState("login");
 
-  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-    setOpen(false);
+  async function handleLogin(previousState: void, formData: FormData) {
+    try {
+      console.log("logining");
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const user = await findUserByEmail(email);
-    if (!user) {
-      throw new Error("User not found");
-      return;
-    }
-    const name = user?.name;
-    if (dispatch) {
-      dispatch({
-        type: "LOGIN",
-        payload: {
-          name: name,
-          email: email,
-        },
-      });
+      await login(formData);
+      const email = formData.get("email") as string;
+      const user = await findUserByEmail(email);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const name = user?.name;
+      if (dispatch) {
+        dispatch({
+          type: "LOGIN",
+          payload: {
+            name: name,
+            email: email,
+          },
+        });
+      }
+      setOpen(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
     }
   }
 
-  function handleRegister(e: React.FormEvent<HTMLFormElement>) {
-    setOpen(false);
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed up
-        const user = userCredential.user;
-        updateProfile(user, {
-          displayName: formData.get("name") as string,
+  async function handleRegister(prevState: void, formData: FormData) {
+    try {
+      console.log("registering");
+
+      await register(formData); //server action
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          updateProfile(user, {
+            displayName: formData.get("name") as string,
+          });
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          throw new Error(errorMessage);
+          // ..
         });
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        throw new Error(errorMessage);
-        // ..
-      });
+
+      setOpen(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+    }
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -82,7 +106,7 @@ export const AuthDialog = () => {
           </DialogDescription>
         </DialogHeader>
         {loginOrRegister === "login" && (
-          <form action={login} onSubmit={handleLogin} id="login">
+          <form action={loginAction} id="login">
             <div>
               <div>
                 <label htmlFor="email" className="block">
@@ -117,7 +141,7 @@ export const AuthDialog = () => {
           </form>
         )}
         {loginOrRegister === "register" && (
-          <form action={register} onSubmit={handleRegister} id="register">
+          <form action={registerAction} id="register">
             <div>
               <div>
                 <label htmlFor="name" className="block">
@@ -167,9 +191,23 @@ export const AuthDialog = () => {
           <button
             form={loginOrRegister === "login" ? "login" : "register"}
             type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            disabled={
+              loginOrRegister === "login" ? loginPending : registerPending
+            } // Disable button when loading
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
           >
-            {loginOrRegister === "login" ? "Login" : "Register"}
+            {loginPending || registerPending ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                {loginOrRegister === "login"
+                  ? "Logging in..."
+                  : "Signing up..."}
+              </>
+            ) : loginOrRegister === "login" ? (
+              "Login"
+            ) : (
+              "Register"
+            )}
           </button>
           <DialogClose asChild>
             <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">

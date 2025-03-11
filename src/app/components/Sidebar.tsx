@@ -1,26 +1,22 @@
-import { FaPlus } from 'react-icons/fa'
-import Box from './Box'
-import SongBar from './SongBar'
-import PlaylistBar from './PlaylistBar'
+"use client";
+import { AddPlaylistButton } from "@/app/components/AddPlaylistButton";
+import Box from "./Box";
+import PlaylistBar from "./PlaylistBar";
+import UserContext from "@/contexts/UserContext";
+import { useContext } from "react";
 
+export default function Sidebar({}) {
+  const user = useContext(UserContext);
+  return (
+    <Box className="pl-8 mt-16 w-96 flex flex-col">
+      <div className="flex justify-between w-full">
+        <p>{(user?.user.name ? user.user.name + "'s" : "Your") + " Library"}</p>
+        <AddPlaylistButton />
+      </div>
 
-
-export default function Sidebar({ }) {
-    return (
-        <Box className='pl-8 mt-16 w-72 h-56 flex flex-col'>
-            <div className='flex justify-between w-full'>
-                <p>Your Library</p>
-                <FaPlus className="relative text-gray-400 hover:text-white cursor-pointer translate translate-y-1/4" />
-
-            </div>
-            <div className='mt-24'>
-                <SongBar />
-            </div>
-            <div>
-                {/* where to show playlist*/}
-                <PlaylistBar />
-            </div>
-
-        </Box>
-    )
+      <div className="mt-12">
+        <PlaylistBar />
+      </div>
+    </Box>
+  );
 }
