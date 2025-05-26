@@ -11,7 +11,7 @@ export default function Sidebar({}) {
     <Box className="pl-8 mt-16 w-96 flex flex-col">
       <div className="flex justify-between w-full">
         <p>{(user?.user.name ? user.user.name + "'s" : "Your") + " Library"}</p>
-        <AddPlaylistButton />
+        {user?.user.id ? <AddPlaylistButton /> : <></>}
       </div>
 
       <div className="mt-12">

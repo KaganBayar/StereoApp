@@ -1,0 +1,29 @@
+{
+  "pages": {
+    "/(Home)/search/page": [
+      "static/chunks/node_modules_next_dist_1a6ee436._.js",
+      "static/chunks/src_app_favicon_ico_mjs_79b6a596._.js",
+      "static/chunks/src_app_30843214._.css",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_04d662ee._.js",
+      "static/chunks/node_modules_react-icons_bi_index_mjs_cba0e860._.js",
+      "static/chunks/node_modules_react-icons_fa_index_mjs_d2e2d7f5._.js",
+      "static/chunks/node_modules_react-icons_vsc_index_mjs_504b5dcb._.js",
+      "static/chunks/node_modules_react-icons_lib_74ccc930._.js",
+      "static/chunks/node_modules_@radix-ui_react-icons_dist_react-icons_esm_ecd85ef9.js",
+      "static/chunks/node_modules_@firebase_auth_dist_esm2017_a0bbab95._.js",
+      "static/chunks/node_modules_@firebase_storage_dist_index_esm2017_b3a08d2a.js",
+      "static/chunks/node_modules_e280ad6f._.js",
+      "static/chunks/_30eec984._.js",
+      "static/chunks/src_app_layout_tsx_f0e4c1a2._.js",
+      "static/chunks/_931cc36b._.js",
+      "static/chunks/src_app_(Home)_layout_tsx_2df6bec7._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_49a6ea35._.js",
+      "static/chunks/node_modules_next_dist_compiled_2ce9398a._.js",
+      "static/chunks/node_modules_next_dist_client_43e3ffb8._.js",
+      "static/chunks/node_modules_next_dist_3bfaed20._.js",
+      "static/chunks/node_modules_@swc_helpers_cjs_00636ac3._.js",
+      "static/chunks/_e69f0d32._.js",
+      "static/chunks/_be317ff2._.js"
+    ]
+  }
+}

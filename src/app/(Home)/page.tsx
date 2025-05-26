@@ -1,3 +1,4 @@
+import { getAccessToken } from "../../lib/utils";
 export default async function Home() {
   return (
     <div>

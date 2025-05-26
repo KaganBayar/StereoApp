@@ -12,11 +12,15 @@ export async function verifyToken(token: string) {
   if (!token) {
     return null;
   } else {
-    const verifiedToken = await jose.jwtVerify(
-      token,
-      new TextEncoder().encode(process.env.JWT_SECRET)
-    );
-    return verifiedToken.payload;
+    try {
+      const verifiedToken = await jose.jwtVerify(
+        token,
+        new TextEncoder().encode(process.env.JWT_SECRET_KEY)
+      );
+      return verifiedToken.payload;
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 

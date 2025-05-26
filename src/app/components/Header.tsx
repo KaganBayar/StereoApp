@@ -3,13 +3,23 @@ import Link from "next/link";
 import { BiHome } from "react-icons/bi";
 import { FaMusic, FaSearch } from "react-icons/fa";
 import { VscArchive } from "react-icons/vsc";
-
+import { logout } from "../../lib/actions";
 import { AuthDialog } from "./AuthDialog";
 import UserContext from "@/contexts/UserContext";
+import { DispatchContext } from "@/contexts/UserContext";
 import { useContext } from "react";
 
 const Header: React.FC = () => {
+  const handleLogout = () => {
+    if (dispatch && user) {
+      dispatch({ type: "LOGOUT" });
+      logout(user.user.id);
+    } else {
+      throw new Error("Global Dispatch not found");
+    }
+  };
   const user = useContext(UserContext);
+  const dispatch = useContext(DispatchContext);
   return (
     <header className="flex items-center justify-between p-4 bg-gray-800 text-white">
       <Link href="/" className="flex  items-center">
@@ -45,7 +55,7 @@ const Header: React.FC = () => {
             </div>
             <p className="mr-2">{user?.user.name}</p>
             <button
-              /* onClick={() => ()} */ /* düzelt */
+              onClick={() => handleLogout()}
               className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm font-medium transition-colors"
             >
               Logout

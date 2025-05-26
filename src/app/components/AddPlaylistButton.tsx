@@ -13,12 +13,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { createPlaylistAction, login } from "@/lib/actions";
-import { useContext } from "react";
-import UserContext from "@/contexts/UserContext";
+import { useContext, useEffect } from "react";
+import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
+import { findUserPlaylists } from "@/lib/actions";
+import { Playlists } from "@/lib/types";
+import { Dispatch } from "react";
 
 export function AddPlaylistButton() {
   const user = useContext(UserContext);
+  const dispatch = useContext(DispatchContext);
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -27,9 +31,14 @@ export function AddPlaylistButton() {
 
     setOpen(false);
     createPlaylistAction(email!).then((res) => {
-      router.push(`/playlist/${res}`);
+      dispatch!({
+        type: "ADDPLAYLIST",
+        payload: [...user!.user.playlists, res],
+      });
+      router.push(`/playlist/${res.id}`);
     });
   };
+
   return (
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>

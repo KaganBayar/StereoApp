@@ -12,7 +12,7 @@ import { login, register } from "@/lib/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useContext } from "react";
 import { DispatchContext } from "@/contexts/UserContext";
-import { findUserByEmail } from "@/lib/actions";
+import { findUserByEmail, findUserPlaylists } from "@/lib/actions";
 import { auth } from "@/../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Loader2 } from "lucide-react";
@@ -35,10 +35,11 @@ export const AuthDialog = () => {
   async function handleLogin(previousState: void, formData: FormData) {
     try {
       console.log("logining");
-
       await login(formData);
+
       const email = formData.get("email") as string;
       const user = await findUserByEmail(email);
+      const playlist = await findUserPlaylists(email);
       if (!user) {
         throw new Error("User not found");
       }
@@ -47,8 +48,11 @@ export const AuthDialog = () => {
         dispatch({
           type: "LOGIN",
           payload: {
+            id: user.id,
+            photos: user.photo,
             name: name,
             email: email,
+            playlists: playlist,
           },
         });
       }

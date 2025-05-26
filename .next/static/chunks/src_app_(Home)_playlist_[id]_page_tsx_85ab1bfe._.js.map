@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/Ben/Desktop/lolo/KOD/Web/muzikendim/src/app/%28Home%29/playlist/%5Bid%5D/page.tsx"],"sourcesContent":["\"use client\";\r\nimport React from \"react\";\r\n\r\nexport default function PostPage({\r\n  params,\r\n}: {\r\n  params: Promise<{ id: \"string\" }>;\r\n}) {\r\n  const usedParams = React.use(params);\r\n  return <div>{usedParams.id}</div>;\r\n}\r\n"],"names":[],"mappings":";;;;AACA;AADA;;;AAGe,SAAS,SAAS,EAC/B,MAAM,EAGP;IACC,MAAM,aAAa,6JAAA,CAAA,UAAK,CAAC,GAAG,CAAC;IAC7B,qBAAO,6LAAC;kBAAK,WAAW,EAAE;;;;;;AAC5B;KAPwB","debugId":null}}]
+}
