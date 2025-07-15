@@ -9,6 +9,8 @@ import { verifyToken } from "@/lib/auth";
 import { findUserIdFromEmail } from "@prisma/client/sql";
 import { createPlaylist } from "@prisma/client/sql";
 import { cookies } from "next/headers";
+import * as jose from "jose";
+import { Playlists } from "../lib/types";
 
 const formRegisterSchema = z.object({
   email: z.string().email(),
@@ -20,6 +22,16 @@ const formLoginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 });
+
+//Auth
+
+export async function createAuthTokenAction(payload: jose.JWTPayload) {
+  return await signToken(payload); // Use utility function
+}
+
+export async function verifyAuthTokenAction(token: string) {
+  return await verifyToken(token); // Use utility function
+}
 
 export async function register(formData: FormData) {
   const data = formRegisterSchema.parse(Object.fromEntries(formData));
@@ -77,12 +89,14 @@ export async function login(formData: FormData) {
     },
   });
   //access token oluşturma
+  const playlists: Playlists[] = await findUserPlaylists(user.email);
   const accessToken = await signToken({
     userId: user.id,
     email: user.email,
     name: user.name,
     roles: user.roles,
     photo: user.photo,
+    playlists: playlists,
   });
 
   try {
@@ -92,7 +106,7 @@ export async function login(formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       //csrf'yi araştır bidaha
-      expires: new Date(Date.now() + 60 * 1000 * 60 * 24),
+      expires: new Date(Date.now() + 60 * 1000), // 1 minute
       path: "/",
     });
 

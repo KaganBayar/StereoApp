@@ -11,7 +11,18 @@
         "app/(Home)/playlist/[id]/page": "action-browser"
       }
     },
-    "000061cd47ae44a4130b19fb2ac70abec6452c2462": {
+    "00ed51ca826733a9eb68a7233bfce2daa2b301b50d": {
+      "workers": {
+        "app/(Home)/playlist/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(Home)/playlist/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true
+        }
+      },
+      "layer": {
+        "app/(Home)/playlist/[id]/page": "action-browser"
+      }
+    },
+    "400cc9f6bec76ef9fdadab1ce1799397512d97ad19": {
       "workers": {
         "app/(Home)/playlist/[id]/page": {
           "moduleId": "[project]/.next-internal/server/app/(Home)/playlist/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",

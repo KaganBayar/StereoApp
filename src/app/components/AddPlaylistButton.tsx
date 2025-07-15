@@ -17,7 +17,6 @@ import { useContext } from "react";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
 import { usePlaylistRefresh } from "@/contexts/playlistRefreshed";
-import { ref } from "firebase/storage";
 
 export function AddPlaylistButton() {
   const user = useContext(UserContext);

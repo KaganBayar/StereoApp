@@ -7,6 +7,7 @@ export type initialStateType = {
     name: string;
     email: string;
     playlists: Playlists[];
+    roles: string[];
   };
 };
 
@@ -17,6 +18,7 @@ const initialState: initialStateType = {
     name: "",
     email: "",
     playlists: [],
+    roles: ["member"],
   },
 };
 export default initialState;

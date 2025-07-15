@@ -92,7 +92,7 @@ async function getToken() {
     if (process.env.JWT_SECRET_KEY == null) {
         throw new Error("JWT_SECRET is not defined");
     } else {
-        return process.env.JWT_SECRET;
+        return process.env.JWT_SECRET_KEY;
     }
 }
 async function verifyToken(token) {
@@ -134,14 +134,16 @@ __turbopack_async_result__();
 
 var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_context__;
 __turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
-/* __next_internal_action_entry_do_not_use__ [{"00ed51ca826733a9eb68a7233bfce2daa2b301b50d":"access_cookie","400dd411926a922857cef7c07349a47a898814a180":"findUserByEmail","4013e6a8784a4b4463149d52c48a91a39f2f65aad0":"createPlaylistAction","404cc8f9864c09645c36716405f20519256a63487e":"register","405a0338801bcb1adf49030937488e2c9c8fd3339a":"findUserPlaylists","40935d33f1a6c37128d5b533ea0e23839cf7cdf73b":"login","40c42b3fabc9ef645d24294f6d7ecdd1fdbf59309f":"logout"},"",""] */ __turbopack_context__.s({
+/* __next_internal_action_entry_do_not_use__ [{"00ed51ca826733a9eb68a7233bfce2daa2b301b50d":"access_cookie","400cc9f6bec76ef9fdadab1ce1799397512d97ad19":"verifyAuthTokenAction","400dd411926a922857cef7c07349a47a898814a180":"findUserByEmail","4013e6a8784a4b4463149d52c48a91a39f2f65aad0":"createPlaylistAction","404cc8f9864c09645c36716405f20519256a63487e":"register","405a0338801bcb1adf49030937488e2c9c8fd3339a":"findUserPlaylists","40935d33f1a6c37128d5b533ea0e23839cf7cdf73b":"login","40be8e18a3c8c0efb3e8a2a2bc83def9dc93d951a8":"createAuthTokenAction","40c42b3fabc9ef645d24294f6d7ecdd1fdbf59309f":"logout"},"",""] */ __turbopack_context__.s({
     "access_cookie": (()=>access_cookie),
+    "createAuthTokenAction": (()=>createAuthTokenAction),
     "createPlaylistAction": (()=>createPlaylistAction),
     "findUserByEmail": (()=>findUserByEmail),
     "findUserPlaylists": (()=>findUserPlaylists),
     "login": (()=>login),
     "logout": (()=>logout),
-    "register": (()=>register)
+    "register": (()=>register),
+    "verifyAuthTokenAction": (()=>verifyAuthTokenAction)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$app$2d$render$2f$encryption$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/app-render/encryption.js [app-rsc] (ecmascript)");
@@ -177,6 +179,12 @@ const formLoginSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_mod
     email: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().email(),
     password: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string()
 });
+async function createAuthTokenAction(payload) {
+    return await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["signToken"])(payload); // Use utility function
+}
+async function verifyAuthTokenAction(token) {
+    return await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["verifyToken"])(token); // Use utility function
+}
 async function register(formData) {
     const data = formRegisterSchema.parse(Object.fromEntries(formData));
     if (!data.email || !data.password) {
@@ -223,12 +231,14 @@ async function login(formData) {
         }
     });
     //access token oluşturma
+    const playlists = await findUserPlaylists(user.email);
     const accessToken = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["signToken"])({
         userId: user.id,
         email: user.email,
         name: user.name,
         roles: user.roles,
-        photo: user.photo
+        photo: user.photo,
+        playlists: playlists
     });
     try {
         await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["verifyToken"])(accessToken);
@@ -236,7 +246,7 @@ async function login(formData) {
             httpOnly: true,
             secure: ("TURBOPACK compile-time value", "development") === "production",
             //csrf'yi araştır bidaha
-            expires: new Date(Date.now() + 60 * 1000 * 60 * 24),
+            expires: new Date(Date.now() + 60 * 1000),
             path: "/"
         });
         console.log("LOOOL", cookieStore.get("accessToken"));
@@ -295,6 +305,8 @@ async function access_cookie() {
 }
 ;
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
+    createAuthTokenAction,
+    verifyAuthTokenAction,
     register,
     login,
     findUserByEmail,
@@ -303,6 +315,8 @@ async function access_cookie() {
     logout,
     access_cookie
 ]);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createAuthTokenAction, "40be8e18a3c8c0efb3e8a2a2bc83def9dc93d951a8", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(verifyAuthTokenAction, "400cc9f6bec76ef9fdadab1ce1799397512d97ad19", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(register, "404cc8f9864c09645c36716405f20519256a63487e", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(login, "40935d33f1a6c37128d5b533ea0e23839cf7cdf73b", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findUserByEmail, "400dd411926a922857cef7c07349a47a898814a180", null);
@@ -323,6 +337,7 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
     __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__
 ]);
 ([__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__);
+;
 ;
 ;
 ;
@@ -354,6 +369,7 @@ var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_contex
 __turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
 __turbopack_context__.s({
     "00ed51ca826733a9eb68a7233bfce2daa2b301b50d": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["access_cookie"]),
+    "400cc9f6bec76ef9fdadab1ce1799397512d97ad19": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["verifyAuthTokenAction"]),
     "400dd411926a922857cef7c07349a47a898814a180": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["findUserByEmail"]),
     "4013e6a8784a4b4463149d52c48a91a39f2f65aad0": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["createPlaylistAction"]),
     "404cc8f9864c09645c36716405f20519256a63487e": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["register"]),
@@ -377,6 +393,7 @@ var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_contex
 __turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
 __turbopack_context__.s({
     "00ed51ca826733a9eb68a7233bfce2daa2b301b50d": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$Home$292f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["00ed51ca826733a9eb68a7233bfce2daa2b301b50d"]),
+    "400cc9f6bec76ef9fdadab1ce1799397512d97ad19": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$Home$292f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["400cc9f6bec76ef9fdadab1ce1799397512d97ad19"]),
     "400dd411926a922857cef7c07349a47a898814a180": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$Home$292f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["400dd411926a922857cef7c07349a47a898814a180"]),
     "4013e6a8784a4b4463149d52c48a91a39f2f65aad0": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$Home$292f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["4013e6a8784a4b4463149d52c48a91a39f2f65aad0"]),
     "404cc8f9864c09645c36716405f20519256a63487e": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$Home$292f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["404cc8f9864c09645c36716405f20519256a63487e"]),

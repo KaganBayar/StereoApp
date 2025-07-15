@@ -11,6 +11,7 @@ export type actionType =
         email: string;
         photos: string;
         playlists: Playlists[];
+        roles: string[];
       };
     }
   | { type: "LOGOUT" }

@@ -941,7 +941,7 @@ async function getToken() {
     if (process.env.JWT_SECRET_KEY == null) {
         throw new Error("JWT_SECRET is not defined");
     } else {
-        return process.env.JWT_SECRET;
+        return process.env.JWT_SECRET_KEY;
     }
 }
 async function verifyToken(token) {

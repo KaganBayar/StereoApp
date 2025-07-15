@@ -150,7 +150,10 @@ const initialState = {
         photo: "",
         name: "",
         email: "",
-        playlists: []
+        playlists: [],
+        roles: [
+            "member"
+        ]
     }
 };
 const __TURBOPACK__default__export__ = initialState;

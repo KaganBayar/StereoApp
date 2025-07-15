@@ -8,9 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model AwsPhoto {
-}
-
 model Users {
   id            String          @id @default(cuid())
   email         String          @unique
