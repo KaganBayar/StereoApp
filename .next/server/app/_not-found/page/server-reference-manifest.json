@@ -11,6 +11,17 @@
         "app/_not-found/page": "action-browser"
       }
     },
+    "00ed51ca826733a9eb68a7233bfce2daa2b301b50d": {
+      "workers": {
+        "app/_not-found/page": {
+          "moduleId": "[project]/.next-internal/server/app/_not-found/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true
+        }
+      },
+      "layer": {
+        "app/_not-found/page": "action-browser"
+      }
+    },
     "40935d33f1a6c37128d5b533ea0e23839cf7cdf73b": {
       "workers": {
         "app/_not-found/page": {

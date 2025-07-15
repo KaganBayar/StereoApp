@@ -1,4 +1,4 @@
-import { PlaylistType } from "@/lib/types";
+import { Playlists } from "@/lib/types";
 
 export type initialStateType = {
   user: {
@@ -6,7 +6,7 @@ export type initialStateType = {
     photo: string;
     name: string;
     email: string;
-    playlists: PlaylistType[];
+    playlists: Playlists[];
   };
 };
 

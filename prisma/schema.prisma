@@ -9,7 +9,6 @@ datasource db {
 }
 
 model AwsPhoto {
-  
 }
 
 model Users {

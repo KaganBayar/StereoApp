@@ -35,15 +35,17 @@ export const AuthDialog = () => {
   async function handleLogin(previousState: void, formData: FormData) {
     try {
       console.log("logining");
-      await login(formData);
+      await login(formData); //server action login returns access token
 
       const email = formData.get("email") as string;
       const user = await findUserByEmail(email);
       const playlist = await findUserPlaylists(email);
+
       if (!user) {
         throw new Error("User not found");
       }
       const name = user?.name;
+
       if (dispatch) {
         dispatch({
           type: "LOGIN",

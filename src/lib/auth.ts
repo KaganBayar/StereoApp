@@ -15,7 +15,10 @@ export async function verifyToken(token: string) {
     try {
       const verifiedToken = await jose.jwtVerify(
         token,
-        new TextEncoder().encode(process.env.JWT_SECRET_KEY)
+        new TextEncoder().encode(process.env.JWT_SECRET_KEY),
+        {
+          algorithms: ["HS256"],
+        }
       );
       return verifiedToken.payload;
     } catch (e) {

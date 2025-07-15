@@ -1,1 +1,1 @@
-SELECT * FROM "RefreshTokens"
+SELECT * FROM "Users"

@@ -9,7 +9,6 @@ import { verifyToken } from "@/lib/auth";
 import { findUserIdFromEmail } from "@prisma/client/sql";
 import { createPlaylist } from "@prisma/client/sql";
 import { cookies } from "next/headers";
-import axios from "axios";
 
 const formRegisterSchema = z.object({
   email: z.string().email(),
@@ -24,9 +23,11 @@ const formLoginSchema = z.object({
 
 export async function register(formData: FormData) {
   const data = formRegisterSchema.parse(Object.fromEntries(formData));
+
   if (!data.email || !data.password) {
     throw new Error("Username Or Password required");
   }
+
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
   await prisma.users.create({
@@ -38,6 +39,7 @@ export async function register(formData: FormData) {
   });
 
   console.log("registered");
+
   console.log(
     await prisma.users.findFirst({
       where: {
@@ -50,6 +52,7 @@ export async function register(formData: FormData) {
 export async function login(formData: FormData) {
   //Parola ve email doğrulama
   const data = formLoginSchema.parse(Object.fromEntries(formData));
+
   const user = await prisma.users.findFirst({
     where: {
       email: data.email,
@@ -61,26 +64,10 @@ export async function login(formData: FormData) {
   if (!(await bcrypt.compare(data.password, user.password))) {
     throw new Error("Password incorrect");
   }
-  /*axios
-    .post(
-      "http://localhost:3000/api/login",
-      {
-        userId: `${user.id}`,
-        username: `${user.name}`,
-        email: `${user.email}`,
-        roles: `${user.roles}`,
-        photo: `${user.photo}`,
-      },
-      {
-        withCredentials: true,
-      }
-    )
-    .then(function (response) {})
-    .catch(function (error) {
-      console.log(error);
-    }); */
 
   console.log("logged in");
+  //refresh token oluşturma
+  const cookieStore = await cookies();
   const refreshToken = crypto.randomBytes(32).toString("hex");
   await prisma.refreshTokens.create({
     data: {
@@ -89,6 +76,7 @@ export async function login(formData: FormData) {
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
   });
+  //access token oluşturma
   const accessToken = await signToken({
     userId: user.id,
     email: user.email,
@@ -96,15 +84,19 @@ export async function login(formData: FormData) {
     roles: user.roles,
     photo: user.photo,
   });
+
   try {
     await verifyToken(accessToken);
-    const cookieStore = await cookies();
-    const accessCookie = cookieStore.set("access_token", accessToken, {
+
+    cookieStore.set("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 5, // 1 hour in seconds
+      //csrf'yi araştır bidaha
+      expires: new Date(Date.now() + 60 * 1000 * 60 * 24),
+      path: "/",
     });
+
+    console.log("LOOOL", cookieStore.get("accessToken"));
   } catch (e) {
     throw new Error("Token verification failed");
   }
@@ -149,11 +141,15 @@ export async function findUserPlaylists(email: string) {
 
 export async function logout(id: string) {
   const cookieStore = await cookies();
-  cookieStore.delete("access_token");
+  cookieStore.delete("accesToken");
   await prisma.refreshTokens.deleteMany({
     where: {
       user_id: id,
     },
   });
   console.log("logged out");
+}
+export async function access_cookie() {
+  const cookieStore = await cookies();
+  return cookieStore.get("accessToken")?.value || "No access token found";
 }

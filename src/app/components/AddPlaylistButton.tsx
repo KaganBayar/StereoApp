@@ -12,31 +12,37 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { createPlaylistAction, login } from "@/lib/actions";
-import { useContext, useEffect } from "react";
+import { createPlaylistAction } from "@/lib/actions";
+import { useContext } from "react";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
-import { findUserPlaylists } from "@/lib/actions";
-import { Playlists } from "@/lib/types";
-import { Dispatch } from "react";
+import { usePlaylistRefresh } from "@/contexts/playlistRefreshed";
+import { ref } from "firebase/storage";
 
 export function AddPlaylistButton() {
   const user = useContext(UserContext);
   const dispatch = useContext(DispatchContext);
   const router = useRouter();
   const [open, setOpen] = useState(false);
-
+  const refreshContext = usePlaylistRefresh();
   const handleSubmit = async () => {
     const email = user?.user.email;
-
     setOpen(false);
-    createPlaylistAction(email!).then((res) => {
-      dispatch!({
-        type: "ADDPLAYLIST",
-        payload: [...user!.user.playlists, res],
+    if (!email) {
+      console.error("User email is not available");
+      return;
+    } else {
+      await createPlaylistAction(email!).then(async (res) => {
+        await refreshContext?.refreshPlaylists();
+        dispatch!({
+          type: "ADDPLAYLIST",
+          payload: [...user!.user.playlists],
+        });
+        router.push(`/playlist/${res.id}`);
       });
-      router.push(`/playlist/${res.id}`);
-    });
+
+      console.log("Playlist created successfully");
+    }
   };
 
   return (

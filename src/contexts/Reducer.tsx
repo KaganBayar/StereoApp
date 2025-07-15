@@ -23,15 +23,10 @@ export default function reducer(state: initialStateType, action: actionType) {
   switch (action.type) {
     case "LOGIN":
       return { ...state, user: action.payload };
-    case "ADDPLAYLIST":
-      return {
-        ...state,
-        playlists: action.payload,
-      };
     case "LOGOUT":
       return {
         ...state,
-        user: { name: "", email: "", photos: "", id: "", playlists: [] },
+        user: { name: "", email: "", photo: "", id: "", playlists: [] },
       };
     case "ADDPLAYLIST":
       return {

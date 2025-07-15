@@ -11,6 +11,17 @@
         "app/(Home)/playlist/[id]/page": "action-browser"
       }
     },
+    "000061cd47ae44a4130b19fb2ac70abec6452c2462": {
+      "workers": {
+        "app/(Home)/playlist/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(Home)/playlist/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true
+        }
+      },
+      "layer": {
+        "app/(Home)/playlist/[id]/page": "action-browser"
+      }
+    },
     "40935d33f1a6c37128d5b533ea0e23839cf7cdf73b": {
       "workers": {
         "app/(Home)/playlist/[id]/page": {
@@ -44,7 +55,7 @@
         "app/(Home)/playlist/[id]/page": "action-browser"
       }
     },
-    "4013e6a8784a4b4463149d52c48a91a39f2f65aad0": {
+    "405a0338801bcb1adf49030937488e2c9c8fd3339a": {
       "workers": {
         "app/(Home)/playlist/[id]/page": {
           "moduleId": "[project]/.next-internal/server/app/(Home)/playlist/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
@@ -55,7 +66,7 @@
         "app/(Home)/playlist/[id]/page": "action-browser"
       }
     },
-    "405a0338801bcb1adf49030937488e2c9c8fd3339a": {
+    "4013e6a8784a4b4463149d52c48a91a39f2f65aad0": {
       "workers": {
         "app/(Home)/playlist/[id]/page": {
           "moduleId": "[project]/.next-internal/server/app/(Home)/playlist/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",

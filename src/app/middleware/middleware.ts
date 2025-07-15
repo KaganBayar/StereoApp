@@ -1,4 +1,4 @@
-import { middleware } from "./authmiddleware";
+/*import { middleware } from "./authmiddleware";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 export function authMiddleware(request: NextRequest) {
@@ -10,3 +10,4 @@ export function authMiddleware(request: NextRequest) {
 export const config = {
   matcher: "/",
 };
+*/

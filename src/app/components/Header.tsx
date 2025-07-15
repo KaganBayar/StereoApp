@@ -10,16 +10,17 @@ import { DispatchContext } from "@/contexts/UserContext";
 import { useContext } from "react";
 
 const Header: React.FC = () => {
-  const handleLogout = () => {
+  const dispatch = useContext(DispatchContext);
+  const user = useContext(UserContext);
+  const handleLogout = async () => {
     if (dispatch && user) {
       dispatch({ type: "LOGOUT" });
-      logout(user.user.id);
+      const userID = user.user.id;
+      await logout(userID);
     } else {
       throw new Error("Global Dispatch not found");
     }
   };
-  const user = useContext(UserContext);
-  const dispatch = useContext(DispatchContext);
   return (
     <header className="flex items-center justify-between p-4 bg-gray-800 text-white">
       <Link href="/" className="flex  items-center">

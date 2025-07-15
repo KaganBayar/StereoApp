@@ -3,14 +3,8 @@ import {
   initializeApp as initiliazeAdminApp,
 } from "firebase-admin/app";
 
-import { initializeApp } from "firebase/app";
-
-
+//music-kendim.appspot.com
 
 export const adminApp = initiliazeAdminApp({
   credential: applicationDefault(),
 });
-
-
-
-
