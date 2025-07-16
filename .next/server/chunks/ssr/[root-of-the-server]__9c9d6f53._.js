@@ -949,7 +949,7 @@ function UserProvider({ initialState, children, reduce }) {
                         console.log("Token verification failed");
                         return;
                     }
-                    if (typeof verifiedAccessToken.userId === "string" && typeof verifiedAccessToken.email === "string" && typeof verifiedAccessToken.name === "string" && typeof verifiedAccessToken.photo === "string" && Array.isArray(verifiedAccessToken.playlist) && Array.isArray(verifiedAccessToken.roles)) {
+                    if (typeof verifiedAccessToken.userId === "string" && typeof verifiedAccessToken.email === "string" && typeof verifiedAccessToken.name === "string" && typeof verifiedAccessToken.photo === "string" && Array.isArray(verifiedAccessToken.playlists) && Array.isArray(verifiedAccessToken.roles)) {
                         const userDatas = {
                             user: {
                                 id: verifiedAccessToken.userId,
@@ -957,7 +957,7 @@ function UserProvider({ initialState, children, reduce }) {
                                 name: verifiedAccessToken.name,
                                 photo: verifiedAccessToken.photo,
                                 roles: verifiedAccessToken.roles,
-                                playlists: verifiedAccessToken.playlist || []
+                                playlists: verifiedAccessToken.playlists || []
                             }
                         };
                         if (dispatch) {
@@ -965,8 +965,8 @@ function UserProvider({ initialState, children, reduce }) {
                                 type: "LOGIN",
                                 payload: {
                                     id: userDatas.user.id,
-                                    photos: userDatas.user.id,
-                                    name: userDatas.user.id,
+                                    photos: userDatas.user.photo,
+                                    name: userDatas.user.name,
                                     email: userDatas.user.email,
                                     playlists: userDatas.user.playlists,
                                     roles: userDatas.user.roles
@@ -974,13 +974,15 @@ function UserProvider({ initialState, children, reduce }) {
                             });
                         }
                     } else {
-                        console.log("Invalid token data structure", accessToken);
+                        console.log("Invalid token data structure", typeof verifiedAccessToken.userId === "string", typeof verifiedAccessToken.email === "string", typeof verifiedAccessToken.name === "string", typeof verifiedAccessToken.photo === "string", Array.isArray(verifiedAccessToken.playlist), Array.isArray(verifiedAccessToken.roles));
                     }
                 }
             }
         }
         fetchUser();
-    }, []);
+    }, [
+        dispatch
+    ]);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$UserContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].Provider, {
         value: user,
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$UserContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DispatchContext"].Provider, {
@@ -988,12 +990,12 @@ function UserProvider({ initialState, children, reduce }) {
             children: children
         }, void 0, false, {
             fileName: "[project]/src/provider/userProvider.tsx",
-            lineNumber: 77,
+            lineNumber: 86,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/provider/userProvider.tsx",
-        lineNumber: 76,
+        lineNumber: 85,
         columnNumber: 5
     }, this);
 }

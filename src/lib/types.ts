@@ -1,8 +1,12 @@
 // src/app/interfaces/User.ts
-export interface User {
-  id: number;
-  name: string;
+import * as jose from "jose";
+export interface UserPayload extends jose.JWTPayload {
+  userId: string;
   email: string;
+  name: string;
+  photo: string;
+  roles: string[];
+  playlists?: Playlists[];
 }
 
 export interface Album {

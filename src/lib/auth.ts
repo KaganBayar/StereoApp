@@ -1,15 +1,10 @@
 import * as jose from "jose";
-
-export async function getToken() {
-  if (process.env.JWT_SECRET_KEY == null) {
-    throw new Error("JWT_SECRET is not defined");
-  } else {
-    return process.env.JWT_SECRET_KEY;
-  }
-}
+import { Playlists } from "../lib/types";
+import { refreshAccessTokenAction } from "@/lib/actions";
 
 export async function verifyToken(token: string) {
   if (!token) {
+    throw new Error("Token is required for verification");
     return null;
   } else {
     try {
@@ -20,20 +15,31 @@ export async function verifyToken(token: string) {
           algorithms: ["HS256"],
         }
       );
+      console.log("VERIFIED");
       return verifiedToken.payload;
     } catch (e) {
-      console.error(e);
+      if (e instanceof jose.errors.JWTExpired) {
+        try {
+          await refreshAccessTokenAction(token);
+          return await verifyToken(token);
+        } catch (error) {
+          throw new Error("Failed to refresh access token: " + error);
+        }
+      } else {
+        throw new Error("Token verification failed: " + e);
+      }
     }
   }
 }
 
-export async function signToken(obj: jose.JWTPayload) {
+export async function signToken(obj: jose.JWTPayload & { userId: string }) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
   const jwt = await new jose.SignJWT(obj)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("1d")
+    .setIssuer(obj.userId)
+    .setExpirationTime("10s")
     .sign(secret);
   return jwt;
 }

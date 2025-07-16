@@ -11,6 +11,7 @@ import { createPlaylist } from "@prisma/client/sql";
 import { cookies } from "next/headers";
 import * as jose from "jose";
 import { Playlists } from "../lib/types";
+import { UserPayload } from "../lib/types";
 
 const formRegisterSchema = z.object({
   email: z.string().email(),
@@ -81,6 +82,13 @@ export async function login(formData: FormData) {
   //refresh token oluşturma
   const cookieStore = await cookies();
   const refreshToken = crypto.randomBytes(32).toString("hex");
+
+  await prisma.refreshTokens.deleteMany({
+    where: {
+      user_id: user.id,
+    },
+  });
+
   await prisma.refreshTokens.create({
     data: {
       token: refreshToken,
@@ -88,6 +96,7 @@ export async function login(formData: FormData) {
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
   });
+
   //access token oluşturma
   const playlists: Playlists[] = await findUserPlaylists(user.email);
   const accessToken = await signToken({
@@ -106,7 +115,7 @@ export async function login(formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       //csrf'yi araştır bidaha
-      expires: new Date(Date.now() + 60 * 1000), // 1 minute
+      expires: new Date(Date.now() + 60 * 1000 * 24 * 60), // 1 minute
       path: "/",
     });
 
@@ -166,4 +175,40 @@ export async function logout(id: string) {
 export async function access_cookie() {
   const cookieStore = await cookies();
   return cookieStore.get("accessToken")?.value || "No access token found";
+}
+
+export async function refreshAccessTokenAction(token: string) {
+  if (!token) {
+    throw new Error("No token provided");
+  } else {
+    try {
+      const decodedToken = jose.decodeJwt(token) as UserPayload;
+      //sign new token
+      const newAccessToken = await signToken({
+        userId: decodedToken.userId,
+        email: decodedToken.email,
+        name: decodedToken.name,
+        roles: decodedToken.roles,
+        photo: decodedToken.photo,
+        playlists: decodedToken.playlists,
+      });
+      //verify new token
+      const verifiedToken = await verifyToken(newAccessToken);
+      if (!verifiedToken) {
+        throw new Error("Token verification failed");
+      }
+      //Umarım üstüne yazıyordur cookieyi
+      const cookieStore = await cookies();
+      console.log("COOKIE", newAccessToken);
+      cookieStore.set("accessToken", newAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        expires: new Date(Date.now() + 60 * 1000 * 24 * 60), // 1 day
+        path: "/",
+      });
+    } catch (error) {
+      throw new Error("Failed to refresh access token: " + error);
+    }
+  }
 }
