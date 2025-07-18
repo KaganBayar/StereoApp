@@ -6,6 +6,7 @@ import { actionType } from "@/contexts/Reducer";
 import { initialStateType } from "@/contexts/initialState";
 import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 interface UserProviderProps {
   initialState: initialStateType;
@@ -18,6 +19,7 @@ export default function UserProvider({
   reduce,
 }: UserProviderProps) {
   const [user, dispatch] = useReducer(reduce, initialState);
+  const router = useRouter();
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -31,7 +33,6 @@ export default function UserProvider({
               accessToken
             );
             console.log("verifiedAccessToken", verifiedAccessToken);
-
             if (!verifiedAccessToken) {
               console.log("Token verification failed");
               return;
@@ -68,6 +69,15 @@ export default function UserProvider({
                   },
                 });
               }
+              return;
+            }
+            if (
+              typeof verifiedAccessToken === "object" &&
+              verifiedAccessToken.success === true &&
+              verifiedAccessToken.action === "refresh"
+            ) {
+              console.log("Refreshing the Page");
+              router.reload();
               return;
             } else {
               console.log("Invalid token data structure");

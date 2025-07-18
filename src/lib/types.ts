@@ -1,4 +1,5 @@
 // src/app/interfaces/User.ts
+
 import * as jose from "jose";
 export interface UserPayload extends jose.JWTPayload {
   userId: string;
@@ -36,4 +37,14 @@ export interface Playlists {
   user_id: string;
   created_at: Date;
   photo: string;
+}
+
+export interface refreshPageOrder {
+  success: true;
+  action: "refresh";
+}
+
+export interface demandLoginOrder {
+  success: false;
+  action: "login";
 }

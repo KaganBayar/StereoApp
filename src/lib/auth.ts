@@ -2,6 +2,8 @@ import * as jose from "jose";
 import { Playlists } from "../lib/types";
 import { refreshAccessTokenAction } from "@/lib/actions";
 
+//BUNU TAMAMEN SERVER ACTIONA ÇEK
+/*
 export async function verifyToken(token: string) {
   if (!token) {
     throw new Error("Token is required for verification");
@@ -31,6 +33,7 @@ export async function verifyToken(token: string) {
     }
   }
 }
+*/
 
 export async function signToken(obj: jose.JWTPayload & { userId: string }) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);

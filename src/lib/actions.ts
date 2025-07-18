@@ -5,13 +5,14 @@ import bcrypt from "bcrypt";
 import prisma from "@/lib/db";
 import crypto from "crypto";
 import { signToken } from "@/lib/auth";
-import { verifyToken } from "@/lib/auth";
 import { findUserIdFromEmail } from "@prisma/client/sql";
 import { createPlaylist } from "@prisma/client/sql";
 import { cookies } from "next/headers";
 import * as jose from "jose";
 import { Playlists } from "../lib/types";
 import { UserPayload } from "../lib/types";
+import { refreshPageOrder } from "../lib/types";
+import { demandLoginOrder } from "../lib/types";
 
 const formRegisterSchema = z.object({
   email: z.string().email(),
@@ -30,8 +31,38 @@ export async function createAuthTokenAction(payload: jose.JWTPayload) {
   return await signToken(payload); // Use utility function
 }
 
-export async function verifyAuthTokenAction(token: string) {
-  return await verifyToken(token); // Use utility function
+export async function verifyAuthTokenAction(
+  token: string
+): Promise<UserPayload | refreshPageOrder> {
+  if (!token) {
+    throw new Error("Token is required for verification");
+  } else {
+    try {
+      const verifiedToken = await jose.jwtVerify(
+        token,
+        new TextEncoder().encode(process.env.JWT_SECRET_KEY),
+        {
+          algorithms: ["HS256"],
+        }
+      );
+      console.log("VERIFIED");
+      return verifiedToken.payload as UserPayload;
+    } catch (e) {
+      if (e instanceof jose.errors.JWTExpired) {
+        try {
+          const newAccessToken = await refreshAccessTokenAction(token);
+          if (!newAccessToken) {
+            throw new Error("No access token outputed by refresh action");
+          }
+          return newAccessToken as UserPayload;
+        } catch (error) {
+          throw new Error("Failed to refresh access token: " + error);
+        }
+      } else {
+        throw new Error("Token verification failed: " + e);
+      }
+    }
+  }
 }
 
 export async function register(formData: FormData) {
@@ -109,7 +140,7 @@ export async function login(formData: FormData) {
   });
 
   try {
-    await verifyToken(accessToken);
+    await verifyAuthTokenAction(accessToken);
 
     cookieStore.set("accessToken", accessToken, {
       httpOnly: true,
@@ -164,7 +195,7 @@ export async function findUserPlaylists(email: string) {
 
 export async function logout(id: string) {
   const cookieStore = await cookies();
-  cookieStore.delete("accesToken");
+  cookieStore.delete("accessToken");
   await prisma.refreshTokens.deleteMany({
     where: {
       user_id: id,
@@ -182,7 +213,19 @@ export async function refreshAccessTokenAction(token: string) {
     throw new Error("No token provided");
   } else {
     try {
+      const cookieStore = await cookies();
       const decodedToken = jose.decodeJwt(token) as UserPayload;
+      const refreshToken = await prisma.refreshTokens.findFirst({
+        where: {
+          user_id: decodedToken.userId,
+        },
+      });
+      if (!refreshToken || refreshToken.expires_at < new Date()) {
+        if (!refreshToken) {
+          throw new Error("Refresh token not found");
+        }
+        throw new Error("Refresh token expired");
+      }
       //sign new token
       const newAccessToken = await signToken({
         userId: decodedToken.userId,
@@ -193,12 +236,12 @@ export async function refreshAccessTokenAction(token: string) {
         playlists: decodedToken.playlists,
       });
       //verify new token
-      const verifiedToken = await verifyToken(newAccessToken);
+      const verifiedToken = await verifyAuthTokenAction(newAccessToken);
       if (!verifiedToken) {
         throw new Error("Token verification failed");
       }
       //Umarım üstüne yazıyordur cookieyi
-      const cookieStore = await cookies();
+
       console.log("COOKIE", newAccessToken);
       cookieStore.set("accessToken", newAccessToken, {
         httpOnly: true,
@@ -207,6 +250,8 @@ export async function refreshAccessTokenAction(token: string) {
         expires: new Date(Date.now() + 60 * 1000 * 24 * 60), // 1 day
         path: "/",
       });
+      //send refresh page order to client
+      return verifiedToken;
     } catch (error) {
       throw new Error("Failed to refresh access token: " + error);
     }
