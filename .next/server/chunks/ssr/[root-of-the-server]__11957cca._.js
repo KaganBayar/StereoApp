@@ -78,55 +78,13 @@ module.exports = mod;
 "[project]/src/lib/auth.ts [app-rsc] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
-var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_context__;
-__turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
+var { g: global, __dirname } = __turbopack_context__;
+{
 __turbopack_context__.s({
-    "getToken": (()=>getToken),
-    "signToken": (()=>signToken),
-    "verifyToken": (()=>verifyToken)
+    "signToken": (()=>signToken)
 });
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$jwt$2f$verify$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/jose/dist/node/esm/jwt/verify.js [app-rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$util$2f$errors$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__$2a$__as__errors$3e$__ = __turbopack_context__.i("[project]/node_modules/jose/dist/node/esm/util/errors.js [app-rsc] (ecmascript) <export * as errors>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$jwt$2f$sign$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/jose/dist/node/esm/jwt/sign.js [app-rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/actions.ts [app-rsc] (ecmascript)");
-var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
-    __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__
-]);
-([__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__);
 ;
-;
-async function getToken() {
-    if (process.env.JWT_SECRET_KEY == null) {
-        throw new Error("JWT_SECRET is not defined");
-    } else {
-        return process.env.JWT_SECRET_KEY;
-    }
-}
-async function verifyToken(token) {
-    if (!token) {
-        return null;
-    } else {
-        try {
-            const verifiedToken = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$jwt$2f$verify$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jwtVerify"])(token, new TextEncoder().encode(process.env.JWT_SECRET_KEY), {
-                algorithms: [
-                    "HS256"
-                ]
-            });
-            console.log("VERIFIED");
-            return verifiedToken.payload;
-        } catch (e) {
-            if (e instanceof __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$util$2f$errors$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__$2a$__as__errors$3e$__["errors"].JWTExpired) {
-                try {
-                    await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["refreshAccessTokenAction"])(token);
-                } catch (error) {
-                    throw new Error("Failed to refresh access token: " + error);
-                }
-            } else {
-                throw new Error("Token verification failed: " + e);
-            }
-        }
-    }
-}
 async function signToken(obj) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
     const jwt = await new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$jwt$2f$sign$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["SignJWT"](obj).setProtectedHeader({
@@ -134,8 +92,7 @@ async function signToken(obj) {
     }).setIssuedAt().setIssuer(obj.userId).setExpirationTime("10s").sign(secret);
     return jwt;
 }
-__turbopack_async_result__();
-} catch(e) { __turbopack_async_result__(e); } }, false);}),
+}}),
 "[externals]/@prisma/client/sql [external] (@prisma/client/sql, esm_import)": ((__turbopack_context__) => {
 "use strict";
 
@@ -172,14 +129,14 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$crypto__$5b$external$5d$__
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/auth.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__ = __turbopack_context__.i("[externals]/@prisma/client/sql [external] (@prisma/client/sql, esm_import)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/headers.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$jwt$2f$verify$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/jose/dist/node/esm/jwt/verify.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$util$2f$errors$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__$2a$__as__errors$3e$__ = __turbopack_context__.i("[project]/node_modules/jose/dist/node/esm/util/errors.js [app-rsc] (ecmascript) <export * as errors>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$util$2f$decode_jwt$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/jose/dist/node/esm/util/decode_jwt.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/action-validate.js [app-rsc] (ecmascript)");
 var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
-    __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__,
     __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__
 ]);
-([__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__);
-;
+([__TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__);
 ;
 ;
 ;
@@ -204,7 +161,33 @@ async function createAuthTokenAction(payload) {
     return await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["signToken"])(payload); // Use utility function
 }
 async function verifyAuthTokenAction(token) {
-    return await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["verifyToken"])(token); // Use utility function
+    if (!token) {
+        throw new Error("Token is required for verification");
+    } else {
+        try {
+            const verifiedToken = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$jwt$2f$verify$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jwtVerify"])(token, new TextEncoder().encode(process.env.JWT_SECRET_KEY), {
+                algorithms: [
+                    "HS256"
+                ]
+            });
+            console.log("VERIFIED");
+            return verifiedToken.payload;
+        } catch (e) {
+            if (e instanceof __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$util$2f$errors$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__$2a$__as__errors$3e$__["errors"].JWTExpired) {
+                try {
+                    const newAccessToken = await refreshAccessTokenAction(token);
+                    if (!newAccessToken) {
+                        throw new Error("No access token outputed by refresh action");
+                    }
+                    return newAccessToken;
+                } catch (error) {
+                    throw new Error("Failed to refresh access token: " + error);
+                }
+            } else {
+                throw new Error("Token verification failed: " + e);
+            }
+        }
+    }
 }
 async function register(formData) {
     const data = formRegisterSchema.parse(Object.fromEntries(formData));
@@ -267,7 +250,7 @@ async function login(formData) {
         playlists: playlists
     });
     try {
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["verifyToken"])(accessToken);
+        await verifyAuthTokenAction(accessToken);
         cookieStore.set("accessToken", accessToken, {
             httpOnly: true,
             secure: ("TURBOPACK compile-time value", "development") === "production",
@@ -317,7 +300,7 @@ async function findUserPlaylists(email) {
 }
 async function logout(id) {
     const cookieStore = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["cookies"])();
-    cookieStore.delete("accesToken");
+    cookieStore.delete("accessToken");
     await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].refreshTokens.deleteMany({
         where: {
             user_id: id
@@ -334,7 +317,19 @@ async function refreshAccessTokenAction(token) {
         throw new Error("No token provided");
     } else {
         try {
+            const cookieStore = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["cookies"])();
             const decodedToken = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$util$2f$decode_jwt$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["decodeJwt"])(token);
+            const refreshToken = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].refreshTokens.findFirst({
+                where: {
+                    user_id: decodedToken.userId
+                }
+            });
+            if (!refreshToken || refreshToken.expires_at < new Date()) {
+                if (!refreshToken) {
+                    throw new Error("Refresh token not found");
+                }
+                throw new Error("Refresh token expired");
+            }
             //sign new token
             const newAccessToken = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["signToken"])({
                 userId: decodedToken.userId,
@@ -345,12 +340,11 @@ async function refreshAccessTokenAction(token) {
                 playlists: decodedToken.playlists
             });
             //verify new token
-            const verifiedToken = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["verifyToken"])(newAccessToken);
+            const verifiedToken = await verifyAuthTokenAction(newAccessToken);
             if (!verifiedToken) {
                 throw new Error("Token verification failed");
             }
             //Umarım üstüne yazıyordur cookieyi
-            const cookieStore = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["cookies"])();
             console.log("COOKIE", newAccessToken);
             cookieStore.set("accessToken", newAccessToken, {
                 httpOnly: true,
@@ -359,7 +353,8 @@ async function refreshAccessTokenAction(token) {
                 expires: new Date(Date.now() + 60 * 1000 * 24 * 60),
                 path: "/"
             });
-            await verifyAuthTokenAction(newAccessToken);
+            //send refresh page order to client
+            return verifiedToken;
         } catch (error) {
             throw new Error("Failed to refresh access token: " + error);
         }

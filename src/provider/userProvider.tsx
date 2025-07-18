@@ -1,12 +1,16 @@
 "use client";
 import UserContext from "@/contexts/UserContext";
-import { DispatchContext } from "@/contexts/UserContext";
+import {
+  DispatchContext,
+  UserInformationLoadingContext,
+} from "@/contexts/UserContext";
 import { useReducer } from "react";
 import { actionType } from "@/contexts/Reducer";
 import { initialStateType } from "@/contexts/initialState";
 import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { cache } from "react";
 
 interface UserProviderProps {
   initialState: initialStateType;
@@ -19,10 +23,12 @@ export default function UserProvider({
   reduce,
 }: UserProviderProps) {
   const [user, dispatch] = useReducer(reduce, initialState);
-  const router = useRouter();
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
   useEffect(() => {
     async function fetchUser() {
       try {
+        setIsAuthLoading(true);
         const accessToken = await access_cookie();
         if (accessToken) {
           if (accessToken === "No access token found") {
@@ -33,6 +39,7 @@ export default function UserProvider({
               accessToken
             );
             console.log("verifiedAccessToken", verifiedAccessToken);
+
             if (!verifiedAccessToken) {
               console.log("Token verification failed");
               return;
@@ -70,15 +77,6 @@ export default function UserProvider({
                 });
               }
               return;
-            }
-            if (
-              typeof verifiedAccessToken === "object" &&
-              verifiedAccessToken.success === true &&
-              verifiedAccessToken.action === "refresh"
-            ) {
-              console.log("Refreshing the Page");
-              router.reload();
-              return;
             } else {
               console.log("Invalid token data structure");
               return;
@@ -87,6 +85,8 @@ export default function UserProvider({
         }
       } catch (error) {
         throw new Error("Failed to fetch user data: " + error);
+      } finally {
+        setIsAuthLoading(false);
       }
     }
     fetchUser();
@@ -94,7 +94,9 @@ export default function UserProvider({
   return (
     <UserContext.Provider value={user}>
       <DispatchContext.Provider value={dispatch}>
-        {children}
+        <UserInformationLoadingContext.Provider value={isAuthLoading}>
+          {children}
+        </UserInformationLoadingContext.Provider>
       </DispatchContext.Provider>
     </UserContext.Provider>
   );

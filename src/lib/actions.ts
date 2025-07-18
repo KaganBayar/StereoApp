@@ -11,8 +11,6 @@ import { cookies } from "next/headers";
 import * as jose from "jose";
 import { Playlists } from "../lib/types";
 import { UserPayload } from "../lib/types";
-import { refreshPageOrder } from "../lib/types";
-import { demandLoginOrder } from "../lib/types";
 
 const formRegisterSchema = z.object({
   email: z.string().email(),
@@ -33,7 +31,7 @@ export async function createAuthTokenAction(payload: jose.JWTPayload) {
 
 export async function verifyAuthTokenAction(
   token: string
-): Promise<UserPayload | refreshPageOrder> {
+): Promise<UserPayload> {
   if (!token) {
     throw new Error("Token is required for verification");
   } else {

@@ -6,12 +6,17 @@ import { VscArchive } from "react-icons/vsc";
 import { logout } from "../../lib/actions";
 import { AuthDialog } from "./AuthDialog";
 import UserContext from "@/contexts/UserContext";
-import { DispatchContext } from "@/contexts/UserContext";
+import {
+  DispatchContext,
+  UserInformationLoadingContext,
+} from "@/contexts/UserContext";
 import { useContext } from "react";
-
+import { Loader2 } from "lucide-react";
 const Header: React.FC = () => {
   const dispatch = useContext(DispatchContext);
   const user = useContext(UserContext);
+  const isAuthLoading = useContext(UserInformationLoadingContext);
+
   const handleLogout = async () => {
     if (dispatch && user) {
       dispatch({ type: "LOGOUT" });
@@ -49,7 +54,12 @@ const Header: React.FC = () => {
       </div>
 
       <div className="flex items-center">
-        {user?.user.email ? (
+        {isAuthLoading ? (
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+            <span className="text-sm text-gray-300">Logging in...</span>
+          </div>
+        ) : user?.user.email ? (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold border-2 border-blue-900">
               {user?.user.name ? user.user.name.charAt(0).toUpperCase() : "U"}
