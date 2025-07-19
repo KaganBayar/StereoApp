@@ -1,7 +1,3 @@
-"use client";
-import { findUserByEmail } from "@/lib/actions";
-import { useMemo } from "react";
-
 const UserAdmin = () => {
   return (
     <div>

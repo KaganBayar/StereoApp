@@ -23,18 +23,18 @@ export default function UserProvider({
   reduce,
 }: UserProviderProps) {
   const [user, dispatch] = useReducer(reduce, initialState);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
       try {
-        setIsAuthLoading(true);
         const accessToken = await access_cookie();
         if (accessToken) {
           if (accessToken === "No access token found") {
             console.log("No access token found");
             return;
           } else {
+            setIsAuthLoading(true);
             const verifiedAccessToken = await verifyAuthTokenAction(
               accessToken
             );

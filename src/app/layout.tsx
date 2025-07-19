@@ -5,7 +5,6 @@ import Header from "./components/Header";
 import UserProvider from "@/provider/userProvider";
 import initialState from "@/contexts/initialState";
 import reducer from "@/contexts/Reducer";
-import { CounterStoreProvider } from "@/provider/counter-store-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,12 +32,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        <CounterStoreProvider>
-          <UserProvider initialState={initialState} reduce={reducer}>
-            <Header />
-            {children}
-          </UserProvider>
-        </CounterStoreProvider>
+        <UserProvider initialState={initialState} reduce={reducer}>
+          <Header />
+          {children}
+        </UserProvider>
       </body>
     </html>
   );
