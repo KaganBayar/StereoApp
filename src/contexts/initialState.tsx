@@ -1,24 +1,13 @@
-import { Playlists } from "@/lib/types";
+import { Playlists, User } from "@/lib/types";
 
-export type initialStateType = {
-  user: {
-    id: string;
-    photo: string;
-    name: string;
-    email: string;
-    playlists: Playlists[];
-    roles: string[];
-  };
+const initialUser: User = {
+  id: "",
+  photo: "",
+  name: "",
+  email: "",
+  playlists: [],
+  roles: ["member"],
+  created_at: null,
+  updated_at: null,
 };
-
-const initialState: initialStateType = {
-  user: {
-    id: "",
-    photo: "",
-    name: "",
-    email: "",
-    playlists: [],
-    roles: ["member"],
-  },
-};
-export default initialState;
+export default initialUser;

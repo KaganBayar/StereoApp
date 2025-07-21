@@ -6,23 +6,24 @@ import {
 } from "@/contexts/UserContext";
 import { useReducer } from "react";
 import { actionType } from "@/contexts/Reducer";
-import { initialStateType } from "@/contexts/initialState";
+
+import { User } from "@/lib/types";
 import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/actions";
 import { useState } from "react";
 import { cache } from "react";
 
 interface UserProviderProps {
-  initialState: initialStateType;
+  User: User;
   children: React.ReactNode;
-  reduce: React.Reducer<initialStateType, actionType>;
+  reduce: React.Reducer<User, actionType>;
 }
 export default function UserProvider({
-  initialState,
+  User,
   children,
   reduce,
 }: UserProviderProps) {
-  const [user, dispatch] = useReducer(reduce, initialState);
+  const [user, dispatch] = useReducer(reduce, User);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   useEffect(() => {
@@ -53,15 +54,13 @@ export default function UserProvider({
               Array.isArray(verifiedAccessToken.playlists) &&
               Array.isArray(verifiedAccessToken.roles)
             ) {
-              const userDatas: initialStateType = {
-                user: {
-                  id: verifiedAccessToken.userId,
-                  email: verifiedAccessToken.email,
-                  name: verifiedAccessToken.name,
-                  photo: verifiedAccessToken.photo,
-                  roles: verifiedAccessToken.roles,
-                  playlists: verifiedAccessToken.playlists || [],
-                },
+              const userDatas: User = {
+                id: verifiedAccessToken.userId,
+                email: verifiedAccessToken.email,
+                name: verifiedAccessToken.name,
+                photo: verifiedAccessToken.photo,
+                roles: verifiedAccessToken.roles,
+                playlists: verifiedAccessToken.playlists || [],
               };
               if (dispatch) {
                 dispatch({

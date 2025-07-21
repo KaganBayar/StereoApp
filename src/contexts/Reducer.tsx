@@ -1,5 +1,5 @@
 "use client";
-import { initialStateType } from "@/contexts/initialState";
+import { User } from "@/lib/types";
 import { Playlists } from "@/lib/types";
 
 export type actionType =
@@ -12,6 +12,8 @@ export type actionType =
         photos: string;
         playlists: Playlists[];
         roles: string[];
+        created_at: Date;
+        updated_at: Date;
       };
     }
   | { type: "LOGOUT" }
@@ -20,14 +22,22 @@ export type actionType =
       payload: Playlists[];
     };
 
-export default function reducer(state: initialStateType, action: actionType) {
+export default function reducer(state: User, action: actionType) {
   switch (action.type) {
     case "LOGIN":
       return { ...state, user: action.payload };
     case "LOGOUT":
       return {
         ...state,
-        user: { name: "", email: "", photo: "", id: "", playlists: [] },
+        user: {
+          name: "",
+          email: "",
+          photo: "",
+          id: "",
+          playlists: [],
+          created_at: null,
+          updated_at: null,
+        },
       };
     case "ADDPLAYLIST":
       return {

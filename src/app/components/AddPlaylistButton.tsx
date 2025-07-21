@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { createPlaylistAction } from "@/lib/actions";
+import { createPlaylistAction } from "@/lib/dbActions";
 import { useContext } from "react";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
@@ -25,7 +25,7 @@ export function AddPlaylistButton() {
   const [open, setOpen] = useState(false);
   const refreshContext = usePlaylistRefresh();
   const handleSubmit = async () => {
-    const email = user?.user.email;
+    const email = user.email;
     setOpen(false);
     if (!email) {
       console.error("User email is not available");

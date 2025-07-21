@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { findUserPlaylists } from "@/lib/actions";
+import { findUserPlaylists } from "@/lib/dbActions";
 import { useContext } from "react";
 import UserContext from "@/contexts/UserContext";
 import { Playlists as PlaylistType } from "@/lib/types";
@@ -14,25 +14,25 @@ export default function PlaylistBar() {
   const [playlist, setPlaylist] = useState<PlaylistType[]>([]);
 
   const refreshPlaylists = useCallback(async () => {
-    if (user?.user.email) {
+    if (user.email) {
       console.log("Manually refreshing playlists");
-      const playlists = await findUserPlaylists(user.user.email);
+      const playlists = await findUserPlaylists(user.email);
       console.log("Playlists fetched:", playlists);
       setPlaylist(playlists);
     } else {
       setPlaylist([]);
     }
-  }, [user?.user.email]);
+  }, [user.email]);
 
   useEffect(() => {
     refreshPlaylists();
-  }, [user?.user.email, refreshPlaylists]);
+  }, [user.email, refreshPlaylists]);
 
   return (
     <PlaylistRefreshProvider refreshFunction={refreshPlaylists}>
       <div className="mb-4">
         <div className="absolute top-3 right-8">
-          {user?.user.id ? <AddPlaylistButton /> : <></>}
+          {user.id ? <AddPlaylistButton /> : <></>}
         </div>
         <div>
           {playlist.map((playlist, index) => {

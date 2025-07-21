@@ -5,8 +5,7 @@ import bcrypt from "bcrypt";
 import prisma from "@/lib/db";
 import crypto from "crypto";
 import { signToken } from "@/lib/auth";
-import { findUserIdFromEmail } from "@prisma/client/sql";
-import { createPlaylist } from "@prisma/client/sql";
+import { findUserPlaylists } from "@/lib/dbActions";
 import { cookies } from "next/headers";
 import * as jose from "jose";
 import { Playlists } from "../lib/types";
@@ -161,34 +160,6 @@ export async function findUserByEmail(email: string) {
     },
   });
   return user;
-}
-
-export async function createPlaylistAction(email: string) {
-  const userId = await prisma.$queryRawTyped(findUserIdFromEmail(email));
-  const playlistId = await prisma.$queryRawTyped(createPlaylist(userId[0].id));
-  console.log("playlist created");
-  return playlistId[0];
-}
-
-export async function findUserPlaylists(email: string) {
-  // First get the user ID from email
-  const user = await prisma.users.findFirst({
-    where: { email },
-    select: { id: true },
-  });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  // Then fetch all playlists belonging to this user
-  const playlists = await prisma.playlist.findMany({
-    where: {
-      user_id: user.id,
-    },
-  });
-
-  return playlists;
 }
 
 export async function logout(id: string) {

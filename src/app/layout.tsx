@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./components/Header";
 import UserProvider from "@/provider/userProvider";
-import initialState from "@/contexts/initialState";
+import initialUser from "@/contexts/initialState";
 import reducer from "@/contexts/Reducer";
 
 const geistSans = localFont({
@@ -32,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        <UserProvider initialState={initialState} reduce={reducer}>
+        <UserProvider User={initialUser} reduce={reducer}>
           <Header />
           {children}
         </UserProvider>

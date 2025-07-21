@@ -359,16 +359,17 @@ const AuthDialog = ()=>{
             if (!user) {
                 throw new Error("User not found");
             }
-            const name = user?.name;
             if (dispatch) {
                 dispatch({
                     type: "LOGIN",
                     payload: {
                         id: user.id,
                         photos: user.photo,
-                        name: name,
+                        name: user.name,
                         email: email,
-                        playlists: playlist
+                        playlists: playlist,
+                        roles: user.roles,
+                        created_at: user.created_at
                     }
                 });
             }
@@ -414,12 +415,12 @@ const AuthDialog = ()=>{
                     children: loginOrRegister === "login" ? "Login" : "Register"
                 }, void 0, false, {
                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                    lineNumber: 100,
+                    lineNumber: 101,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/components/AuthDialog.tsx",
-                lineNumber: 99,
+                lineNumber: 100,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogContent"], {
@@ -432,7 +433,7 @@ const AuthDialog = ()=>{
                                 children: loginOrRegister === "login" ? "Login" : "Register"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                lineNumber: 106,
+                                lineNumber: 107,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogDescription"], {
@@ -444,13 +445,13 @@ const AuthDialog = ()=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                lineNumber: 109,
+                                lineNumber: 110,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/components/AuthDialog.tsx",
-                        lineNumber: 105,
+                        lineNumber: 106,
                         columnNumber: 9
                     }, this),
                     loginOrRegister === "login" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -466,7 +467,7 @@ const AuthDialog = ()=>{
                                             children: "Email"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 118,
+                                            lineNumber: 119,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -476,13 +477,13 @@ const AuthDialog = ()=>{
                                             className: "w-full py-2 px-4 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 121,
+                                            lineNumber: 122,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 117,
+                                    lineNumber: 118,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -493,7 +494,7 @@ const AuthDialog = ()=>{
                                             children: "Password"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 129,
+                                            lineNumber: 130,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -503,13 +504,13 @@ const AuthDialog = ()=>{
                                             className: "w-full py-2 px-4 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 132,
+                                            lineNumber: 133,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 128,
+                                    lineNumber: 129,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -519,18 +520,18 @@ const AuthDialog = ()=>{
                                     children: "register"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 139,
+                                    lineNumber: 140,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                            lineNumber: 116,
+                            lineNumber: 117,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/AuthDialog.tsx",
-                        lineNumber: 115,
+                        lineNumber: 116,
                         columnNumber: 11
                     }, this),
                     loginOrRegister === "register" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -546,7 +547,7 @@ const AuthDialog = ()=>{
                                             children: "Name"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 153,
+                                            lineNumber: 154,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -556,13 +557,13 @@ const AuthDialog = ()=>{
                                             className: "w-full py-2 px-4 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 156,
+                                            lineNumber: 157,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 152,
+                                    lineNumber: 153,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -573,7 +574,7 @@ const AuthDialog = ()=>{
                                             children: "Email"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 164,
+                                            lineNumber: 165,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -583,13 +584,13 @@ const AuthDialog = ()=>{
                                             className: "w-full py-2 px-4 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 167,
+                                            lineNumber: 168,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 163,
+                                    lineNumber: 164,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -600,7 +601,7 @@ const AuthDialog = ()=>{
                                             children: "Password"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 175,
+                                            lineNumber: 176,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -610,13 +611,13 @@ const AuthDialog = ()=>{
                                             className: "w-full py-2 px-4 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 178,
+                                            lineNumber: 179,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 174,
+                                    lineNumber: 175,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -626,18 +627,18 @@ const AuthDialog = ()=>{
                                     children: "Login"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 185,
+                                    lineNumber: 186,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                            lineNumber: 151,
+                            lineNumber: 152,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/AuthDialog.tsx",
-                        lineNumber: 150,
+                        lineNumber: 151,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -654,7 +655,7 @@ const AuthDialog = ()=>{
                                             className: "h-4 w-4 mr-2 animate-spin"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                            lineNumber: 207,
+                                            lineNumber: 208,
                                             columnNumber: 17
                                         }, this),
                                         loginOrRegister === "login" ? "Logging in..." : "Signing up..."
@@ -662,7 +663,7 @@ const AuthDialog = ()=>{
                                 }, void 0, true) : loginOrRegister === "login" ? "Login" : "Register"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                lineNumber: 197,
+                                lineNumber: 198,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$dialog$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogClose"], {
@@ -672,30 +673,30 @@ const AuthDialog = ()=>{
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                    lineNumber: 219,
+                                    lineNumber: 220,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/components/AuthDialog.tsx",
-                                lineNumber: 218,
+                                lineNumber: 219,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/components/AuthDialog.tsx",
-                        lineNumber: 196,
+                        lineNumber: 197,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/components/AuthDialog.tsx",
-                lineNumber: 104,
+                lineNumber: 105,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/components/AuthDialog.tsx",
-        lineNumber: 98,
+        lineNumber: 99,
         columnNumber: 5
     }, this);
 };
@@ -739,7 +740,7 @@ const Header = ()=>{
             dispatch({
                 type: "LOGOUT"
             });
-            const userID = user.user.id;
+            const userID = user.id;
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$3a$ca3067__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$text$2f$javascript$3e$__["logout"])(userID);
         } else {
             throw new Error("Global Dispatch not found");
@@ -864,12 +865,12 @@ const Header = ()=>{
                     fileName: "[project]/src/app/components/Header.tsx",
                     lineNumber: 58,
                     columnNumber: 11
-                }, this) : user?.user.email ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                }, this) : user.email ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex items-center gap-3",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold border-2 border-blue-900",
-                            children: user?.user.name ? user.user.name.charAt(0).toUpperCase() : "U"
+                            children: user?.name ? user.name.charAt(0).toUpperCase() : "U"
                         }, void 0, false, {
                             fileName: "[project]/src/app/components/Header.tsx",
                             lineNumber: 64,
@@ -877,7 +878,7 @@ const Header = ()=>{
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                             className: "mr-2",
-                            children: user?.user.name
+                            children: user.name
                         }, void 0, false, {
                             fileName: "[project]/src/app/components/Header.tsx",
                             lineNumber: 67,
@@ -963,8 +964,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$3a$63b9b9
 ;
 ;
 ;
-function UserProvider({ initialState, children, reduce }) {
-    const [user, dispatch] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useReducer"])(reduce, initialState);
+function UserProvider({ User, children, reduce }) {
+    const [user, dispatch] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useReducer"])(reduce, User);
     const [isAuthLoading, setIsAuthLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         async function fetchUser() {
@@ -984,14 +985,12 @@ function UserProvider({ initialState, children, reduce }) {
                         }
                         if (typeof verifiedAccessToken.userId === "string" && typeof verifiedAccessToken.email === "string" && typeof verifiedAccessToken.name === "string" && typeof verifiedAccessToken.photo === "string" && Array.isArray(verifiedAccessToken.playlists) && Array.isArray(verifiedAccessToken.roles)) {
                             const userDatas = {
-                                user: {
-                                    id: verifiedAccessToken.userId,
-                                    email: verifiedAccessToken.email,
-                                    name: verifiedAccessToken.name,
-                                    photo: verifiedAccessToken.photo,
-                                    roles: verifiedAccessToken.roles,
-                                    playlists: verifiedAccessToken.playlists || []
-                                }
+                                id: verifiedAccessToken.userId,
+                                email: verifiedAccessToken.email,
+                                name: verifiedAccessToken.name,
+                                photo: verifiedAccessToken.photo,
+                                roles: verifiedAccessToken.roles,
+                                playlists: verifiedAccessToken.playlists || []
                             };
                             if (dispatch) {
                                 dispatch({
@@ -1032,17 +1031,17 @@ function UserProvider({ initialState, children, reduce }) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/src/provider/userProvider.tsx",
-                lineNumber: 97,
+                lineNumber: 96,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/provider/userProvider.tsx",
-            lineNumber: 96,
+            lineNumber: 95,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/provider/userProvider.tsx",
-        lineNumber: 95,
+        lineNumber: 94,
         columnNumber: 5
     }, this);
 }
@@ -1071,7 +1070,8 @@ function reducer(state, action) {
                     email: "",
                     photo: "",
                     id: "",
-                    playlists: []
+                    playlists: [],
+                    created_at: ""
                 }
             };
         case "ADDPLAYLIST":

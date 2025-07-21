@@ -1,6 +1,18 @@
 // src/app/interfaces/User.ts
 
 import * as jose from "jose";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+  photo: string;
+  playlists: Playlists[];
+  created_at: Date | null;
+  updated_at: Date | null;
+} //initialState Kullananları bi ara buna çevir
+
 export interface UserPayload extends jose.JWTPayload {
   userId: string;
   email: string;

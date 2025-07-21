@@ -340,7 +340,7 @@ function AddPlaylistButton() {
     const [open, setOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const refreshContext = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$playlistRefreshed$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePlaylistRefresh"])();
     const handleSubmit = async ()=>{
-        const email = user?.user.email;
+        const email = user.email;
         setOpen(false);
         if (!email) {
             console.error("User email is not available");
@@ -487,9 +487,9 @@ function PlaylistBar() {
     const [playlist, setPlaylist] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const refreshPlaylists = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "PlaylistBar.useCallback[refreshPlaylists]": async ()=>{
-            if (user?.user.email) {
+            if (user.email) {
                 console.log("Manually refreshing playlists");
-                const playlists = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$3a$bb6c43__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$text$2f$javascript$3e$__["findUserPlaylists"])(user.user.email);
+                const playlists = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$3a$bb6c43__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$text$2f$javascript$3e$__["findUserPlaylists"])(user.email);
                 console.log("Playlists fetched:", playlists);
                 setPlaylist(playlists);
             } else {
@@ -497,14 +497,14 @@ function PlaylistBar() {
             }
         }
     }["PlaylistBar.useCallback[refreshPlaylists]"], [
-        user?.user.email
+        user.email
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "PlaylistBar.useEffect": ()=>{
             refreshPlaylists();
         }
     }["PlaylistBar.useEffect"], [
-        user?.user.email,
+        user.email,
         refreshPlaylists
     ]);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$playlistRefreshed$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["PlaylistRefreshProvider"], {
@@ -514,10 +514,10 @@ function PlaylistBar() {
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "absolute top-3 right-8",
-                    children: user?.user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$components$2f$AddPlaylistButton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AddPlaylistButton"], {}, void 0, false, {
+                    children: user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$components$2f$AddPlaylistButton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AddPlaylistButton"], {}, void 0, false, {
                         fileName: "[project]/src/app/components/PlaylistBar.tsx",
                         lineNumber: 35,
-                        columnNumber: 28
+                        columnNumber: 22
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {}, void 0, false)
                 }, void 0, false, {
                     fileName: "[project]/src/app/components/PlaylistBar.tsx",
@@ -600,7 +600,7 @@ function Sidebar({}) {
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "flex justify-between w-full ",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                    children: (user?.user.name ? user.user.name + "'s" : "Your") + " Library"
+                    children: (user.name ? user.name + "'s" : "Your") + " Library"
                 }, void 0, false, {
                     fileName: "[project]/src/app/components/Sidebar.tsx",
                     lineNumber: 13,

@@ -20,7 +20,7 @@ const Header: React.FC = () => {
   const handleLogout = async () => {
     if (dispatch && user) {
       dispatch({ type: "LOGOUT" });
-      const userID = user.user.id;
+      const userID = user.id;
       await logout(userID);
     } else {
       throw new Error("Global Dispatch not found");
@@ -59,12 +59,12 @@ const Header: React.FC = () => {
             <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
             <span className="text-sm text-gray-300">Logging in...</span>
           </div>
-        ) : user?.user.email ? (
+        ) : user.email ? (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold border-2 border-blue-900">
-              {user?.user.name ? user.user.name.charAt(0).toUpperCase() : "U"}
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
             </div>
-            <p className="mr-2">{user?.user.name}</p>
+            <p className="mr-2">{user.name}</p>
             <button
               onClick={() => handleLogout()}
               className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm font-medium transition-colors"

@@ -10,7 +10,7 @@ export default function Sidebar({}) {
   return (
     <Box className="pl-8 mt-16 w-96 flex flex-col relative">
       <div className="flex justify-between w-full ">
-        <p>{(user?.user.name ? user.user.name + "'s" : "Your") + " Library"}</p>
+        <p>{(user.name ? user.name + "'s" : "Your") + " Library"}</p>
       </div>
 
       <div className="mt-12">

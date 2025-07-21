@@ -144,19 +144,19 @@ var { g: global, __dirname } = __turbopack_context__;
 __turbopack_context__.s({
     "default": (()=>__TURBOPACK__default__export__)
 });
-const initialState = {
-    user: {
-        id: "",
-        photo: "",
-        name: "",
-        email: "",
-        playlists: [],
-        roles: [
-            "member"
-        ]
-    }
+const initialUser = {
+    id: "",
+    photo: "",
+    name: "",
+    email: "",
+    playlists: [],
+    roles: [
+        "member"
+    ],
+    created_at: null,
+    updated_at: null
 };
-const __TURBOPACK__default__export__ = initialState;
+const __TURBOPACK__default__export__ = initialUser;
 }}),
 "[project]/src/contexts/Reducer.tsx (client reference/proxy) <module evaluation>": ((__turbopack_context__) => {
 "use strict";
@@ -230,7 +230,7 @@ function RootLayout({ children }) {
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("body", {
             className: `${__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$geistsans_9fc57718$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].variable} ${__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$geistmono_b9f59162$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].variable} antialiased bg-black text-white`,
             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$provider$2f$userProvider$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                initialState: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$initialState$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"],
+                User: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$initialState$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"],
                 reduce: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$Reducer$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"],
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$components$2f$Header$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
