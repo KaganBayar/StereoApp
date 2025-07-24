@@ -1,7 +1,28 @@
 "use server";
-import prisma from "@/lib/db";
 import { findUserIdFromEmail } from "@prisma/client/sql";
 import { createPlaylist } from "@prisma/client/sql";
+import { Artist } from "@/lib/types";
+import { Albums } from "@/lib/types";
+import prisma from "@/lib/db";
+
+export async function findAllAlbums() {
+  const albums = await prisma.albums.findMany({
+    include: {
+      song: true,
+    },
+  });
+  return albums satisfies Albums[];
+}
+
+export async function findAllAuthors() {
+  const authors = await prisma.author.findMany({
+    include: {
+      albums: true,
+      songs: true,
+    },
+  });
+  return authors satisfies Artist[];
+}
 
 export async function findUserByEmail(email: string) {
   const user = await prisma.users.findFirst({

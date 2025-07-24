@@ -1,8 +1,7 @@
 "use server";
-
+import prisma from "@/lib/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import prisma from "@/lib/db";
 import crypto from "crypto";
 import { signToken } from "@/lib/auth";
 import { findUserPlaylists } from "@/lib/dbActions";
@@ -134,6 +133,8 @@ export async function login(formData: FormData) {
     roles: user.roles,
     photo: user.photo,
     playlists: playlists,
+    created_at: user.created_at,
+    updated_at: user.updated_at,
   });
 
   try {
@@ -205,11 +206,7 @@ export async function refreshAccessTokenAction(token: string) {
         playlists: decodedToken.playlists,
       });
       //verify new token
-      const verifiedToken = await verifyAuthTokenAction(newAccessToken);
-      if (!verifiedToken) {
-        throw new Error("Token verification failed");
-      }
-      //Umarım üstüne yazıyordur cookieyi
+      const decodedPayload = jose.decodeJwt(newAccessToken) as UserPayload;
 
       console.log("COOKIE", newAccessToken);
       cookieStore.set("accessToken", newAccessToken, {
@@ -220,7 +217,7 @@ export async function refreshAccessTokenAction(token: string) {
         path: "/",
       });
       //send refresh page order to client
-      return verifiedToken;
+      return decodedPayload;
     } catch (error) {
       throw new Error("Failed to refresh access token: " + error);
     }

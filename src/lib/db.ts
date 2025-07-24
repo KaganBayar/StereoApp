@@ -4,16 +4,6 @@ const prismaClientSingleton = () => {
   return new PrismaClient();
 };
 
-export async function printAllUsers() {
-  const users = await prisma.users.findMany();
-  console.log(users);
-}
-
-export async function deleteAllUser() {
-  prisma.users.deleteMany();
-  console.log("All users deleted"); // bir tane bıraıyor nedense
-}
-
 declare const globalThis: {
   prismaGlobal: ReturnType<typeof prismaClientSingleton>;
 } & typeof global;

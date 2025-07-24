@@ -1,6 +1,9 @@
 // src/app/interfaces/User.ts
 
 import * as jose from "jose";
+import prisma from "./db";
+import { Prisma } from "@prisma/client";
+import { GetPayloadResult } from "@prisma/client/runtime/library";
 
 export interface User {
   id: string;
@@ -11,8 +14,15 @@ export interface User {
   playlists: Playlists[];
   created_at: Date | null;
   updated_at: Date | null;
-} //initialState Kullananları bi ara buna çevir
+}
 
+export type Artist = Prisma.AuthorGetPayload<{
+  include: { albums: true; songs: true };
+}>;
+
+export type Albums = Prisma.AlbumsGetPayload<{
+  include: { song: true };
+}>;
 export interface UserPayload extends jose.JWTPayload {
   userId: string;
   email: string;
@@ -20,19 +30,8 @@ export interface UserPayload extends jose.JWTPayload {
   photo: string;
   roles: string[];
   playlists?: Playlists[];
-}
-
-export interface Album {
-  id: number;
-  title: string;
-  artistId: number;
-  releaseDate: Date;
-}
-
-export interface Artist {
-  id: number;
-  name: string;
-  genre: string;
+  created_at: Date | null;
+  updated_at: Date | null;
 }
 
 export interface Song {

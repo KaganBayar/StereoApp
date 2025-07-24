@@ -98,6 +98,28 @@
       "layer": {
         "app/(Home)/admin/page": "action-browser"
       }
+    },
+    "00b88c31bdd424d1b8c79386aa3b0ef50258e94484": {
+      "workers": {
+        "app/(Home)/admin/page": {
+          "moduleId": "[project]/.next-internal/server/app/(Home)/admin/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/dbActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true
+        }
+      },
+      "layer": {
+        "app/(Home)/admin/page": "action-browser"
+      }
+    },
+    "00472913df20adf3763cbb6f7c3d329dd015f99ad9": {
+      "workers": {
+        "app/(Home)/admin/page": {
+          "moduleId": "[project]/.next-internal/server/app/(Home)/admin/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/dbActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true
+        }
+      },
+      "layer": {
+        "app/(Home)/admin/page": "action-browser"
+      }
     }
   },
   "edge": {}

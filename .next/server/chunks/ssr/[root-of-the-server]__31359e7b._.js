@@ -22,26 +22,13 @@ module.exports = mod;
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
-    "default": (()=>__TURBOPACK__default__export__),
-    "deleteAllUser": (()=>deleteAllUser),
-    "printAllUsers": (()=>printAllUsers)
+    "prisma": (()=>prisma)
 });
 var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
 ;
-const prismaClientSingleton = ()=>{
-    return new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
-};
-async function printAllUsers() {
-    const users = await prisma.users.findMany();
-    console.log(users);
-}
-async function deleteAllUser() {
-    prisma.users.deleteMany();
-    console.log("All users deleted"); // bir tane bıraıyor nedense
-}
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
-const __TURBOPACK__default__export__ = prisma;
-if ("TURBOPACK compile-time truthy", 1) globalThis.prismaGlobal = prisma;
+const globalForPrisma = global;
+const prisma = globalForPrisma.prisma || new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]();
+if ("TURBOPACK compile-time truthy", 1) globalForPrisma.prisma = prisma;
 }}),
 "[externals]/crypto [external] (crypto, cjs)": (function(__turbopack_context__) {
 
@@ -108,8 +95,10 @@ __turbopack_async_result__();
 
 var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_context__;
 __turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
-/* __next_internal_action_entry_do_not_use__ [{"006257a8d0546883f2b929060d62ab9b146c3f71e7":"findAllUsers","4004ce1d32f2ae4d440ec25acfb606c13698b9c7f7":"createPlaylistAction","40380f62d0db07cf03ccd5c863c566ab57020e0471":"findUserByEmail","40983706af57efe30768d9b8201175922ca62cbd75":"findUserPlaylists"},"",""] */ __turbopack_context__.s({
+/* __next_internal_action_entry_do_not_use__ [{"00472913df20adf3763cbb6f7c3d329dd015f99ad9":"findAllAuthors","006257a8d0546883f2b929060d62ab9b146c3f71e7":"findAllUsers","00b88c31bdd424d1b8c79386aa3b0ef50258e94484":"findAllAlbums","4004ce1d32f2ae4d440ec25acfb606c13698b9c7f7":"createPlaylistAction","40380f62d0db07cf03ccd5c863c566ab57020e0471":"findUserByEmail","40983706af57efe30768d9b8201175922ca62cbd75":"findUserPlaylists"},"",""] */ __turbopack_context__.s({
     "createPlaylistAction": (()=>createPlaylistAction),
+    "findAllAlbums": (()=>findAllAlbums),
+    "findAllAuthors": (()=>findAllAuthors),
     "findAllUsers": (()=>findAllUsers),
     "findUserByEmail": (()=>findUserByEmail),
     "findUserPlaylists": (()=>findUserPlaylists)
@@ -128,6 +117,23 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
 ;
 ;
 ;
+async function findAllAlbums() {
+    const albums = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].albums.findMany({
+        include: {
+            song: true
+        }
+    });
+    return albums;
+}
+async function findAllAuthors() {
+    const authors = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].author.findMany({
+        include: {
+            albums: true,
+            songs: true
+        }
+    });
+    return authors;
+}
 async function findUserByEmail(email) {
     const user = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].users.findFirst({
         where: {
@@ -173,11 +179,15 @@ async function findUserPlaylists(email) {
 }
 ;
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
+    findAllAlbums,
+    findAllAuthors,
     findUserByEmail,
     findAllUsers,
     createPlaylistAction,
     findUserPlaylists
 ]);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findAllAlbums, "00b88c31bdd424d1b8c79386aa3b0ef50258e94484", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findAllAuthors, "00472913df20adf3763cbb6f7c3d329dd015f99ad9", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findUserByEmail, "40380f62d0db07cf03ccd5c863c566ab57020e0471", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findAllUsers, "006257a8d0546883f2b929060d62ab9b146c3f71e7", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createPlaylistAction, "4004ce1d32f2ae4d440ec25acfb606c13698b9c7f7", null);
@@ -325,7 +335,9 @@ async function login(formData) {
         name: user.name,
         roles: user.roles,
         photo: user.photo,
-        playlists: playlists
+        playlists: playlists,
+        created_at: user.created_at,
+        updated_at: user.updated_at
     });
     try {
         await verifyAuthTokenAction(accessToken);
@@ -391,11 +403,7 @@ async function refreshAccessTokenAction(token) {
                 playlists: decodedToken.playlists
             });
             //verify new token
-            const verifiedToken = await verifyAuthTokenAction(newAccessToken);
-            if (!verifiedToken) {
-                throw new Error("Token verification failed");
-            }
-            //Umarım üstüne yazıyordur cookieyi
+            const decodedPayload = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$node$2f$esm$2f$util$2f$decode_jwt$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["decodeJwt"])(newAccessToken);
             console.log("COOKIE", newAccessToken);
             cookieStore.set("accessToken", newAccessToken, {
                 httpOnly: true,
@@ -405,7 +413,7 @@ async function refreshAccessTokenAction(token) {
                 path: "/"
             });
             //send refresh page order to client
-            return verifiedToken;
+            return decodedPayload;
         } catch (error) {
             throw new Error("Failed to refresh access token: " + error);
         }

@@ -61,17 +61,21 @@ export default function UserProvider({
                 photo: verifiedAccessToken.photo,
                 roles: verifiedAccessToken.roles,
                 playlists: verifiedAccessToken.playlists || [],
+                created_at: verifiedAccessToken.created_at,
+                updated_at: verifiedAccessToken.updated_at,
               };
               if (dispatch) {
                 dispatch({
                   type: "LOGIN",
                   payload: {
-                    id: userDatas.user.id,
-                    photos: userDatas.user.photo,
-                    name: userDatas.user.name,
-                    email: userDatas.user.email,
-                    playlists: userDatas.user.playlists,
-                    roles: userDatas.user.roles,
+                    id: userDatas.id,
+                    photos: userDatas.photo,
+                    name: userDatas.name,
+                    email: userDatas.email,
+                    playlists: userDatas.playlists,
+                    roles: userDatas.roles,
+                    created_at: userDatas.created_at,
+                    updated_at: userDatas.updated_at,
                   },
                 });
               }

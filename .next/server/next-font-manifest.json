@@ -1,5 +1,9 @@
 {
   "app": {
+    "[project]/src/app/(Home)/admin/page": [
+      "static/media/GeistVF-s.p.7fe29570.woff",
+      "static/media/GeistMonoVF-s.p.a9159d35.woff"
+    ],
     "[project]/src/app/(Home)/page": [
       "static/media/GeistVF-s.p.7fe29570.woff",
       "static/media/GeistMonoVF-s.p.a9159d35.woff"
