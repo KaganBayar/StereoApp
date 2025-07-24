@@ -140,7 +140,7 @@ const AddAlbum = () => {
   }
 
   return (
-    <div className="pt-6 p-4">
+    <div className="pt-6 p-4 w-full">
       <div className="flex justify-between items-center mb-6">
         <div className="text-neutral-200 text-xl">Albums ({albums.length})</div>
         <button

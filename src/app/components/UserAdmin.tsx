@@ -3,13 +3,17 @@ import { useState, useEffect } from "react";
 import { User } from "@/lib/types";
 import { findAllUsers } from "@/lib/dbActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import { UserAdminEditForm } from "@/lib/types";
+import { updateUser } from "@/lib/dbActions";
+import { deleteUser } from "@/lib/dbActions";
+import { logout } from "@/lib/actions";
 
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<User>>({});
+  const [editForm, setEditForm] = useState<Partial<UserAdminEditForm>>({});
 
   useEffect(() => {
     loadUsers();
@@ -40,14 +44,15 @@ const UserAdmin = () => {
 
   const handleSave = async () => {
     if (!editingUser || !editForm.name || !editForm.email) return;
-    
+
     try {
-      // Update user logic would go here
-      setUsers(users.map(user => 
-        user.id === editingUser 
-          ? { ...user, ...editForm }
-          : user
-      ));
+      const updatedUser = await updateUser(editingUser, editForm);
+      await logout(editingUser);
+      setUsers(
+        users.map((user) =>
+          user.id === editingUser ? { ...user, ...editForm } : user
+        )
+      );
       setEditingUser(null);
       setEditForm({});
     } catch (err) {
@@ -63,10 +68,11 @@ const UserAdmin = () => {
 
   const handleDelete = async (userId: string) => {
     if (!confirm("Are you sure you want to delete this user?")) return;
-    
+
     try {
-      // Delete user logic would go here
-      setUsers(users.filter(user => user.id !== userId));
+      await deleteUser(userId);
+      await logout(userId);
+      setUsers(users.filter((user) => user.id !== userId));
     } catch (err) {
       setError("Failed to delete user");
       console.error("Error deleting user:", err);
@@ -91,7 +97,7 @@ const UserAdmin = () => {
       <div className="pt-6 p-4">
         <div className="text-neutral-200 text-xl mb-4">Users</div>
         <div className="text-red-500 mb-4">{error}</div>
-        <button 
+        <button
           onClick={loadUsers}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
         >
@@ -102,20 +108,34 @@ const UserAdmin = () => {
   }
 
   return (
-    <div className="pt-6 p-4">
-      <div className="text-neutral-200 text-xl mb-6">Users ({users.length})</div>
-      
+    <div className="pt-7 p-4 w-full">
+      <div className="text-neutral-200 text-xl mb-6">
+        Users ({users.length})
+      </div>
+
       <div className="bg-gray-800 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Roles</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Playlists</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Created</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Roles
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Playlists
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Created
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-600">
@@ -125,20 +145,26 @@ const UserAdmin = () => {
                     {editingUser === user.id ? (
                       <input
                         type="text"
-                        value={editForm.name || ''}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        value={editForm.name || ""}
+                        onChange={(e) =>
+                          handleInputChange("name", e.target.value)
+                        }
                         className="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                       />
                     ) : (
-                      <div className="text-sm font-medium text-white">{user.name}</div>
+                      <div className="text-sm font-medium text-white">
+                        {user.name}
+                      </div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {editingUser === user.id ? (
                       <input
                         type="email"
-                        value={editForm.email || ''}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        value={editForm.email || ""}
+                        onChange={(e) =>
+                          handleInputChange("email", e.target.value)
+                        }
                         className="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                       />
                     ) : (
@@ -149,15 +175,27 @@ const UserAdmin = () => {
                     {editingUser === user.id ? (
                       <input
                         type="text"
-                        value={Array.isArray(editForm.roles) ? editForm.roles.join(', ') : ''}
-                        onChange={(e) => handleInputChange('roles', e.target.value.split(', ').filter(r => r.trim()))}
+                        value={
+                          Array.isArray(editForm.roles)
+                            ? editForm.roles.join(", ")
+                            : ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "roles",
+                            e.target.value.split(", ").filter((r) => r.trim())
+                          )
+                        }
                         placeholder="admin, user"
                         className="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                       />
                     ) : (
                       <div className="flex flex-wrap gap-1">
                         {user.roles.map((role, idx) => (
-                          <span key={idx} className="px-2 py-1 text-xs bg-blue-600 text-white rounded">
+                          <span
+                            key={idx}
+                            className="px-2 py-1 text-xs bg-blue-600 text-white rounded"
+                          >
                             {role}
                           </span>
                         ))}
@@ -165,11 +203,15 @@ const UserAdmin = () => {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">{user.playlists?.length || 0}</div>
+                    <div className="text-sm text-gray-300">
+                      {user.playlists?.length || 0}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
-                      {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                      {user.created_at
+                        ? new Date(user.created_at).toLocaleDateString()
+                        : "N/A"}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

@@ -12,8 +12,8 @@ export default function Home() {
   >("userList");
 
   return (
-    <div className="items-center flex flex-col">
-      <Box className="flex w-[50%]">
+    <div className="items-center flex flex-col w-full">
+      <Box className="flex w-[100%]">
         <div className="space-x-4 flex flex-row w-full justify-around">
           <button
             onClick={() => {

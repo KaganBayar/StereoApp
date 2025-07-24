@@ -16,6 +16,12 @@ export interface User {
   updated_at: Date | null;
 }
 
+export interface UserAdminEditForm {
+  name: string;
+  email: string;
+  roles: string[];
+}
+
 export type Artist = Prisma.AuthorGetPayload<{
   include: { albums: true; songs: true };
 }>;

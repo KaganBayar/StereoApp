@@ -163,6 +163,7 @@ export async function findUserByEmail(email: string) {
   return user;
 }
 
+//başkasının bilgisayarını logoutlayamıyorsun
 export async function logout(id: string) {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");

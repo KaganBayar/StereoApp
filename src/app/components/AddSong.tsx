@@ -45,7 +45,12 @@ const AddSong = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.artistId || !formData.albumId || !formData.duration) {
+    if (
+      !formData.title ||
+      !formData.artistId ||
+      !formData.albumId ||
+      !formData.duration
+    ) {
       setError("Please fill in all required fields");
       return;
     }
@@ -53,11 +58,11 @@ const AddSong = () => {
     try {
       if (editingSong) {
         // Update song logic
-        setSongs(songs.map(song => 
-          song.id === editingSong 
-            ? { ...song, ...formData as Song }
-            : song
-        ));
+        setSongs(
+          songs.map((song) =>
+            song.id === editingSong ? { ...song, ...(formData as Song) } : song
+          )
+        );
         setEditingSong(null);
       } else {
         // Add new song logic
@@ -66,7 +71,7 @@ const AddSong = () => {
           title: formData.title!,
           artistId: formData.artistId!,
           albumId: formData.albumId!,
-          duration: formData.duration!
+          duration: formData.duration!,
         };
         setSongs([...songs, newSong]);
         setShowAddForm(false);
@@ -86,9 +91,9 @@ const AddSong = () => {
 
   const handleDelete = async (songId: number) => {
     if (!confirm("Are you sure you want to delete this song?")) return;
-    
+
     try {
-      setSongs(songs.filter(song => song.id !== songId));
+      setSongs(songs.filter((song) => song.id !== songId));
     } catch (err) {
       setError("Failed to delete song");
       console.error("Error deleting song:", err);
@@ -103,19 +108,19 @@ const AddSong = () => {
   };
 
   const getArtistName = (artistId: number) => {
-    const artist = artists.find(a => a.id === artistId);
-    return artist?.name || 'Unknown Artist';
+    const artist = artists.find((a) => a.id === artistId);
+    return artist?.name || "Unknown Artist";
   };
 
   const getAlbumName = (albumId: number) => {
-    const album = albums.find(a => a.id === albumId);
-    return album?.title || 'Unknown Album';
+    const album = albums.find((a) => a.id === albumId);
+    return album?.title || "Unknown Album";
   };
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   if (loading) {
@@ -128,7 +133,7 @@ const AddSong = () => {
   }
 
   return (
-    <div className="pt-6 p-4">
+    <div className="pt-6 p-4 w-full">
       <div className="flex justify-between items-center mb-6">
         <div className="text-neutral-200 text-xl">Songs ({songs.length})</div>
         <button
@@ -140,15 +145,13 @@ const AddSong = () => {
       </div>
 
       {error && (
-        <div className="bg-red-600 text-white p-4 rounded mb-4">
-          {error}
-        </div>
+        <div className="bg-red-600 text-white p-4 rounded mb-4">{error}</div>
       )}
 
       {(showAddForm || editingSong) && (
         <div className="bg-gray-800 p-6 rounded-lg mb-6">
           <h3 className="text-white text-lg mb-4">
-            {editingSong ? 'Edit Song' : 'Add New Song'}
+            {editingSong ? "Edit Song" : "Add New Song"}
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -158,51 +161,55 @@ const AddSong = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.title || ''}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
+                  value={formData.title || ""}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   Artist *
                 </label>
                 <select
-                  value={formData.artistId || ''}
-                  onChange={(e) => handleInputChange('artistId', parseInt(e.target.value))}
+                  value={formData.artistId || ""}
+                  onChange={(e) =>
+                    handleInputChange("artistId", parseInt(e.target.value))
+                  }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
                 >
                   <option value="">Select Artist</option>
-                  {artists.map(artist => (
+                  {artists.map((artist) => (
                     <option key={artist.id} value={artist.id}>
                       {artist.name}
                     </option>
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   Album *
                 </label>
                 <select
-                  value={formData.albumId || ''}
-                  onChange={(e) => handleInputChange('albumId', parseInt(e.target.value))}
+                  value={formData.albumId || ""}
+                  onChange={(e) =>
+                    handleInputChange("albumId", parseInt(e.target.value))
+                  }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
                 >
                   <option value="">Select Album</option>
-                  {albums.map(album => (
+                  {albums.map((album) => (
                     <option key={album.id} value={album.id}>
                       {album.title}
                     </option>
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   Duration (seconds) *
@@ -210,20 +217,22 @@ const AddSong = () => {
                 <input
                   type="number"
                   min="1"
-                  value={formData.duration || ''}
-                  onChange={(e) => handleInputChange('duration', parseInt(e.target.value))}
+                  value={formData.duration || ""}
+                  onChange={(e) =>
+                    handleInputChange("duration", parseInt(e.target.value))
+                  }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
             </div>
-            
+
             <div className="flex space-x-3">
               <button
                 type="submit"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded flex items-center gap-2"
               >
-                <FaSave /> {editingSong ? 'Update' : 'Add'} Song
+                <FaSave /> {editingSong ? "Update" : "Add"} Song
               </button>
               <button
                 type="button"
@@ -242,27 +251,45 @@ const AddSong = () => {
           <table className="w-full">
             <thead className="bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Artist</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Album</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Duration</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Title
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Artist
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Album
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Duration
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-600">
               {songs.map((song) => (
                 <tr key={song.id} className="bg-gray-800 hover:bg-gray-750">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-white">{song.title}</div>
+                    <div className="text-sm font-medium text-white">
+                      {song.title}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">{getArtistName(song.artistId)}</div>
+                    <div className="text-sm text-gray-300">
+                      {getArtistName(song.artistId)}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">{getAlbumName(song.albumId)}</div>
+                    <div className="text-sm text-gray-300">
+                      {getAlbumName(song.albumId)}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300">{formatDuration(song.duration)}</div>
+                    <div className="text-sm text-gray-300">
+                      {formatDuration(song.duration)}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">

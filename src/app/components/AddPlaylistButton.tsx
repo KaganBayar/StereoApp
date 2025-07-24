@@ -35,9 +35,9 @@ export function AddPlaylistButton() {
         await refreshContext?.refreshPlaylists();
         dispatch!({
           type: "ADDPLAYLIST",
-          payload: [...user!.user.playlists],
+          payload: [...user.playlists],
         });
-        router.push(`/playlist/${res.id}`);
+        router.push(`/playlist/${res}`);
       });
 
       console.log("Playlist created successfully");

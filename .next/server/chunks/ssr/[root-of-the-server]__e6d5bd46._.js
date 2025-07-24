@@ -98,13 +98,15 @@ __turbopack_async_result__();
 
 var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_context__;
 __turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
-/* __next_internal_action_entry_do_not_use__ [{"00472913df20adf3763cbb6f7c3d329dd015f99ad9":"findAllAuthors","006257a8d0546883f2b929060d62ab9b146c3f71e7":"findAllUsers","00b88c31bdd424d1b8c79386aa3b0ef50258e94484":"findAllAlbums","4004ce1d32f2ae4d440ec25acfb606c13698b9c7f7":"createPlaylistAction","40380f62d0db07cf03ccd5c863c566ab57020e0471":"findUserByEmail","40983706af57efe30768d9b8201175922ca62cbd75":"findUserPlaylists"},"",""] */ __turbopack_context__.s({
+/* __next_internal_action_entry_do_not_use__ [{"00472913df20adf3763cbb6f7c3d329dd015f99ad9":"findAllAuthors","006257a8d0546883f2b929060d62ab9b146c3f71e7":"findAllUsers","00b88c31bdd424d1b8c79386aa3b0ef50258e94484":"findAllAlbums","4004ce1d32f2ae4d440ec25acfb606c13698b9c7f7":"createPlaylistAction","40380f62d0db07cf03ccd5c863c566ab57020e0471":"findUserByEmail","404bbe1197ba5208f6c1a67a83177b03a55057dc8e":"deleteUser","40983706af57efe30768d9b8201175922ca62cbd75":"findUserPlaylists","60763221fca0ae26d89238676ad7b3cd8d98dbf65a":"updateUser"},"",""] */ __turbopack_context__.s({
     "createPlaylistAction": (()=>createPlaylistAction),
+    "deleteUser": (()=>deleteUser),
     "findAllAlbums": (()=>findAllAlbums),
     "findAllAuthors": (()=>findAllAuthors),
     "findAllUsers": (()=>findAllUsers),
     "findUserByEmail": (()=>findUserByEmail),
-    "findUserPlaylists": (()=>findUserPlaylists)
+    "findUserPlaylists": (()=>findUserPlaylists),
+    "updateUser": (()=>updateUser)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$app$2d$render$2f$encryption$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/app-render/encryption.js [app-rsc] (ecmascript)");
@@ -115,7 +117,6 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
     __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__
 ]);
 ([__TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__);
-;
 ;
 ;
 ;
@@ -153,11 +154,44 @@ async function findAllUsers() {
     });
     return users;
 }
+async function updateUser(id, dataForm) {
+    const updatedUser = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].users.update({
+        where: {
+            id: id
+        },
+        data: {
+            ...dataForm,
+            updated_at: new Date()
+        }
+    });
+    return updatedUser;
+}
+async function deleteUser(id) {
+    const deletedUser = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].users.delete({
+        where: {
+            id: id
+        }
+    });
+    return deletedUser;
+}
 async function createPlaylistAction(email) {
     const userId = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].$queryRawTyped((0, __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__["findUserIdFromEmail"])(email));
-    const playlistId = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].$queryRawTyped((0, __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client$2f$sql__$5b$external$5d$__$2840$prisma$2f$client$2f$sql$2c$__esm_import$29$__["createPlaylist"])(userId[0].id));
+    //const playlistId = await prisma.$queryRawTyped(createPlaylist(userId[0].id));
+    const playlistId = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].playlist.create({
+        data: {
+            name: "My Playlist",
+            description: "This is my playlist",
+            user_id: userId[0].id,
+            created_at: new Date(),
+            updated_at: new Date(),
+            photo: "default.jpg"
+        },
+        select: {
+            id: true
+        }
+    });
     console.log("playlist created");
-    return playlistId[0];
+    return playlistId.id;
 }
 async function findUserPlaylists(email) {
     // First get the user ID from email
@@ -186,6 +220,8 @@ async function findUserPlaylists(email) {
     findAllAuthors,
     findUserByEmail,
     findAllUsers,
+    updateUser,
+    deleteUser,
     createPlaylistAction,
     findUserPlaylists
 ]);
@@ -193,6 +229,8 @@ async function findUserPlaylists(email) {
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findAllAuthors, "00472913df20adf3763cbb6f7c3d329dd015f99ad9", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findUserByEmail, "40380f62d0db07cf03ccd5c863c566ab57020e0471", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findAllUsers, "006257a8d0546883f2b929060d62ab9b146c3f71e7", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(updateUser, "60763221fca0ae26d89238676ad7b3cd8d98dbf65a", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteUser, "404bbe1197ba5208f6c1a67a83177b03a55057dc8e", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createPlaylistAction, "4004ce1d32f2ae4d440ec25acfb606c13698b9c7f7", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findUserPlaylists, "40983706af57efe30768d9b8201175922ca62cbd75", null);
 __turbopack_async_result__();
