@@ -5,56 +5,77 @@ import prisma from "./db";
 import { Prisma } from "@prisma/client";
 import { GetPayloadResult } from "@prisma/client/runtime/library";
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  roles: string[];
-  photo: string;
-  playlists: Playlists[];
-  created_at: Date | null;
-  updated_at: Date | null;
-}
-
-export interface UserAdminEditForm {
-  name: string;
-  email: string;
-  roles: string[];
-}
+export type User = Prisma.UsersGetPayload<{
+  include: { playlists: true };
+}>;
 
 export type Artist = Prisma.AuthorGetPayload<{
   include: { albums: true; songs: true };
 }>;
 
+export interface ArtistFormData {
+  name: string;
+  genre: string;
+  bio?: string;
+  photo_url?: string;
+}
+
+export interface UserPayload
+  extends jose.JWTPayload,
+    Prisma.UsersGetPayload<{
+      include: { playlists: true };
+    }> {}
+
 export type Albums = Prisma.AlbumsGetPayload<{
   include: { song: true };
 }>;
-export interface UserPayload extends jose.JWTPayload {
-  userId: string;
-  email: string;
-  name: string;
-  photo: string;
-  roles: string[];
-  playlists?: Playlists[];
-  created_at: Date | null;
-  updated_at: Date | null;
-}
+export type Songs = Prisma.SongGetPayload<{}>;
 
-export interface Song {
-  id: number;
-  title: string;
-  albumId: number;
-  artistId: number;
-  duration: number; // duration in seconds
-}
-export interface Playlists {
-  id: string;
+export type SongCreateFormData = {
   name: string;
-  description: string | null;
-  user_id: string;
-  created_at: Date;
-  photo: string;
-}
+  url: string;
+  author_id: string;
+  length: number;
+  playlist_id: string;
+  albumsId?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
+  photo?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
+};
+
+export type SongUpdateFormData = Partial<
+  Pick<Songs, "name" | "url" | "length" | "photo">
+>;
+export type Album = Prisma.AlbumsGetPayload<{
+  include: {
+    song: true;
+  };
+}>;
+
+export type AlbumUpdateFormData = Partial<
+  Pick<Album, "title" | "artistId" | "releaseDate" | "cover_url">
+>;
+
+export type AlbumCreateFormData = {
+  title: string;
+  artistId: string;
+  releaseDate: Date;
+  cover_url?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
+};
+export type ArtistUpdateFormData = Partial<
+  Pick<Artist, "name" | "genre" | "bio" | "photo_url">
+>;
+
+export type ArtistCreateFormData = {
+  name: string;
+  genre: string;
+  bio?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
+  photo_url?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
+};
+
+export type Playlists = Prisma.PlaylistGetPayload<{
+  include: {
+    Song: true;
+  };
+}>;
 
 export interface refreshPageOrder {
   success: true;

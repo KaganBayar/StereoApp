@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
-    {"offset": {"line": 60, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/Ben/Desktop/lolo/KOD/Web/muzikendim/src/app/api/readCookie/route.ts"],"sourcesContent":["import { cookies } from \"next/headers\";\r\nexport async function GET() {\r\n  const cookieStore = await cookies();\r\n  const access_token = cookieStore.getAll();\r\n  return new Response(`{lookAtMe: ${access_token}}`, {\r\n    headers: {\r\n      \"content-type\": \"application/json\",\r\n    },\r\n  });\r\n}\r\n"],"names":[],"mappings":";;;AAAA;;AACO,eAAe;IACpB,MAAM,cAAc,MAAM,CAAA,GAAA,iIAAA,CAAA,UAAO,AAAD;IAChC,MAAM,eAAe,YAAY,MAAM;IACvC,OAAO,IAAI,SAAS,CAAC,WAAW,EAAE,aAAa,CAAC,CAAC,EAAE;QACjD,SAAS;YACP,gBAAgB;QAClB;IACF;AACF","debugId":null}}]
-}

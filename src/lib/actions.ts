@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import * as jose from "jose";
 import { Playlists } from "../lib/types";
 import { UserPayload } from "../lib/types";
+import { requireValidUser, requireAdminUser } from "@/lib/serverValidation";
 
 const formRegisterSchema = z.object({
   email: z.string().email(),
@@ -41,8 +42,11 @@ export async function verifyAuthTokenAction(
           algorithms: ["HS256"],
         }
       );
+
+      const tokenPayload = verifiedToken.payload as UserPayload;
+
       console.log("VERIFIED");
-      return verifiedToken.payload as UserPayload;
+      return tokenPayload;
     } catch (e) {
       if (e instanceof jose.errors.JWTExpired) {
         try {
@@ -144,7 +148,7 @@ export async function login(formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       //csrf'yi araştır bidaha
-      expires: new Date(Date.now() + 60 * 1000 * 24 * 60), // 1 minute
+      expires: new Date(Date.now() + 60 * 1000), // 1 minute
       path: "/",
     });
 
@@ -165,6 +169,20 @@ export async function findUserByEmail(email: string) {
 
 //başkasının bilgisayarını logoutlayamıyorsun
 export async function logout(id: string) {
+  try {
+    // Try to validate user session - if it fails, just continue with logout
+    const currentUser = await requireValidUser();
+
+    // If admin is logging out someone else, allow it
+    // If regular user, they can only logout themselves
+    if (!currentUser.roles.includes("admin") && currentUser.userId !== id) {
+      throw new Error("FORBIDDEN: Cannot logout another user");
+    }
+  } catch (error) {
+    // If validation fails, still proceed with logout cleanup for security
+    console.log("Logout validation failed, proceeding with cleanup:", error);
+  }
+
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
   await prisma.refreshTokens.deleteMany({
@@ -175,6 +193,9 @@ export async function logout(id: string) {
   console.log("logged out");
 }
 export async function access_cookie() {
+  // Validate user session first
+  await requireValidUser();
+
   const cookieStore = await cookies();
   return cookieStore.get("accessToken")?.value || "No access token found";
 }

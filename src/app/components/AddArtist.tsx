@@ -2,6 +2,12 @@
 import { useState, useEffect } from "react";
 import { Artist } from "@/lib/types";
 import {
+  findAllAuthors,
+  createAuthor,
+  updateAuthor,
+  deleteAuthor,
+} from "@/lib/dbActions";
+import {
   FaPlus,
   FaEdit,
   FaTrash,
@@ -9,14 +15,16 @@ import {
   FaTimes,
   FaMusic,
 } from "react-icons/fa";
+import { ArtistCreateFormData, ArtistUpdateFormData } from "@/lib/types";
 
 const AddAuthor = () => {
   const [authors, setAuthors] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingAuthor, setEditingAuthor] = useState<number | null>(null);
-  const [formData, setFormData] = useState<Partial<Artist>>({});
+  const [editingAuthor, setEditingAuthor] = useState<string | null>(null);
+  const [formData, setFormData] = useState<ArtistUpdateFormData>({});
+  // name: string |genre: string; bio | string; photo_url | string;
 
   useEffect(() => {
     loadAuthors();
@@ -25,10 +33,8 @@ const AddAuthor = () => {
   const loadAuthors = async () => {
     try {
       setLoading(true);
-      // Load authors
-      // This function would need to be implemented in dbActions
-      // const authorsData = await findAllAuthors();
-      // setAuthors(authorsData);
+      const authorsData = await findAllAuthors();
+      setAuthors(authorsData);
       setError(null);
     } catch (err) {
       setError("Failed to load authors");
@@ -44,6 +50,7 @@ const AddAuthor = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    //cover ve bio frontende implemente edildiği zaman onları da ekle
     if (!formData.name || !formData.genre) {
       setError("Please fill in all required fields");
       return;
@@ -51,22 +58,19 @@ const AddAuthor = () => {
 
     try {
       if (editingAuthor) {
-        // Update author logic
+        const updatedAuthor = await updateAuthor(editingAuthor, {
+          name: formData.name!,
+          genre: formData.genre!,
+        });
         setAuthors(
           authors.map((author) =>
-            author.id === editingAuthor
-              ? { ...author, ...(formData as Artist) }
-              : author
+            author.id === editingAuthor ? updatedAuthor : author
           )
         );
         setEditingAuthor(null);
       } else {
         // Add new author logic
-        const newAuthor: Artist = {
-          id: Date.now(), // Temporary ID
-          name: formData.name!,
-          genre: formData.genre!,
-        };
+        const newAuthor = await createAuthor(formData as ArtistCreateFormData);
         setAuthors([...authors, newAuthor]);
         setShowAddForm(false);
       }
@@ -83,10 +87,11 @@ const AddAuthor = () => {
     setFormData(author);
   };
 
-  const handleDelete = async (authorId: number) => {
+  const handleDelete = async (authorId: string) => {
     if (!confirm("Are you sure you want to delete this author?")) return;
 
     try {
+      await deleteAuthor(authorId);
       setAuthors(authors.filter((author) => author.id !== authorId));
     } catch (err) {
       setError("Failed to delete author");

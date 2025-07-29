@@ -1,10 +1,16 @@
 "use server";
 import { findUserIdFromEmail } from "@prisma/client/sql";
-import { createPlaylist } from "@prisma/client/sql";
 import { Artist, User } from "@/lib/types";
 import { Albums } from "@/lib/types";
 import prisma from "@/lib/db";
-import { UserAdminEditForm } from "@/lib/types";
+import {
+  AlbumUpdateFormData,
+  AlbumCreateFormData,
+  ArtistCreateFormData,
+  ArtistUpdateFormData,
+} from "@/lib/types";
+import { requireValidUser, requireAdminUser } from "@/lib/serverValidation";
+import { Songs } from "@/lib/types";
 
 export async function findAllAlbums() {
   const albums = await prisma.albums.findMany({
@@ -25,7 +31,13 @@ export async function findAllAuthors() {
   return authors satisfies Artist[];
 }
 
+export async function findAllSongs() {
+  const songs = await prisma.song.findMany({});
+  return songs satisfies Songs[];
+}
+
 export async function findUserByEmail(email: string) {
+  await requireAdminUser();
   const user = await prisma.users.findFirst({
     where: {
       email,
@@ -35,6 +47,9 @@ export async function findUserByEmail(email: string) {
 }
 //pagination ekle
 export async function findAllUsers() {
+  // Require admin access
+  await requireAdminUser();
+
   const users = await prisma.users.findMany({
     include: {
       playlists: true,
@@ -47,6 +62,9 @@ export async function updateUser(
   id: string,
   dataForm: Partial<UserAdminEditForm>
 ) {
+  // Require admin access
+  await requireAdminUser();
+
   const updatedUser = await prisma.users.update({
     where: {
       id: id,
@@ -60,6 +78,9 @@ export async function updateUser(
 }
 
 export async function deleteUser(id: string) {
+  // Require admin access
+  await requireAdminUser();
+
   const deletedUser = await prisma.users.delete({
     where: {
       id: id,
@@ -69,6 +90,14 @@ export async function deleteUser(id: string) {
 }
 
 export async function createPlaylistAction(email: string) {
+  // Validate user session and get current user data
+  const currentUser = await requireValidUser();
+
+  // Ensure user can only create playlists for themselves
+  if (currentUser.email !== email) {
+    throw new Error("FORBIDDEN: Cannot create playlist for another user");
+  }
+
   const userId = await prisma.$queryRawTyped(findUserIdFromEmail(email));
   //const playlistId = await prisma.$queryRawTyped(createPlaylist(userId[0].id));
   const playlistId = await prisma.playlist.create({
@@ -107,4 +136,214 @@ export async function findUserPlaylists(email: string) {
   });
 
   return playlists;
+}
+
+export async function createAuthor(data: ArtistCreateFormData) {
+  await requireAdminUser();
+  //buraya geri dön yarın
+  const author = await prisma.author.create({
+    data: {
+      name: data.name,
+      genre: data.genre,
+      bio: data.bio,
+      photo_url: data.photo_url,
+    },
+    include: {
+      albums: true,
+      songs: true,
+    },
+  });
+  return author;
+}
+
+export async function updateAuthor(id: string, data: ArtistUpdateFormData) {
+  await requireAdminUser();
+
+  const author = await prisma.author.update({
+    where: { id },
+    data: {
+      ...data,
+      updated_at: new Date(),
+    },
+    include: {
+      albums: true,
+      songs: true,
+    },
+  });
+  return author;
+}
+
+export async function deleteAuthor(id: string) {
+  await requireAdminUser();
+
+  const author = await prisma.author.delete({
+    where: { id },
+  });
+  return author;
+}
+
+export async function createAlbum(data: AlbumCreateFormData) {
+  await requireAdminUser();
+
+  const album = await prisma.albums.create({
+    data: {
+      title: data.title,
+      artistId: data.artistId,
+      releaseDate: data.releaseDate,
+      cover_url: data.cover_url,
+    },
+    include: {
+      song: true,
+    },
+  });
+  return album;
+}
+
+export async function updateAlbum(
+  id: string,
+  data: Partial<AlbumUpdateFormData>
+) {
+  await requireAdminUser();
+
+  const album = await prisma.albums.update({
+    where: { id },
+    data: {
+      ...data,
+      updated_at: new Date(),
+    },
+    include: {
+      song: true,
+    },
+  });
+  return album;
+}
+
+export async function deleteAlbum(id: string) {
+  await requireAdminUser();
+
+  const album = await prisma.albums.delete({
+    where: { id },
+  });
+  return album;
+}
+
+export async function createSong(
+  name: string,
+  url: string,
+  author_id: string,
+  length: number,
+  playlist_id: string,
+  albumsId?: string,
+  photo?: string
+) {
+  await requireAdminUser();
+
+  const song = await prisma.song.create({
+    data: {
+      name,
+      url,
+      author_id,
+      length,
+      playlist_id,
+      albumsId,
+      photo: photo || "",
+    },
+  });
+  return song;
+}
+
+export async function createSongForAdmin(
+  title: string,
+  artistId: string,
+  albumId: string,
+  duration: number,
+  url: string = ""
+) {
+  await requireAdminUser();
+
+  // Get a default playlist - you might want to create a system playlist or handle this differently
+  const defaultPlaylist = await prisma.playlist.findFirst({
+    orderBy: { created_at: "asc" },
+  });
+
+  if (!defaultPlaylist) {
+    throw new Error("No playlist found to add song to");
+  }
+
+  const song = await prisma.song.create({
+    data: {
+      name: title,
+      url: url || `placeholder_${Date.now()}.mp3`,
+      author_id: artistId,
+      length: duration,
+      playlist_id: defaultPlaylist.id,
+      albumsId: albumId,
+      photo: "",
+    },
+  });
+  return song;
+}
+
+export async function updateSong(
+  id: string,
+  data: Partial<{
+    name: string;
+    url: string;
+    author_id: string;
+    length: number;
+    playlist_id: string;
+    albumsId: string;
+    photo: string;
+  }>
+) {
+  await requireAdminUser();
+
+  const song = await prisma.song.update({
+    where: { id },
+    data: {
+      ...data,
+      updated_at: new Date(),
+    },
+  });
+  return song;
+}
+
+export async function deleteSong(id: string) {
+  await requireAdminUser();
+
+  const song = await prisma.song.delete({
+    where: { id },
+  });
+  return song;
+}
+
+export async function findAllUsersWithPagination(
+  page: number = 1,
+  limit: number = 10
+) {
+  await requireAdminUser();
+
+  const skip = (page - 1) * limit;
+
+  const [users, total] = await Promise.all([
+    prisma.users.findMany({
+      skip,
+      take: limit,
+      include: {
+        playlists: true,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    }),
+    prisma.users.count(),
+  ]);
+
+  return {
+    users,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 }

@@ -23,7 +23,7 @@ export const AuthDialog = () => {
   const [loginState, loginAction, loginPending] = useActionState(
     handleLogin,
     undefined
-  ); // bunlar çalışmıyor sanırsam
+  );
   const [registerState, registerAction, registerPending] = useActionState(
     handleRegister,
     undefined

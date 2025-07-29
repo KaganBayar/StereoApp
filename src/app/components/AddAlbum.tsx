@@ -9,7 +9,13 @@ import {
   FaTimes,
   FaCalendar,
 } from "react-icons/fa";
-import { findAllAlbums, findAllAuthors } from "@/lib/dbActions";
+import {
+  findAllAlbums,
+  findAllAuthors,
+  updateAlbum,
+  createAlbum,
+} from "@/lib/dbActions";
+import { AlbumCreateFormData, AlbumUpdateFormData } from "@/lib/types";
 
 const AddAlbum = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -17,9 +23,10 @@ const AddAlbum = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingAlbum, setEditingAlbum] = useState<number | null>(null);
-  const [formData, setFormData] = useState<Partial<Album>>({});
-
+  const [editingAlbum, setEditingAlbum] = useState<string | null>(null);
+  const [formData, setFormData] = useState<AlbumUpdateFormData>({});
+  //"title" | "artistId" | "releaseDate" | "cover_url
+  //also you cant input cover_url in frontend
   useEffect(() => {
     loadData();
   }, []);
@@ -27,8 +34,7 @@ const AddAlbum = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      // Load albums and artists
-      // These functions would need to be implemented in dbActions
+
       const [albumsData, artistsData] = await Promise.all([
         findAllAlbums(),
         findAllAuthors(),
@@ -53,30 +59,27 @@ const AddAlbum = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.artistId || !formData.releaseDate) {
+    // must be same as AlbumCreateFormData
+    if (
+      !formData.title ||
+      !formData.artistId ||
+      !formData.releaseDate ||
+      !formData.cover_url
+    ) {
       setError("Please fill in all required fields");
       return;
     }
-
     try {
       if (editingAlbum) {
-        // Update album logic
+        updateAlbum(editingAlbum, formData);
         setAlbums(
           albums.map((album) =>
-            album.id === editingAlbum
-              ? { ...album, ...(formData as Album) }
-              : album
+            album.id === editingAlbum ? { ...album, ...formData } : album
           )
         );
         setEditingAlbum(null);
       } else {
-        // Add new album logic
-        const newAlbum: Album = {
-          id: Date.now(), // Temporary ID
-          title: formData.title!,
-          artistId: formData.artistId!,
-          releaseDate: formData.releaseDate!,
-        };
+        const newAlbum = await createAlbum(formData as AlbumCreateFormData);
         setAlbums([...albums, newAlbum]);
         setShowAddForm(false);
       }
@@ -99,7 +102,7 @@ const AddAlbum = () => {
     });
   };
 
-  const handleDelete = async (albumId: number) => {
+  const handleDelete = async (albumId: string) => {
     if (!confirm("Are you sure you want to delete this album?")) return;
 
     try {
@@ -117,7 +120,7 @@ const AddAlbum = () => {
     setError(null);
   };
 
-  const getArtistName = (artistId: number) => {
+  const getArtistName = (artistId: string) => {
     const artist = artists.find((a) => a.id === artistId);
     return artist?.name || "Unknown Artist";
   };

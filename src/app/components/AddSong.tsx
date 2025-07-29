@@ -1,17 +1,20 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Song, Artist, Album } from "@/lib/types";
+import { Songs, Artist, Albums } from "@/lib/types";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
-
+import { findAllSongs } from "@/lib/dbActions";
+import { findAllAuthors } from "@/lib/dbActions";
+import { findAllAlbums } from "@/lib/dbActions";
+import { SongUpdateFormData, SongCreateFormData } from "@/lib/types";
 const AddSong = () => {
-  const [songs, setSongs] = useState<Song[]>([]);
+  const [songs, setSongs] = useState<Songs[]>([]);
   const [artists, setArtists] = useState<Artist[]>([]);
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums, setAlbums] = useState<Albums[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSong, setEditingSong] = useState<number | null>(null);
-  const [formData, setFormData] = useState<Partial<Song>>({});
+  const [formData, setFormData] = useState<SongUpdateFormData>({});
 
   useEffect(() => {
     loadData();
@@ -20,16 +23,15 @@ const AddSong = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      // Load songs, artists, and albums
-      // These functions would need to be implemented in dbActions
-      // const [songsData, artistsData, albumsData] = await Promise.all([
-      //   findAllSongs(),
-      //   findAllArtists(),
-      //   findAllAlbums()
-      // ]);
-      // setSongs(songsData);
-      // setArtists(artistsData);
-      // setAlbums(albumsData);
+
+      const [songsData, artistsData, albumsData] = await Promise.all([
+        findAllSongs(),
+        findAllAuthors(),
+        findAllAlbums(),
+      ]);
+      setSongs(songsData);
+      setArtists(artistsData);
+      setAlbums(albumsData);
       setError(null);
     } catch (err) {
       setError("Failed to load data");
@@ -39,7 +41,7 @@ const AddSong = () => {
     }
   };
 
-  const handleInputChange = (field: keyof Song, value: string | number) => {
+  const handleInputChange = (field: keyof Songs, value: string | number) => {
     setFormData({ ...formData, [field]: value });
   };
 
@@ -49,7 +51,7 @@ const AddSong = () => {
       !formData.title ||
       !formData.artistId ||
       !formData.albumId ||
-      !formData.duration
+      !formData.
     ) {
       setError("Please fill in all required fields");
       return;
@@ -66,7 +68,7 @@ const AddSong = () => {
         setEditingSong(null);
       } else {
         // Add new song logic
-        const newSong: Song = {
+        const newSong: Songs = {
           id: Date.now(), // Temporary ID
           title: formData.title!,
           artistId: formData.artistId!,
@@ -84,7 +86,7 @@ const AddSong = () => {
     }
   };
 
-  const handleEdit = (song: Song) => {
+  const handleEdit = (song: Songs) => {
     setEditingSong(song.id);
     setFormData(song);
   };

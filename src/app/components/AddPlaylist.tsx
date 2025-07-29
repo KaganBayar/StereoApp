@@ -1,7 +1,16 @@
+/*
 "use client";
 import { useState, useEffect, useContext } from "react";
 import { Playlists } from "@/lib/types";
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaMusic, FaUser } from "react-icons/fa";
+import {
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaSave,
+  FaTimes,
+  FaMusic,
+  FaUser,
+} from "react-icons/fa";
 import { createPlaylistAction, findUserPlaylists } from "@/lib/dbActions";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { usePlaylistRefresh } from "@/contexts/playlistRefreshed";
@@ -12,7 +21,7 @@ const AddPlaylist = () => {
   const dispatch = useContext(DispatchContext);
   const router = useRouter();
   const refreshContext = usePlaylistRefresh();
-  
+
   const [playlists, setPlaylists] = useState<Playlists[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,14 +37,23 @@ const AddPlaylist = () => {
 
   const loadPlaylists = async () => {
     if (!user?.email) return;
-    
+
     try {
       setLoading(true);
       const userPlaylists = await findUserPlaylists(user.email);
       setPlaylists(userPlaylists);
       setError(null);
-    } catch (err) {
-      setError("Failed to load playlists");
+    } catch (err: any) {
+      if (
+        err.message?.includes("UNAUTHORIZED") ||
+        err.message?.includes("FORBIDDEN")
+      ) {
+        setError("Session expired or access denied. Please log in again.");
+        // Clear user context or redirect to login
+        dispatch!({ type: "LOGOUT" });
+      } else {
+        setError("Failed to load playlists");
+      }
       console.error("Error loading playlists:", err);
     } finally {
       setLoading(false);
@@ -56,26 +74,30 @@ const AddPlaylist = () => {
     try {
       if (editingPlaylist) {
         // Update playlist logic would go here
-        setPlaylists(playlists.map(playlist => 
-          playlist.id === editingPlaylist 
-            ? { ...playlist, ...formData as Playlists }
-            : playlist
-        ));
+        setPlaylists(
+          playlists.map((playlist) =>
+            playlist.id === editingPlaylist
+              ? { ...playlist, ...(formData as Playlists) }
+              : playlist
+          )
+        );
         setEditingPlaylist(null);
       } else {
         // Create new playlist
         const newPlaylist = await createPlaylistAction(user.email);
-        
+
         // Update the playlist with custom name/description if provided
         const updatedPlaylist = {
           ...newPlaylist,
           name: formData.name || `My Playlist ${playlists.length + 1}`,
           description: formData.description || null,
-          photo: formData.photo || 'https://via.placeholder.com/300x300?text=Playlist',
+          photo:
+            formData.photo ||
+            "https://via.placeholder.com/300x300?text=Playlist",
           created_at: new Date(),
-          user_id: user.user.id
+          user_id: user.user.id,
         };
-        
+
         setPlaylists([...playlists, updatedPlaylist]);
         await refreshContext?.refreshPlaylists();
         dispatch!({
@@ -86,8 +108,16 @@ const AddPlaylist = () => {
       }
       setFormData({});
       setError(null);
-    } catch (err) {
-      setError("Failed to save playlist");
+    } catch (err: any) {
+      if (
+        err.message?.includes("UNAUTHORIZED") ||
+        err.message?.includes("FORBIDDEN")
+      ) {
+        setError("Session expired or access denied. Please log in again.");
+        dispatch!({ type: "LOGOUT" });
+      } else {
+        setError("Failed to save playlist");
+      }
       console.error("Error saving playlist:", err);
     }
   };
@@ -97,16 +127,16 @@ const AddPlaylist = () => {
     setFormData({
       name: playlist.name,
       description: playlist.description,
-      photo: playlist.photo
+      photo: playlist.photo,
     });
   };
 
   const handleDelete = async (playlistId: string) => {
     if (!confirm("Are you sure you want to delete this playlist?")) return;
-    
+
     try {
       // Delete playlist logic would go here
-      setPlaylists(playlists.filter(playlist => playlist.id !== playlistId));
+      setPlaylists(playlists.filter((playlist) => playlist.id !== playlistId));
       await refreshContext?.refreshPlaylists();
       dispatch!({
         type: "REMOVEPLAYLIST",
@@ -130,10 +160,10 @@ const AddPlaylist = () => {
   };
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -150,7 +180,9 @@ const AddPlaylist = () => {
     return (
       <div className="pt-6 p-4">
         <div className="text-neutral-200 text-xl mb-4">Playlists</div>
-        <div className="text-neutral-400">Please log in to manage playlists.</div>
+        <div className="text-neutral-400">
+          Please log in to manage playlists.
+        </div>
       </div>
     );
   }
@@ -158,7 +190,9 @@ const AddPlaylist = () => {
   return (
     <div className="pt-6 p-4">
       <div className="flex justify-between items-center mb-6">
-        <div className="text-neutral-200 text-xl">Playlists ({playlists.length})</div>
+        <div className="text-neutral-200 text-xl">
+          Playlists ({playlists.length})
+        </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2"
@@ -168,15 +202,13 @@ const AddPlaylist = () => {
       </div>
 
       {error && (
-        <div className="bg-red-600 text-white p-4 rounded mb-4">
-          {error}
-        </div>
+        <div className="bg-red-600 text-white p-4 rounded mb-4">{error}</div>
       )}
 
       {(showAddForm || editingPlaylist) && (
         <div className="bg-gray-800 p-6 rounded-lg mb-6">
           <h3 className="text-white text-lg mb-4">
-            {editingPlaylist ? 'Edit Playlist' : 'Create New Playlist'}
+            {editingPlaylist ? "Edit Playlist" : "Create New Playlist"}
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -186,45 +218,47 @@ const AddPlaylist = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.name || ''}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  value={formData.name || ""}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-500 focus:outline-none"
                   placeholder={`My Playlist ${playlists.length + 1}`}
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   Cover Image URL
                 </label>
                 <input
                   type="url"
-                  value={formData.photo || ''}
-                  onChange={(e) => handleInputChange('photo', e.target.value)}
+                  value={formData.photo || ""}
+                  onChange={(e) => handleInputChange("photo", e.target.value)}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-500 focus:outline-none"
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 Description
               </label>
               <textarea
-                value={formData.description || ''}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                value={formData.description || ""}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-500 focus:outline-none h-24 resize-none"
                 placeholder="Tell us about your playlist..."
               />
             </div>
-            
+
             <div className="flex space-x-3">
               <button
                 type="submit"
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2"
               >
-                <FaSave /> {editingPlaylist ? 'Update' : 'Create'} Playlist
+                <FaSave /> {editingPlaylist ? "Update" : "Create"} Playlist
               </button>
               <button
                 type="button"
@@ -240,15 +274,22 @@ const AddPlaylist = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {playlists.map((playlist) => (
-          <div key={playlist.id} className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-750 transition-colors">
+          <div
+            key={playlist.id}
+            className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-750 transition-colors"
+          >
             <div className="aspect-square relative">
               <img
-                src={playlist.photo || 'https://via.placeholder.com/300x300?text=Playlist'}
+                src={
+                  playlist.photo ||
+                  "https://via.placeholder.com/300x300?text=Playlist"
+                }
                 alt={playlist.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = 'https://via.placeholder.com/300x300?text=Playlist';
+                  target.src =
+                    "https://via.placeholder.com/300x300?text=Playlist";
                 }}
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
@@ -260,24 +301,24 @@ const AddPlaylist = () => {
                 </button>
               </div>
             </div>
-            
+
             <div className="p-4">
               <h3 className="text-white font-medium text-lg mb-2 truncate">
                 {playlist.name}
               </h3>
-              
+
               {playlist.description && (
                 <p className="text-gray-400 text-sm mb-3 line-clamp-2">
                   {playlist.description}
                 </p>
               )}
-              
+
               <div className="flex items-center text-gray-500 text-xs mb-4">
                 <FaUser className="mr-1" />
-                <span className="mr-3">{user.user?.name || 'You'}</span>
+                <span className="mr-3">{user.user?.name || "You"}</span>
                 <span>{formatDate(playlist.created_at)}</span>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <button
                   onClick={() => handleViewPlaylist(playlist.id)}
@@ -285,7 +326,7 @@ const AddPlaylist = () => {
                 >
                   View Playlist
                 </button>
-                
+
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(playlist)}
@@ -309,7 +350,9 @@ const AddPlaylist = () => {
       {playlists.length === 0 && !showAddForm && (
         <div className="text-center py-12">
           <div className="text-gray-400 text-lg mb-4">No playlists found</div>
-          <p className="text-gray-500 mb-6">Create your first playlist to get started!</p>
+          <p className="text-gray-500 mb-6">
+            Create your first playlist to get started!
+          </p>
           <button
             onClick={() => setShowAddForm(true)}
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded flex items-center gap-2 mx-auto"
@@ -323,3 +366,4 @@ const AddPlaylist = () => {
 };
 
 export default AddPlaylist;
+*/

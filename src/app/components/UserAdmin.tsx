@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { User } from "@/lib/types";
 import { findAllUsers } from "@/lib/dbActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
-import { UserAdminEditForm } from "@/lib/types";
+
 import { updateUser } from "@/lib/dbActions";
 import { deleteUser } from "@/lib/dbActions";
 import { logout } from "@/lib/actions";
@@ -13,7 +13,9 @@ const UserAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<UserAdminEditForm>>({});
+  const [editForm, setEditForm] = useState<
+    Partial<Pick<User, "name" | "email" | "roles">>
+  >({});
 
   useEffect(() => {
     loadUsers();
@@ -25,8 +27,17 @@ const UserAdmin = () => {
       const fetchedUsers = await findAllUsers();
       setUsers(fetchedUsers);
       setError(null);
-    } catch (err) {
-      setError("Failed to load users");
+    } catch (err: any) {
+      if (
+        err.message?.includes("UNAUTHORIZED") ||
+        err.message?.includes("FORBIDDEN")
+      ) {
+        setError(
+          "Session expired or insufficient permissions. Please log in again."
+        );
+      } else {
+        setError("Failed to load users");
+      }
       console.error("Error loading users:", err);
     } finally {
       setLoading(false);
@@ -55,8 +66,17 @@ const UserAdmin = () => {
       );
       setEditingUser(null);
       setEditForm({});
-    } catch (err) {
-      setError("Failed to update user");
+    } catch (err: any) {
+      if (
+        err.message?.includes("UNAUTHORIZED") ||
+        err.message?.includes("FORBIDDEN")
+      ) {
+        setError(
+          "Session expired or insufficient permissions. Please log in again."
+        );
+      } else {
+        setError("Failed to update user");
+      }
       console.error("Error updating user:", err);
     }
   };
@@ -73,8 +93,17 @@ const UserAdmin = () => {
       await deleteUser(userId);
       await logout(userId);
       setUsers(users.filter((user) => user.id !== userId));
-    } catch (err) {
-      setError("Failed to delete user");
+    } catch (err: any) {
+      if (
+        err.message?.includes("UNAUTHORIZED") ||
+        err.message?.includes("FORBIDDEN")
+      ) {
+        setError(
+          "Session expired or insufficient permissions. Please log in again."
+        );
+      } else {
+        setError("Failed to delete user");
+      }
       console.error("Error deleting user:", err);
     }
   };
