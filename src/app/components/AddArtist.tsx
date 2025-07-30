@@ -44,7 +44,10 @@ const AddAuthor = () => {
     }
   };
 
-  const handleInputChange = (field: keyof Artist, value: string | number) => {
+  const handleInputChange = (
+    field: keyof ArtistUpdateFormData,
+    value: string | number
+  ) => {
     setFormData({ ...formData, [field]: value });
   };
 

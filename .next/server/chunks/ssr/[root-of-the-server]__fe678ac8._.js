@@ -201,7 +201,7 @@ __turbopack_async_result__();
 
 var { g: global, __dirname, a: __turbopack_async_module__ } = __turbopack_context__;
 __turbopack_async_module__(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
-/* __next_internal_action_entry_do_not_use__ [{"00191d9cc2b02f350405c1dcec281d3f5a4543e1e1":"findAllAlbums","0079564afe7c4bfb5f80bc30627ede99d1da45b36a":"findAllSongs","00939501ca09012a5026c01745d7078b16a7bd42f9":"findAllAuthors","00e6aa1a376dd6d6eeb48011221263e50fe85ecba1":"findAllUsers","402663a2ad23c54505bbb97dd6c4a900d7c72288ec":"findUserPlaylists","4041d62bc83510547ebd783bab8bbdc7fe1acefbb8":"findUserByEmail","4078502e504a30d4e98f24f7f4b7ff3fb5d5994e4d":"deleteUser","40ad73a66d2b732127bd3885f988d666b0c58fab8c":"deleteSong","40b2604a84e39a253c6a4db30adf819a6e90efbf69":"deleteAuthor","40ce87c17e8ba4ad943e68fcd0b80a95d4056e50a9":"deleteAlbum","40cfd724179355e6acb33582377f08f761046de2a6":"createPlaylistAction","601c81162d8d02a9360dcc6902195ca4cacc1ac2d1":"updateAuthor","605183b015f5d7d43ec8c58470c93c0315bffa5901":"updateSong","6076e776b31d6fe022a289bcb965f2e5daf6c3d3b0":"findAllUsersWithPagination","607c04da65108624052c863ff747fe00a7e880f344":"updateAlbum","60e69f587c4bca3fe665ac731b6fa4a6aefeb99666":"updateUser","780bc166fb807997d5e3fa8d361ca45eadcb61b5c1":"createAuthor","780ce0bce6c2dc46a49e692c3e5b03737e003afadb":"createAlbum","7ca9b6931e85db6ac529480d44455e9725824c1e36":"createSongForAdmin","7fff8dc4ff66ad518eeba9398f61f9f033e410cf7b":"createSong"},"",""] */ __turbopack_context__.s({
+/* __next_internal_action_entry_do_not_use__ [{"00191d9cc2b02f350405c1dcec281d3f5a4543e1e1":"findAllAlbums","0079564afe7c4bfb5f80bc30627ede99d1da45b36a":"findAllSongs","00939501ca09012a5026c01745d7078b16a7bd42f9":"findAllAuthors","00e6aa1a376dd6d6eeb48011221263e50fe85ecba1":"findAllUsers","400bc166fb807997d5e3fa8d361ca45eadcb61b5c1":"createAuthor","400ce0bce6c2dc46a49e692c3e5b03737e003afadb":"createAlbum","402663a2ad23c54505bbb97dd6c4a900d7c72288ec":"findUserPlaylists","4041d62bc83510547ebd783bab8bbdc7fe1acefbb8":"findUserByEmail","4078502e504a30d4e98f24f7f4b7ff3fb5d5994e4d":"deleteUser","40ad73a66d2b732127bd3885f988d666b0c58fab8c":"deleteSong","40b2604a84e39a253c6a4db30adf819a6e90efbf69":"deleteAuthor","40ce87c17e8ba4ad943e68fcd0b80a95d4056e50a9":"deleteAlbum","40cfd724179355e6acb33582377f08f761046de2a6":"createPlaylistAction","40ff8dc4ff66ad518eeba9398f61f9f033e410cf7b":"createSong","601c81162d8d02a9360dcc6902195ca4cacc1ac2d1":"updateAuthor","605183b015f5d7d43ec8c58470c93c0315bffa5901":"updateSong","6076e776b31d6fe022a289bcb965f2e5daf6c3d3b0":"findAllUsersWithPagination","607c04da65108624052c863ff747fe00a7e880f344":"updateAlbum","60e69f587c4bca3fe665ac731b6fa4a6aefeb99666":"updateUser","7ca9b6931e85db6ac529480d44455e9725824c1e36":"createSongForAdmin"},"",""] */ __turbopack_context__.s({
     "createAlbum": (()=>createAlbum),
     "createAuthor": (()=>createAuthor),
     "createPlaylistAction": (()=>createPlaylistAction),
@@ -349,15 +349,15 @@ async function findUserPlaylists(email) {
     });
     return playlists;
 }
-async function createAuthor(name, genre, bio, photo_url) {
+async function createAuthor(data) {
     await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$serverValidation$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["requireAdminUser"])();
     //buraya geri dön yarın
     const author = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].author.create({
         data: {
-            name,
-            genre,
-            bio,
-            photo_url
+            name: data.name,
+            genre: data.genre,
+            bio: data.bio,
+            photo_url: data.photo_url
         },
         include: {
             albums: true,
@@ -392,14 +392,14 @@ async function deleteAuthor(id) {
     });
     return author;
 }
-async function createAlbum(title, artistId, releaseDate, cover_url) {
+async function createAlbum(data) {
     await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$serverValidation$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["requireAdminUser"])();
     const album = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].albums.create({
         data: {
-            title,
-            artistId,
-            releaseDate,
-            cover_url
+            title: data.title,
+            artistId: data.artistId,
+            releaseDate: data.releaseDate,
+            cover_url: data.cover_url
         },
         include: {
             song: true
@@ -432,17 +432,16 @@ async function deleteAlbum(id) {
     });
     return album;
 }
-async function createSong(name, url, author_id, length, playlist_id, albumsId, photo) {
+async function createSong(data) {
     await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$serverValidation$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["requireAdminUser"])();
     const song = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$db$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].song.create({
         data: {
-            name,
-            url,
-            author_id,
-            length,
-            playlist_id,
-            albumsId,
-            photo: photo || ""
+            name: data.name,
+            author_id: data.author_id,
+            length: data.length,
+            playlist_id: data.playlist_id,
+            albumsId: data.albumsId,
+            photo: data.photo || ""
         }
     });
     return song;
@@ -549,13 +548,13 @@ async function findAllUsersWithPagination(page = 1, limit = 10) {
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteUser, "4078502e504a30d4e98f24f7f4b7ff3fb5d5994e4d", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createPlaylistAction, "40cfd724179355e6acb33582377f08f761046de2a6", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(findUserPlaylists, "402663a2ad23c54505bbb97dd6c4a900d7c72288ec", null);
-(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createAuthor, "780bc166fb807997d5e3fa8d361ca45eadcb61b5c1", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createAuthor, "400bc166fb807997d5e3fa8d361ca45eadcb61b5c1", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(updateAuthor, "601c81162d8d02a9360dcc6902195ca4cacc1ac2d1", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteAuthor, "40b2604a84e39a253c6a4db30adf819a6e90efbf69", null);
-(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createAlbum, "780ce0bce6c2dc46a49e692c3e5b03737e003afadb", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createAlbum, "400ce0bce6c2dc46a49e692c3e5b03737e003afadb", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(updateAlbum, "607c04da65108624052c863ff747fe00a7e880f344", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteAlbum, "40ce87c17e8ba4ad943e68fcd0b80a95d4056e50a9", null);
-(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createSong, "7fff8dc4ff66ad518eeba9398f61f9f033e410cf7b", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createSong, "40ff8dc4ff66ad518eeba9398f61f9f033e410cf7b", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(createSongForAdmin, "7ca9b6931e85db6ac529480d44455e9725824c1e36", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(updateSong, "605183b015f5d7d43ec8c58470c93c0315bffa5901", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteSong, "40ad73a66d2b732127bd3885f988d666b0c58fab8c", null);

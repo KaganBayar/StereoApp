@@ -1,4 +1,33 @@
- U
-/config/*
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build outputs
+dist/
+build/
+
+# Environment variables
 .env
-/node_modules/*
+.env.local
+.env.production
+
+# Database
+*.db
+*.sqlite
+
+# Firebase
+*firebase*adminsdk*.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Cache
+.cache/
+# Claude environments
+.claude

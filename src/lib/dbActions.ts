@@ -1,6 +1,11 @@
 "use server";
 import { findUserIdFromEmail } from "@prisma/client/sql";
-import { Artist, User } from "@/lib/types";
+import {
+  Artist,
+  SongUpdateFormData,
+  SongCreateFormData,
+  User,
+} from "@/lib/types";
 import { Albums } from "@/lib/types";
 import prisma from "@/lib/db";
 import {
@@ -227,26 +232,17 @@ export async function deleteAlbum(id: string) {
   return album;
 }
 
-export async function createSong(
-  name: string,
-  url: string,
-  author_id: string,
-  length: number,
-  playlist_id: string,
-  albumsId?: string,
-  photo?: string
-) {
+export async function createSong(data: SongCreateFormData) {
   await requireAdminUser();
 
   const song = await prisma.song.create({
     data: {
-      name,
-      url,
-      author_id,
-      length,
-      playlist_id,
-      albumsId,
-      photo: photo || "",
+      name: data.name,
+      author_id: data.author_id,
+      length: data.length,
+      playlist_id: data.playlist_id,
+      albumsId: data.albumsId,
+      photo: data.photo || "",
     },
   });
   return song;
@@ -284,18 +280,7 @@ export async function createSongForAdmin(
   return song;
 }
 
-export async function updateSong(
-  id: string,
-  data: Partial<{
-    name: string;
-    url: string;
-    author_id: string;
-    length: number;
-    playlist_id: string;
-    albumsId: string;
-    photo: string;
-  }>
-) {
+export async function updateSong(id: string, data: SongUpdateFormData) {
   await requireAdminUser();
 
   const song = await prisma.song.update({

@@ -5,7 +5,9 @@ import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import { findAllSongs } from "@/lib/dbActions";
 import { findAllAuthors } from "@/lib/dbActions";
 import { findAllAlbums } from "@/lib/dbActions";
+import { updateSong, createSong, deleteSong } from "@/lib/dbActions";
 import { SongUpdateFormData, SongCreateFormData } from "@/lib/types";
+
 const AddSong = () => {
   const [songs, setSongs] = useState<Songs[]>([]);
   const [artists, setArtists] = useState<Artist[]>([]);
@@ -13,7 +15,7 @@ const AddSong = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingSong, setEditingSong] = useState<number | null>(null);
+  const [editingSong, setEditingSong] = useState<string | null>(null);
   const [formData, setFormData] = useState<SongUpdateFormData>({});
 
   useEffect(() => {
@@ -41,17 +43,20 @@ const AddSong = () => {
     }
   };
 
-  const handleInputChange = (field: keyof Songs, value: string | number) => {
+  const handleInputChange = (
+    field: keyof SongUpdateFormData,
+    value: string | number
+  ) => {
     setFormData({ ...formData, [field]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
-      !formData.title ||
-      !formData.artistId ||
-      !formData.albumId ||
-      !formData.
+      !formData.name ||
+      !formData.author_id ||
+      !formData.albumsId ||
+      !formData.length
     ) {
       setError("Please fill in all required fields");
       return;
@@ -59,22 +64,15 @@ const AddSong = () => {
 
     try {
       if (editingSong) {
-        // Update song logic
+        await updateSong(editingSong, formData);
         setSongs(
           songs.map((song) =>
-            song.id === editingSong ? { ...song, ...(formData as Song) } : song
+            song.id === editingSong ? { ...song, ...(formData as Songs) } : song
           )
         );
         setEditingSong(null);
       } else {
-        // Add new song logic
-        const newSong: Songs = {
-          id: Date.now(), // Temporary ID
-          title: formData.title!,
-          artistId: formData.artistId!,
-          albumId: formData.albumId!,
-          duration: formData.duration!,
-        };
+        const newSong = await createSong(formData as SongCreateFormData);
         setSongs([...songs, newSong]);
         setShowAddForm(false);
       }
@@ -91,10 +89,11 @@ const AddSong = () => {
     setFormData(song);
   };
 
-  const handleDelete = async (songId: number) => {
+  const handleDelete = async (songId: string) => {
     if (!confirm("Are you sure you want to delete this song?")) return;
 
     try {
+      await deleteSong(songId);
       setSongs(songs.filter((song) => song.id !== songId));
     } catch (err) {
       setError("Failed to delete song");
@@ -109,12 +108,12 @@ const AddSong = () => {
     setError(null);
   };
 
-  const getArtistName = (artistId: number) => {
+  const getArtistName = (artistId: string) => {
     const artist = artists.find((a) => a.id === artistId);
     return artist?.name || "Unknown Artist";
   };
 
-  const getAlbumName = (albumId: number) => {
+  const getAlbumName = (albumId: string) => {
     const album = albums.find((a) => a.id === albumId);
     return album?.title || "Unknown Album";
   };
@@ -159,12 +158,12 @@ const AddSong = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Title *
+                  Name *
                 </label>
                 <input
                   type="text"
-                  value={formData.title || ""}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  value={formData.name || ""}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
                 />
@@ -175,9 +174,9 @@ const AddSong = () => {
                   Artist *
                 </label>
                 <select
-                  value={formData.artistId || ""}
+                  value={formData.author_id || ""}
                   onChange={(e) =>
-                    handleInputChange("artistId", parseInt(e.target.value))
+                    handleInputChange("author_id", parseInt(e.target.value))
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -196,9 +195,9 @@ const AddSong = () => {
                   Album *
                 </label>
                 <select
-                  value={formData.albumId || ""}
+                  value={formData.albumsId || ""}
                   onChange={(e) =>
-                    handleInputChange("albumId", parseInt(e.target.value))
+                    handleInputChange("albumsId", parseInt(e.target.value))
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -219,9 +218,9 @@ const AddSong = () => {
                 <input
                   type="number"
                   min="1"
-                  value={formData.duration || ""}
+                  value={formData.length || ""}
                   onChange={(e) =>
-                    handleInputChange("duration", parseInt(e.target.value))
+                    handleInputChange("length", parseInt(e.target.value))
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -275,22 +274,22 @@ const AddSong = () => {
                 <tr key={song.id} className="bg-gray-800 hover:bg-gray-750">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-white">
-                      {song.title}
+                      {song.name}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
-                      {getArtistName(song.artistId)}
+                      {getArtistName(song.author_id)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
-                      {getAlbumName(song.albumId)}
+                      {getAlbumName(song.albumsId)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
-                      {formatDuration(song.duration)}
+                      {formatDuration(song.length)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

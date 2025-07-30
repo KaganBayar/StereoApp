@@ -51,7 +51,7 @@ const AddAlbum = () => {
   };
 
   const handleInputChange = (
-    field: keyof Album,
+    field: keyof AlbumUpdateFormData,
     value: string | number | Date
   ) => {
     setFormData({ ...formData, [field]: value });
