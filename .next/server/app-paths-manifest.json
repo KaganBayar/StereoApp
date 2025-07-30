@@ -1,6 +1,0 @@
-{
-  "/(Home)/admin/page": "app/(Home)/admin/page.js",
-  "/(Home)/page": "app/(Home)/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js"
-}
