@@ -26,6 +26,10 @@ export interface UserPayload
       include: { playlists: true };
     }> {}
 
+export type UserAdminEditForm = Partial<
+  Pick<User, "name" | "email" | "photo" | "roles">
+>;
+
 export type Albums = Prisma.AlbumsGetPayload<{
   include: { song: true };
 }>;
@@ -33,12 +37,10 @@ export type Songs = Prisma.SongGetPayload<{}>;
 
 export type SongCreateFormData = {
   name: string;
-  url: string;
   author_id: string;
   length: number;
-  playlist_id: string;
-  albumsId?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
-  photo?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
+  albumsId: string;
+  photo: string;
 };
 
 export type SongUpdateFormData = Partial<
@@ -58,7 +60,7 @@ export type AlbumCreateFormData = {
   title: string;
   artistId: string;
   releaseDate: Date;
-  cover_url?: string; // bu optional olmayacak frontend implemantasyonu olduğunda soru işaretini kaldır
+  cover_url: string;
 };
 export type ArtistUpdateFormData = Partial<
   Pick<Artist, "name" | "genre" | "bio" | "photo_url">
@@ -73,7 +75,18 @@ export type ArtistCreateFormData = {
 
 export type Playlists = Prisma.PlaylistGetPayload<{
   include: {
-    Song: true;
+    PlaylistSong: {
+      include: {
+        song: true;
+      };
+    };
+  };
+}>;
+
+export type PlaylistSong = Prisma.PlaylistSongGetPayload<{
+  include: {
+    song: true;
+    playlist: true;
   };
 }>;
 

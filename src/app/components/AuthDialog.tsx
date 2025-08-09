@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@/app/components/ui/dialog";
 import { login, register } from "@/lib/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useContext } from "react";
