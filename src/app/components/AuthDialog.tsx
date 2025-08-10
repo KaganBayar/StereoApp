@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@/app/components/ui/dialog";
 import { login, register } from "@/lib/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useContext } from "react";
@@ -39,7 +39,7 @@ export const AuthDialog = () => {
 
       const email = formData.get("email") as string;
       const user = await findUserByEmail(email);
-      const playlist = await findUserPlaylists(email);
+      const playlist = await findUserPlaylists(user.id);
 
       if (!user) {
         throw new Error("User not found");

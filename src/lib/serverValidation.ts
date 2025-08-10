@@ -1,11 +1,10 @@
 "use server";
 import { cookies } from "next/headers";
-import * as jose from "jose";
 import prisma from "@/lib/db";
-import { UserPayload } from "@/lib/types";
+import { User, UserPayload } from "@/lib/types";
 import { verifyAuthTokenAction } from "@/lib/actions";
 
-export async function validateUserSession(): Promise<UserPayload> {
+export async function validateUserSession(): Promise<User> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
@@ -22,7 +21,7 @@ export async function validateUserSession(): Promise<UserPayload> {
     // Check if user still exists and is active in database
     const currentUser = await prisma.users.findFirst({
       where: {
-        id: tokenPayload.userId,
+        id: tokenPayload.id,
       },
       include: {
         playlists: true,
@@ -51,7 +50,8 @@ export async function validateUserSession(): Promise<UserPayload> {
 
     // Return fresh user data from database instead of token data
     return {
-      userId: currentUser.id,
+      id: currentUser.id,
+      password: currentUser.password,
       email: currentUser.email,
       name: currentUser.name,
       roles: currentUser.roles,

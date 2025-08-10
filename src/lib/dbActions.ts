@@ -4,7 +4,7 @@ import {
   Artist,
   SongUpdateFormData,
   SongCreateFormData,
-  User,
+  UserAdminEditForm,
 } from "@/lib/types";
 import { Albums } from "@/lib/types";
 import prisma from "@/lib/db";
@@ -42,7 +42,7 @@ export async function findAllSongs() {
 }
 
 export async function findUserByEmail(email: string) {
-  await requireAdminUser();
+ 
   const user = await prisma.users.findFirst({
     where: {
       email,
@@ -50,7 +50,7 @@ export async function findUserByEmail(email: string) {
   });
   return user;
 }
-//pagination ekle
+
 export async function findAllUsers() {
   // Require admin access
   await requireAdminUser();
@@ -63,10 +63,7 @@ export async function findAllUsers() {
   return users;
 }
 
-export async function updateUser(
-  id: string,
-  dataForm: Partial<UserAdminEditForm>
-) {
+export async function updateUser(id: string, dataForm: UserAdminEditForm) {
   // Require admin access
   await requireAdminUser();
 
@@ -122,21 +119,21 @@ export async function createPlaylistAction(email: string) {
   return playlistId.id;
 }
 
-export async function findUserPlaylists(email: string) {
-  // First get the user ID from email
-  const user = await prisma.users.findFirst({
-    where: { email },
-    select: { id: true },
-  });
+export async function findUserPlaylists(id: string) {
+ 
 
-  if (!user) {
-    throw new Error("User not found");
-  }
-
+  
   // Then fetch all playlists belonging to this user
   const playlists = await prisma.playlist.findMany({
     where: {
-      user_id: user.id,
+      user_id: id,
+    },
+    include: {
+      PlaylistSong: {
+        include: {
+          song: true,
+        },
+      },
     },
   });
 
@@ -203,7 +200,7 @@ export async function createAlbum(data: AlbumCreateFormData) {
   });
   return album;
 }
-
+// Update çalışmıyor
 export async function updateAlbum(
   id: string,
   data: Partial<AlbumUpdateFormData>
@@ -240,41 +237,8 @@ export async function createSong(data: SongCreateFormData) {
       name: data.name,
       author_id: data.author_id,
       length: data.length,
-      playlist_id: data.playlist_id,
       albumsId: data.albumsId,
       photo: data.photo || "",
-    },
-  });
-  return song;
-}
-
-export async function createSongForAdmin(
-  title: string,
-  artistId: string,
-  albumId: string,
-  duration: number,
-  url: string = ""
-) {
-  await requireAdminUser();
-
-  // Get a default playlist - you might want to create a system playlist or handle this differently
-  const defaultPlaylist = await prisma.playlist.findFirst({
-    orderBy: { created_at: "asc" },
-  });
-
-  if (!defaultPlaylist) {
-    throw new Error("No playlist found to add song to");
-  }
-
-  const song = await prisma.song.create({
-    data: {
-      name: title,
-      url: url || `placeholder_${Date.now()}.mp3`,
-      author_id: artistId,
-      length: duration,
-      playlist_id: defaultPlaylist.id,
-      albumsId: albumId,
-      photo: "",
     },
   });
   return song;
@@ -331,4 +295,32 @@ export async function findAllUsersWithPagination(
     limit,
     totalPages: Math.ceil(total / limit),
   };
+}
+
+// PlaylistSong junction table operations
+export async function addSongToPlaylist(playlistId: string, songId: string) {
+  await requireValidUser();
+
+  const playlistSong = await prisma.playlistSong.create({
+    data: {
+      playlist_id: playlistId,
+      song_id: songId,
+    },
+  });
+  return playlistSong;
+}
+
+export async function removeSongFromPlaylist(
+  playlistId: string,
+  songId: string
+) {
+  await requireValidUser();
+
+  const deletedPlaylistSong = await prisma.playlistSong.deleteMany({
+    where: {
+      playlist_id: playlistId,
+      song_id: songId,
+    },
+  });
+  return deletedPlaylistSong;
 }

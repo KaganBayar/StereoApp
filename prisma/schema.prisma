@@ -22,30 +22,37 @@ model Users {
 }
 
 model Playlist {
+  id           String         @id @default(cuid())
+  name         String         @default("My Playlist")
+  description  String?
+  user         Users          @relation(fields: [user_id], references: [id])
+  user_id      String
+  created_at   DateTime       @default(now())
+  photo        String         @default("")
+  updated_at   DateTime       @updatedAt @db.Timestamp(6)
+  PlaylistSong PlaylistSong[]
+}
+
+model PlaylistSong {
   id          String   @id @default(cuid())
-  name        String   @default("My Playlist")
-  description String?
-  user        Users    @relation(fields: [user_id], references: [id])
-  user_id     String
-  Song        Song[]
-  created_at  DateTime @default(now())
-  photo       String   @default("")
-  updated_at  DateTime @updatedAt @db.Timestamp(6)
+  playlist    Playlist @relation(fields: [playlist_id], references: [id])
+  playlist_id String
+  song        Song     @relation(fields: [song_id], references: [id])
+  song_id     String
 }
 
 model Song {
-  id          String   @id @default(cuid())
-  name        String   @default("defaultSong")
-  playlist    Playlist @relation(fields: [playlist_id], references: [id])
-  playlist_id String
-  author      Author   @relation(fields: [author_id], references: [id])
-  author_id   String
-  length      Int
-  photo       String   @default("")
-  created_at  DateTime @default(now()) @db.Timestamp(6)
-  updated_at  DateTime @updatedAt @db.Timestamp(6)
-  Albums      Albums   @relation(fields: [albumsId], references: [id])
-  albumsId    String
+  id           String         @id @default(cuid())
+  name         String         @default("defaultSong")
+  author       Author         @relation(fields: [author_id], references: [id])
+  author_id    String
+  length       Int
+  photo        String         @default("")
+  created_at   DateTime       @default(now()) @db.Timestamp(6)
+  updated_at   DateTime       @updatedAt @db.Timestamp(6)
+  Albums       Albums         @relation(fields: [albumsId], references: [id])
+  albumsId     String
+  PlaylistSong PlaylistSong[]
 }
 
 model Author {

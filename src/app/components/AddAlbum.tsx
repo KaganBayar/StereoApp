@@ -9,6 +9,7 @@ import {
   FaTimes,
   FaCalendar,
 } from "react-icons/fa";
+import Image from "next/image";
 import {
   findAllAlbums,
   findAllAuthors,
@@ -60,13 +61,13 @@ const AddAlbum = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // must be same as AlbumCreateFormData
-    if (
-      !formData.title ||
-      !formData.artistId ||
-      !formData.releaseDate ||
-      !formData.cover_url
-    ) {
+    if (!formData.title || !formData.artistId || !formData.releaseDate) {
       setError("Please fill in all required fields");
+      return;
+    }
+
+    if (formData.cover_url && typeof formData.cover_url !== "string") {
+      setError("Invalid cover URL format");
       return;
     }
     try {
@@ -96,6 +97,7 @@ const AddAlbum = () => {
     setFormData({
       ...album,
       releaseDate:
+        //bu bozuyor burada hata var ayrıca frontendine yazması çok meşakatlı
         album.releaseDate instanceof Date
           ? (album.releaseDate.toISOString().split("T")[0] as any)
           : (new Date(album.releaseDate).toISOString().split("T")[0] as any),
@@ -186,7 +188,7 @@ const AddAlbum = () => {
                 <select
                   value={formData.artistId || ""}
                   onChange={(e) =>
-                    handleInputChange("artistId", parseInt(e.target.value))
+                    handleInputChange("artistId", e.target.value)
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
                   required
@@ -222,6 +224,37 @@ const AddAlbum = () => {
                   required
                 />
               </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Album Cover URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.cover_url || ""}
+                  onChange={(e) =>
+                    handleInputChange("cover_url", e.target.value)
+                  }
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
+                  placeholder="https://example.com/album-cover.jpg"
+                />
+                {formData.cover_url && (
+                  <div className="mt-2">
+                    <Image
+                      src={formData.cover_url}
+                      alt="Album cover preview"
+                      width={64}
+                      height={64}
+                      className="w-16 h-16 rounded object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://placehold.co/64x64.png?text=Album";
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex space-x-3">
@@ -249,6 +282,9 @@ const AddAlbum = () => {
             <thead className="bg-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Cover
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Title
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -265,6 +301,23 @@ const AddAlbum = () => {
             <tbody className="divide-y divide-gray-600">
               {albums.map((album) => (
                 <tr key={album.id} className="bg-gray-800 hover:bg-gray-750">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Image
+                      src={
+                        album.cover_url ||
+                        "https://placehold.co/40x40.png?text=Album"
+                      }
+                      alt="Album cover"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://placehold.co/40x40.png?text=Album";
+                      }}
+                    />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-white">
                       {album.title}

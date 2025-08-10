@@ -24,7 +24,7 @@ const formLoginSchema = z.object({
 
 //Auth
 
-export async function createAuthTokenAction(payload: jose.JWTPayload) {
+export async function createAuthTokenAction(payload: UserPayload) {
   return await signToken(payload); // Use utility function
 }
 
@@ -129,11 +129,12 @@ export async function login(formData: FormData) {
   });
 
   //access token oluşturma
-  const playlists: Playlists[] = await findUserPlaylists(user.email);
+  const playlists: Playlists[] = await findUserPlaylists(user.id);
   const accessToken = await signToken({
-    userId: user.id,
+    id: user.id,
     email: user.email,
     name: user.name,
+    password: user.password,
     roles: user.roles,
     photo: user.photo,
     playlists: playlists,
@@ -173,29 +174,39 @@ export async function logout(id: string) {
     // Try to validate user session - if it fails, just continue with logout
     const currentUser = await requireValidUser();
 
+    if(!currentUser)
+    {
+      throw new Error("You cant Logout Without User")
+    }
+
     // If admin is logging out someone else, allow it
     // If regular user, they can only logout themselves
-    if (!currentUser.roles.includes("admin") && currentUser.userId !== id) {
+    if (!currentUser.roles.includes("admin") && currentUser.id !== id) {
       throw new Error("FORBIDDEN: Cannot logout another user");
     }
-  } catch (error) {
-    // If validation fails, still proceed with logout cleanup for security
-    console.log("Logout validation failed, proceeding with cleanup:", error);
-  }
+    if(currentUser.id === id)
+    {
+      const cookieStore = await cookies();
+      cookieStore.delete("accessToken");
+    }
 
-  const cookieStore = await cookies();
-  cookieStore.delete("accessToken");
-  await prisma.refreshTokens.deleteMany({
-    where: {
+    await prisma.refreshTokens.deleteMany({
+      where: {
       user_id: id,
     },
   });
   console.log("logged out");
+
+  } catch (error) {
+    // If validation fails, still proceed with logout cleanup for security
+    console.log("Logout validation failed, proceeding with cleanup:", error);
+  }
+  
+  
+  
+ 
 }
 export async function access_cookie() {
-  // Validate user session first
-  await requireValidUser();
-
   const cookieStore = await cookies();
   return cookieStore.get("accessToken")?.value || "No access token found";
 }
@@ -209,7 +220,7 @@ export async function refreshAccessTokenAction(token: string) {
       const decodedToken = jose.decodeJwt(token) as UserPayload;
       const refreshToken = await prisma.refreshTokens.findFirst({
         where: {
-          user_id: decodedToken.userId,
+          user_id: decodedToken.id,
         },
       });
       if (!refreshToken || refreshToken.expires_at < new Date()) {
@@ -220,12 +231,15 @@ export async function refreshAccessTokenAction(token: string) {
       }
       //sign new token
       const newAccessToken = await signToken({
-        userId: decodedToken.userId,
+        id: decodedToken.id,
+        password: decodedToken.password,
         email: decodedToken.email,
         name: decodedToken.name,
         roles: decodedToken.roles,
         photo: decodedToken.photo,
         playlists: decodedToken.playlists,
+        updated_at: decodedToken.updated_at,
+        created_at: decodedToken.created_at
       });
       //verify new token
       const decodedPayload = jose.decodeJwt(newAccessToken) as UserPayload;

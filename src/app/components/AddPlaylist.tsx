@@ -11,6 +11,7 @@ import {
   FaMusic,
   FaUser,
 } from "react-icons/fa";
+import Image from "next/image";
 import { createPlaylistAction, findUserPlaylists } from "@/lib/dbActions";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { usePlaylistRefresh } from "@/contexts/playlistRefreshed";
@@ -68,6 +69,11 @@ const AddPlaylist = () => {
     e.preventDefault();
     if (!user?.email) {
       setError("User not authenticated");
+      return;
+    }
+
+    if (formData.photo && typeof formData.photo !== 'string') {
+      setError("Invalid photo URL format");
       return;
     }
 
@@ -236,6 +242,21 @@ const AddPlaylist = () => {
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-500 focus:outline-none"
                   placeholder="https://example.com/image.jpg"
                 />
+                {formData.photo && (
+                  <div className="mt-2">
+                    <Image
+                      src={formData.photo}
+                      alt="Playlist cover preview"
+                      width={64}
+                      height={64}
+                      className="w-16 h-16 rounded object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://placehold.co/64x64.png?text=Playlist";
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -279,17 +300,19 @@ const AddPlaylist = () => {
             className="bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-750 transition-colors"
           >
             <div className="aspect-square relative">
-              <img
+              <Image
                 src={
                   playlist.photo ||
-                  "https://via.placeholder.com/300x300?text=Playlist"
+                  "https://placehold.co/300x300.png?text=Playlist"
                 }
                 alt={playlist.name}
+                width={300}
+                height={300}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src =
-                    "https://via.placeholder.com/300x300?text=Playlist";
+                    "https://placehold.co/300x300.png?text=Playlist";
                 }}
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">

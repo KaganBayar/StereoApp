@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/app/components/ui/alert-dialog";
 import { createPlaylistAction } from "@/lib/dbActions";
 import { useContext } from "react";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";

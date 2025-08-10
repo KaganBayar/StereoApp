@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { User } from "@/lib/types";
 import { findAllUsers } from "@/lib/dbActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import Image from "next/image";
 
 import { updateUser } from "@/lib/dbActions";
 import { deleteUser } from "@/lib/dbActions";
@@ -14,7 +15,7 @@ const UserAdmin = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<
-    Partial<Pick<User, "name" | "email" | "roles">>
+    Partial<Pick<User, "name" | "email" | "roles" | "photo">>
   >({});
 
   useEffect(() => {
@@ -50,11 +51,17 @@ const UserAdmin = () => {
       name: user.name,
       email: user.email,
       roles: user.roles,
+      photo: user.photo,
     });
   };
 
   const handleSave = async () => {
     if (!editingUser || !editForm.name || !editForm.email) return;
+
+    if (editForm.photo && typeof editForm.photo !== "string") {
+      setError("Invalid photo URL format");
+      return;
+    }
 
     try {
       const updatedUser = await updateUser(editingUser, editForm);
@@ -148,6 +155,9 @@ const UserAdmin = () => {
             <thead className="bg-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Profile
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -170,6 +180,49 @@ const UserAdmin = () => {
             <tbody className="divide-y divide-gray-600">
               {users.map((user) => (
                 <tr key={user.id} className="bg-gray-800 hover:bg-gray-750">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingUser === user.id ? (
+                      <div className="flex flex-col space-y-2">
+                        <Image
+                          src={
+                            editForm.photo ||
+                            "https://placehold.co/40x40.png?text=User"
+                          }
+                          alt="Profile"
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "https://placehold.co/40x40.png?text=User";
+                          }}
+                        />
+                        <input
+                          type="url"
+                          value={editForm.photo || ""}
+                          onChange={(e) =>
+                            handleInputChange("photo", e.target.value)
+                          }
+                          placeholder="Profile image URL"
+                          className="bg-gray-700 text-white px-2 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none text-xs w-32"
+                        />
+                      </div>
+                    ) : (
+                      <Image
+                        src={
+                          user.photo || "https://placehold.co/40x40.png?text=User"
+                        }
+                        alt="Profile"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "https://placehold.co/40x40.png?text=User";
+                        }}
+                      />
+                    )}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {editingUser === user.id ? (
                       <input

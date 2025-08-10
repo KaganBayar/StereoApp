@@ -11,7 +11,7 @@ import { User } from "@/lib/types";
 import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/actions";
 import { useState } from "react";
-import { cache } from "react";
+
 
 interface UserProviderProps {
   User: User;
@@ -47,7 +47,7 @@ export default function UserProvider({
             }
 
             if (
-              typeof verifiedAccessToken.userId === "string" &&
+              typeof verifiedAccessToken.id === "string" &&
               typeof verifiedAccessToken.email === "string" &&
               typeof verifiedAccessToken.name === "string" &&
               typeof verifiedAccessToken.photo === "string" &&
@@ -55,12 +55,13 @@ export default function UserProvider({
               Array.isArray(verifiedAccessToken.roles)
             ) {
               const userDatas: User = {
-                id: verifiedAccessToken.userId,
+                id: verifiedAccessToken.id,
                 email: verifiedAccessToken.email,
                 name: verifiedAccessToken.name,
+                password: verifiedAccessToken.password,
                 photo: verifiedAccessToken.photo,
                 roles: verifiedAccessToken.roles,
-                playlists: verifiedAccessToken.playlists || [],
+                playlists: verifiedAccessToken.playlists,
                 created_at: verifiedAccessToken.created_at,
                 updated_at: verifiedAccessToken.updated_at,
               };

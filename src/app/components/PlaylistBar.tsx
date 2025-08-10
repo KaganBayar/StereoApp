@@ -16,7 +16,7 @@ export default function PlaylistBar() {
   const refreshPlaylists = useCallback(async () => {
     if (user.email) {
       console.log("Manually refreshing playlists");
-      const playlists = await findUserPlaylists(user.email);
+      const playlists = await findUserPlaylists(user.id);
       console.log("Playlists fetched:", playlists);
       setPlaylist(playlists);
     } else {

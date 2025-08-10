@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Songs, Artist, Albums } from "@/lib/types";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import Image from "next/image";
 import { findAllSongs } from "@/lib/dbActions";
 import { findAllAuthors } from "@/lib/dbActions";
 import { findAllAlbums } from "@/lib/dbActions";
@@ -62,6 +63,11 @@ const AddSong = () => {
       return;
     }
 
+    if (formData.photo && typeof formData.photo !== "string") {
+      setError("Invalid photo URL format");
+      return;
+    }
+
     try {
       if (editingSong) {
         await updateSong(editingSong, formData);
@@ -72,7 +78,14 @@ const AddSong = () => {
         );
         setEditingSong(null);
       } else {
-        const newSong = await createSong(formData as SongCreateFormData);
+        const songData: SongCreateFormData = {
+          name: formData.name!,
+          author_id: formData.author_id!,
+          length: formData.length!,
+          albumsId: formData.albumsId!,
+          photo: formData.photo || "",
+        };
+        const newSong = await createSong(songData);
         setSongs([...songs, newSong]);
         setShowAddForm(false);
       }
@@ -117,7 +130,7 @@ const AddSong = () => {
     const album = albums.find((a) => a.id === albumId);
     return album?.title || "Unknown Album";
   };
-
+  // format daha güzel gösterir şekilde tasarla
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -176,7 +189,7 @@ const AddSong = () => {
                 <select
                   value={formData.author_id || ""}
                   onChange={(e) =>
-                    handleInputChange("author_id", parseInt(e.target.value))
+                    handleInputChange("author_id", e.target.value)
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -197,7 +210,7 @@ const AddSong = () => {
                 <select
                   value={formData.albumsId || ""}
                   onChange={(e) =>
-                    handleInputChange("albumsId", parseInt(e.target.value))
+                    handleInputChange("albumsId", e.target.value)
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -226,6 +239,34 @@ const AddSong = () => {
                   required
                 />
               </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Song Cover URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.photo || ""}
+                  onChange={(e) => handleInputChange("photo", e.target.value)}
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+                  placeholder="https://example.com/cover.jpg"
+                />
+                {formData.photo && (
+                  <div className="mt-2">
+                    <Image
+                      src={formData.photo}
+                      alt="Song cover preview"
+                      width={64}
+                      height={64}
+                      className="w-16 h-16 rounded object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://placehold.co/64x64.png?text=Song";
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex space-x-3">
@@ -253,6 +294,9 @@ const AddSong = () => {
             <thead className="bg-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Cover
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Title
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
@@ -272,6 +316,21 @@ const AddSong = () => {
             <tbody className="divide-y divide-gray-600">
               {songs.map((song) => (
                 <tr key={song.id} className="bg-gray-800 hover:bg-gray-750">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Image
+                      src={
+                        song.photo || "https://placehold.co/40x40.png?text=Song"
+                      }
+                      alt="Song cover"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://placehold.co/40x40.png?text=Song";
+                      }}
+                    />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-white">
                       {song.name}
