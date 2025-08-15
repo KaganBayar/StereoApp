@@ -17,6 +17,10 @@ import {
   createAlbum,
 } from "@/lib/dbActions";
 import { AlbumCreateFormData, AlbumUpdateFormData } from "@/lib/types";
+import { uploadString, ref } from "firebase/storage";
+import { storage } from "../../../config/firebase";
+import { photoUse } from "@/lib/firebaseActions";
+import { albumImagesRef } from "../../../config/firebase";
 
 const AddAlbum = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -28,10 +32,35 @@ const AddAlbum = () => {
   const [formData, setFormData] = useState<AlbumUpdateFormData>({});
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // State to store loaded album cover images from Firebase
+  const [albumImages, setAlbumImages] = useState<{ [key: string]: string }>({});
   //"title" | "artistId" | "releaseDate" | "cover_url
   useEffect(() => {
     loadData();
   }, []);
+
+  // Load album cover images from Firebase storage
+  const loadAlbumImages = async (albumsData: Album[]) => {
+    const newAlbumImages: { [key: string]: string } = {};
+
+    for (const album of albumsData) {
+      if (album.cover_url) {
+        try {
+          // Use photoUse function to get image data URL from Firebase
+          const imageUrl = await photoUse(album.cover_url);
+          newAlbumImages[album.id] = imageUrl;
+        } catch (error) {
+          console.error(
+            `Failed to load cover image for album ${album.id}:`,
+            error
+          );
+          // Don't add to newAlbumImages if failed, will use placeholder
+        }
+      }
+    }
+
+    setAlbumImages(newAlbumImages);
+  };
 
   const loadData = async () => {
     try {
@@ -43,6 +72,12 @@ const AddAlbum = () => {
       ]);
       setAlbums(albumsData);
       setArtists(artistsData);
+
+      // Load album cover images from Firebase if albums exist
+      if (albumsData.length > 0) {
+        await loadAlbumImages(albumsData);
+      }
+
       setError(null);
     } catch (err) {
       setError("Failed to load data");
@@ -64,11 +99,12 @@ const AddAlbum = () => {
     if (file) {
       setSelectedImage(file);
       const reader = new FileReader();
-      //load ended
+      // When file is loaded, set preview and store Firebase path (not base64)
       reader.onloadend = () => {
-        const result = reader.result as string;
+        const result = reader.result as string; // Data URL for preview
         setImagePreview(result);
-        setFormData({ ...formData, cover_url: result });
+        // Store Firebase storage path instead of base64 data
+        setFormData({ ...formData, cover_url: "images/albums/" + file.name });
       };
       reader.readAsDataURL(file);
     }
@@ -87,20 +123,46 @@ const AddAlbum = () => {
       return;
     }
     try {
+      // Upload image to Firebase if there's a new image selected
+      if (formData.cover_url && imagePreview && selectedImage) {
+        const imageRef = ref(storage, formData.cover_url);
+        // Convert Data URL to base64 for Firebase upload
+        const base64 = imagePreview.split(",")[1];
+        // Upload image to Firebase Storage
+        await uploadString(imageRef, base64, "base64");
+      }
+
+      const submitData = {
+        ...formData,
+        releaseDate:
+          typeof formData.releaseDate === "string"
+            ? new Date(formData.releaseDate)
+            : formData.releaseDate,
+      };
+
       if (editingAlbum) {
-        updateAlbum(editingAlbum, formData);
+        const updatedAlbum = await updateAlbum(editingAlbum, submitData);
+        // Reload album images to include the new/updated image
+        await loadAlbumImages([
+          ...albums.filter((a) => a.id !== editingAlbum),
+          updatedAlbum,
+        ]);
         setAlbums(
           albums.map((album) =>
-            album.id === editingAlbum ? { ...album, ...formData } : album
+            album.id === editingAlbum ? updatedAlbum : album
           )
         );
         setEditingAlbum(null);
       } else {
-        const newAlbum = await createAlbum(formData as AlbumCreateFormData);
+        const newAlbum = await createAlbum(submitData as AlbumCreateFormData);
+        // Reload album images to include the new album's image
+        await loadAlbumImages([...albums, newAlbum]);
         setAlbums([...albums, newAlbum]);
         setShowAddForm(false);
       }
       setFormData({});
+      setSelectedImage(null);
+      setImagePreview(null);
       setError(null);
     } catch (err) {
       setError("Failed to save album");
@@ -113,12 +175,13 @@ const AddAlbum = () => {
     setFormData({
       ...album,
       releaseDate:
-        //bu bozuyor burada hata var ayrıca frontendine yazması çok meşakatlı
         album.releaseDate instanceof Date
-          ? (album.releaseDate.toISOString().split("T")[0] as any)
-          : (new Date(album.releaseDate).toISOString().split("T")[0] as any),
+          ? album.releaseDate.toISOString().split("T")[0]
+          : new Date(album.releaseDate).toISOString().split("T")[0],
     });
-    setImagePreview(album.cover_url || null);
+    // Set image preview from loaded Firebase images or fallback to stored URL
+    const loadedImage = albumImages[album.id];
+    setImagePreview(loadedImage || album.cover_url || null);
     setSelectedImage(null);
   };
 
@@ -230,16 +293,22 @@ const AddAlbum = () => {
                   type="date"
                   value={
                     formData.releaseDate
-                      ? formData.releaseDate instanceof Date
+                      ? typeof formData.releaseDate === "string"
+                        ? formData.releaseDate
+                        : formData.releaseDate instanceof Date
                         ? formData.releaseDate.toISOString().split("T")[0]
                         : new Date(formData.releaseDate)
                             .toISOString()
                             .split("T")[0]
                       : ""
                   }
-                  onChange={(e) =>
-                    handleInputChange("releaseDate", new Date(e.target.value))
-                  }
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleInputChange("releaseDate", e.target.value);
+                    } else {
+                      handleInputChange("releaseDate", "");
+                    }
+                  }}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
                   required
                 />
@@ -262,7 +331,7 @@ const AddAlbum = () => {
                       alt="Album cover preview"
                       width={64}
                       height={64}
-                      className="w-16 h-16 rounded object-cover"
+                      className="w-16 h-16 rounded-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src =
@@ -321,13 +390,13 @@ const AddAlbum = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Image
                       src={
-                        album.cover_url ||
+                        albumImages[album.id] ||
                         "https://placehold.co/40x40.png?text=Album"
                       }
                       alt="Album cover"
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded object-cover"
+                      className="w-10 h-10 rounded-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src =

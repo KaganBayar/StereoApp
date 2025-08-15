@@ -35,25 +35,15 @@ const AddAuthor = () => {
   );
 
   // name: string |genre: string; bio | string; photo_url | string;
-  //effect1
-  const loadAuthorImages = async (authorsData: Artist[]) => {
-    const newAuthorImages: { [key: string]: string } = {};
 
-    for (const author of authorsData) {
-      if (author.photo_url) {
-        try {
-          const imageUrl = await photoUse(author.photo_url);
-          newAuthorImages[author.id] = imageUrl;
-        } catch (error) {
-          console.error(`Failed to load image for author ${author.id}:`, error);
-          // Don't add to newAuthorImages if failed, will use placeholder
-        }
-      }
+  useEffect(() => {
+    async function loadData() {
+      await loadAuthors();
     }
+    loadData();
+  }, []);
 
-    setAuthorImages(newAuthorImages);
-  };
-
+  //effect1
   const loadAuthors = async () => {
     try {
       setLoading(true);
@@ -71,14 +61,25 @@ const AddAuthor = () => {
       setLoading(false);
     }
   };
-  //effect 2
 
-  useEffect(() => {
-    async function loadData() {
-      await loadAuthors();
+  //effect2
+  const loadAuthorImages = async (authorsData: Artist[]) => {
+    const newAuthorImages: { [key: string]: string } = {};
+
+    for (const author of authorsData) {
+      if (author.photo_url) {
+        try {
+          const imageUrl = await photoUse(author.photo_url);
+          newAuthorImages[author.id] = imageUrl;
+        } catch (error) {
+          console.error(`Failed to load image for author ${author.id}:`, error);
+          // Don't add to newAuthorImages if failed, will use placeholder
+        }
+      }
     }
-    loadData();
-  }, []);
+
+    setAuthorImages(newAuthorImages);
+  };
 
   const handleInputChange = (
     field: keyof ArtistUpdateFormData,
