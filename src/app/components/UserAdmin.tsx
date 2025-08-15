@@ -7,7 +7,7 @@ import Image from "next/image";
 
 import { updateUser } from "@/lib/dbActions";
 import { deleteUser } from "@/lib/dbActions";
-import { logout } from "@/lib/actions";
+import { logout, systemLogout } from "@/lib/actions";
 
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -17,6 +17,8 @@ const UserAdmin = () => {
   const [editForm, setEditForm] = useState<
     Partial<Pick<User, "name" | "email" | "roles" | "photo">>
   >({});
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -53,6 +55,8 @@ const UserAdmin = () => {
       roles: user.roles,
       photo: user.photo,
     });
+    setImagePreview(user.photo || null);
+    setSelectedImage(null);
   };
 
   const handleSave = async () => {
@@ -65,7 +69,7 @@ const UserAdmin = () => {
 
     try {
       const updatedUser = await updateUser(editingUser, editForm);
-      await logout(editingUser);
+      await systemLogout(editingUser);
       setUsers(
         users.map((user) =>
           user.id === editingUser ? { ...user, ...editForm } : user
@@ -91,6 +95,8 @@ const UserAdmin = () => {
   const handleCancel = () => {
     setEditingUser(null);
     setEditForm({});
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   const handleDelete = async (userId: string) => {
@@ -98,7 +104,7 @@ const UserAdmin = () => {
 
     try {
       await deleteUser(userId);
-      await logout(userId);
+      await systemLogout(userId);
       setUsers(users.filter((user) => user.id !== userId));
     } catch (err: any) {
       if (
@@ -117,6 +123,20 @@ const UserAdmin = () => {
 
   const handleInputChange = (field: keyof User, value: string | string[]) => {
     setEditForm({ ...editForm, [field]: value });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setImagePreview(result);
+        setEditForm({ ...editForm, photo: result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   if (loading) {
@@ -185,6 +205,7 @@ const UserAdmin = () => {
                       <div className="flex flex-col space-y-2">
                         <Image
                           src={
+                            imagePreview ||
                             editForm.photo ||
                             "https://placehold.co/40x40.png?text=User"
                           }
@@ -194,23 +215,22 @@ const UserAdmin = () => {
                           className="w-10 h-10 rounded-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = "https://placehold.co/40x40.png?text=User";
+                            target.src =
+                              "https://placehold.co/40x40.png?text=User";
                           }}
                         />
                         <input
-                          type="url"
-                          value={editForm.photo || ""}
-                          onChange={(e) =>
-                            handleInputChange("photo", e.target.value)
-                          }
-                          placeholder="Profile image URL"
-                          className="bg-gray-700 text-white px-2 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none text-xs w-32"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="bg-gray-700 text-white px-1 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none text-xs w-32 file:mr-2 file:py-1 file:px-2 file:border-0 file:text-xs file:font-medium file:bg-blue-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-blue-700"
                         />
                       </div>
                     ) : (
                       <Image
                         src={
-                          user.photo || "https://placehold.co/40x40.png?text=User"
+                          user.photo ||
+                          "https://placehold.co/40x40.png?text=User"
                         }
                         alt="Profile"
                         width={40}
@@ -218,7 +238,8 @@ const UserAdmin = () => {
                         className="w-10 h-10 rounded-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = "https://placehold.co/40x40.png?text=User";
+                          target.src =
+                            "https://placehold.co/40x40.png?text=User";
                         }}
                       />
                     )}

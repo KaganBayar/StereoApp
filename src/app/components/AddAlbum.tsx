@@ -26,8 +26,9 @@ const AddAlbum = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<string | null>(null);
   const [formData, setFormData] = useState<AlbumUpdateFormData>({});
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   //"title" | "artistId" | "releaseDate" | "cover_url
-  //also you cant input cover_url in frontend
   useEffect(() => {
     loadData();
   }, []);
@@ -56,6 +57,21 @@ const AddAlbum = () => {
     value: string | number | Date
   ) => {
     setFormData({ ...formData, [field]: value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      //load ended
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setImagePreview(result);
+        setFormData({ ...formData, cover_url: result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,6 +118,8 @@ const AddAlbum = () => {
           ? (album.releaseDate.toISOString().split("T")[0] as any)
           : (new Date(album.releaseDate).toISOString().split("T")[0] as any),
     });
+    setImagePreview(album.cover_url || null);
+    setSelectedImage(null);
   };
 
   const handleDelete = async (albumId: string) => {
@@ -119,6 +137,8 @@ const AddAlbum = () => {
     setEditingAlbum(null);
     setShowAddForm(false);
     setFormData({});
+    setSelectedImage(null);
+    setImagePreview(null);
     setError(null);
   };
 
@@ -227,21 +247,18 @@ const AddAlbum = () => {
 
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Album Cover URL
+                  Album Cover Image
                 </label>
                 <input
-                  type="url"
-                  value={formData.cover_url || ""}
-                  onChange={(e) =>
-                    handleInputChange("cover_url", e.target.value)
-                  }
-                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
-                  placeholder="https://example.com/album-cover.jpg"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-purple-700"
                 />
-                {formData.cover_url && (
+                {imagePreview && (
                   <div className="mt-2">
                     <Image
-                      src={formData.cover_url}
+                      src={imagePreview}
                       alt="Album cover preview"
                       width={64}
                       height={64}

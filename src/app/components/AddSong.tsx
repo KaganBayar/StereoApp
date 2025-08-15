@@ -18,6 +18,8 @@ const AddSong = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSong, setEditingSong] = useState<string | null>(null);
   const [formData, setFormData] = useState<SongUpdateFormData>({});
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -49,6 +51,20 @@ const AddSong = () => {
     value: string | number
   ) => {
     setFormData({ ...formData, [field]: value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setImagePreview(result);
+        setFormData({ ...formData, photo: result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,6 +116,8 @@ const AddSong = () => {
   const handleEdit = (song: Songs) => {
     setEditingSong(song.id);
     setFormData(song);
+    setImagePreview(song.photo || null);
+    setSelectedImage(null);
   };
 
   const handleDelete = async (songId: string) => {
@@ -118,6 +136,8 @@ const AddSong = () => {
     setEditingSong(null);
     setShowAddForm(false);
     setFormData({});
+    setSelectedImage(null);
+    setImagePreview(null);
     setError(null);
   };
 
@@ -242,19 +262,18 @@ const AddSong = () => {
 
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Song Cover URL
+                  Song Cover Image
                 </label>
                 <input
-                  type="url"
-                  value={formData.photo || ""}
-                  onChange={(e) => handleInputChange("photo", e.target.value)}
-                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
-                  placeholder="https://example.com/cover.jpg"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-green-700"
                 />
-                {formData.photo && (
+                {imagePreview && (
                   <div className="mt-2">
                     <Image
-                      src={formData.photo}
+                      src={imagePreview}
                       alt="Song cover preview"
                       width={64}
                       height={64}

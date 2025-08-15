@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Artist } from "@/lib/types";
 import {
   findAllAuthors,
@@ -17,6 +17,10 @@ import {
 } from "react-icons/fa";
 import Image from "next/image";
 import { ArtistCreateFormData, ArtistUpdateFormData } from "@/lib/types";
+import { musicImagesRef } from "../../../config/firebase";
+import { uploadString, getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../../../config/firebase";
+import { photoUse } from "@/lib/firebaseActions";
 
 const AddAuthor = () => {
   const [authors, setAuthors] = useState<Artist[]>([]);
@@ -25,17 +29,40 @@ const AddAuthor = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAuthor, setEditingAuthor] = useState<string | null>(null);
   const [formData, setFormData] = useState<ArtistUpdateFormData>({});
-  // name: string |genre: string; bio | string; photo_url | string;
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [authorImages, setAuthorImages] = useState<{ [key: string]: string }>(
+    {}
+  );
 
-  useEffect(() => {
-    loadAuthors();
-  }, []);
+  // name: string |genre: string; bio | string; photo_url | string;
+  //effect1
+  const loadAuthorImages = async (authorsData: Artist[]) => {
+    const newAuthorImages: { [key: string]: string } = {};
+
+    for (const author of authorsData) {
+      if (author.photo_url) {
+        try {
+          const imageUrl = await photoUse(author.photo_url);
+          newAuthorImages[author.id] = imageUrl;
+        } catch (error) {
+          console.error(`Failed to load image for author ${author.id}:`, error);
+          // Don't add to newAuthorImages if failed, will use placeholder
+        }
+      }
+    }
+
+    setAuthorImages(newAuthorImages);
+  };
 
   const loadAuthors = async () => {
     try {
       setLoading(true);
+      console.log("AuthorLoading");
       const authorsData = await findAllAuthors();
       setAuthors(authorsData);
+      if (authorsData.length > 0) {
+        await loadAuthorImages(authorsData);
+      }
       setError(null);
     } catch (err) {
       setError("Failed to load authors");
@@ -44,6 +71,14 @@ const AddAuthor = () => {
       setLoading(false);
     }
   };
+  //effect 2
+
+  useEffect(() => {
+    async function loadData() {
+      await loadAuthors();
+    }
+    loadData();
+  }, []);
 
   const handleInputChange = (
     field: keyof ArtistUpdateFormData,
@@ -52,8 +87,23 @@ const AddAuthor = () => {
     setFormData({ ...formData, [field]: value });
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string; //Data:url
+        setImagePreview(result);
+        setFormData({ ...formData, photo_url: "images/artists/" + file.name });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!formData.name || !formData.genre || !formData.bio) {
       setError("Please fill in all required fields");
       return;
@@ -65,13 +115,23 @@ const AddAuthor = () => {
     }
 
     try {
+      if (formData.photo_url && imagePreview) {
+        const imageRef = ref(storage, formData.photo_url);
+        //convert Data:url to base64
+        const base64 = imagePreview.split(",")[1];
+        // Upload image to Firebase
+        const snapshot = await uploadString(imageRef, base64, "base64");
+      }
       if (editingAuthor) {
+        // Update existing author
         const updatedAuthor = await updateAuthor(editingAuthor, {
-          name: formData.name!,
-          genre: formData.genre!,
-          bio: formData.bio,
-          photo_url: formData.photo_url,
+          name: formData?.name,
+          genre: formData?.genre,
+          bio: formData?.bio,
+          photo_url: formData?.photo_url,
         });
+        await loadAuthorImages([...authors, updatedAuthor]);
+        //Update frontend
         setAuthors(
           authors.map((author) =>
             author.id === editingAuthor ? updatedAuthor : author
@@ -81,20 +141,26 @@ const AddAuthor = () => {
       } else {
         // Add new author logic
         const newAuthor = await createAuthor(formData as ArtistCreateFormData);
+        await loadAuthorImages([...authors, newAuthor]);
         setAuthors([...authors, newAuthor]);
         setShowAddForm(false);
       }
+
       setFormData({});
       setError(null);
     } catch (err) {
       setError("Failed to save author");
       console.error("Error saving author:", err);
+    } finally {
+      setImagePreview(null);
     }
   };
 
-  const handleEdit = (author: Artist) => {
+  const handleEdit = async (author: Artist) => {
     setEditingAuthor(author.id);
     setFormData(author);
+    const photo = authorImages[author.id];
+    setImagePreview(photo || null);
   };
 
   const handleDelete = async (authorId: string) => {
@@ -113,6 +179,7 @@ const AddAuthor = () => {
     setEditingAuthor(null);
     setShowAddForm(false);
     setFormData({});
+    setImagePreview(null);
     setError(null);
   };
 
@@ -180,21 +247,18 @@ const AddAuthor = () => {
 
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Profile Photo URL
+                  Profile Photo
                 </label>
                 <input
-                  type="url"
-                  value={formData.photo_url || ""}
-                  onChange={(e) =>
-                    handleInputChange("photo_url", e.target.value)
-                  }
-                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-indigo-500 focus:outline-none"
-                  placeholder="https://example.com/photo.jpg"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-indigo-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-indigo-700"
                 />
-                {formData.photo_url && (
+                {imagePreview && (
                   <div className="mt-2">
                     <Image
-                      src={formData.photo_url}
+                      src={imagePreview}
                       alt="Author preview"
                       width={64}
                       height={64}
@@ -269,7 +333,7 @@ const AddAuthor = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Image
                       src={
-                        author.photo_url ||
+                        authorImages[author.id] ||
                         "https://placehold.co/40x40.png?text=Author"
                       }
                       alt="Author"

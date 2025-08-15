@@ -6,14 +6,16 @@ import { Prisma } from "@prisma/client";
 import { GetPayloadResult } from "@prisma/client/runtime/library";
 
 export type User = Prisma.UsersGetPayload<{
-  include: { playlists: {
-    include: { PlaylistSong: { include: { song: true } } };
-  }};
+  include: {
+    playlists: {
+      include: { PlaylistSong: { include: { song: true } } };
+    };
+  };
 }>;
 
 export type Artist = Prisma.AuthorGetPayload<{
   include: { albums: true; songs: true };
-}>;
+}>; // Databasede author ayrıca photo_url kullanmıyorum photo_name kullanıyorum
 
 export interface ArtistFormData {
   name: string;
@@ -25,7 +27,9 @@ export interface ArtistFormData {
 export interface UserPayload
   extends jose.JWTPayload,
     Prisma.UsersGetPayload<{
-      include: { playlists: { include: { PlaylistSong: { include: { song: true } } } } };
+      include: {
+        playlists: { include: { PlaylistSong: { include: { song: true } } } };
+      };
     }> {}
 
 export type UserAdminEditForm = Partial<
@@ -71,8 +75,8 @@ export type ArtistUpdateFormData = Partial<
 export type ArtistCreateFormData = {
   name: string;
   genre: string;
-  bio : string; 
-  photo_url: string; 
+  bio: string;
+  photo_url: string;
 };
 
 export type Playlists = Prisma.PlaylistGetPayload<{

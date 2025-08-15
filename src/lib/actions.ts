@@ -83,14 +83,6 @@ export async function register(formData: FormData) {
   });
 
   console.log("registered");
-
-  console.log(
-    await prisma.users.findFirst({
-      where: {
-        email: data.email,
-      },
-    })
-  );
 }
 
 export async function login(formData: FormData) {
@@ -168,44 +160,41 @@ export async function findUserByEmail(email: string) {
   return user;
 }
 
-//başkasının bilgisayarını logoutlayamıyorsun
 export async function logout(id: string) {
   try {
-    // Try to validate user session - if it fails, just continue with logout
     const currentUser = await requireValidUser();
 
-    if(!currentUser)
-    {
-      throw new Error("You cant Logout Without User")
+    if (!currentUser) {
+      throw new Error("You cant Logout Without User");
     }
 
-    // If admin is logging out someone else, allow it
-    // If regular user, they can only logout themselves
-    if (!currentUser.roles.includes("admin") && currentUser.id !== id) {
-      throw new Error("FORBIDDEN: Cannot logout another user");
-    }
-    if(currentUser.id === id)
-    {
-      const cookieStore = await cookies();
-      cookieStore.delete("accessToken");
-    }
+    const cookieStore = await cookies();
+    cookieStore.delete("accessToken");
 
     await prisma.refreshTokens.deleteMany({
       where: {
-      user_id: id,
-    },
-  });
-  console.log("logged out");
-
+        user_id: id,
+      },
+    });
+    console.log("logged out");
   } catch (error) {
     // If validation fails, still proceed with logout cleanup for security
     console.log("Logout validation failed, proceeding with cleanup:", error);
   }
-  
-  
-  
- 
 }
+
+export async function systemLogout(id: string) {
+  try {
+    await prisma.refreshTokens.deleteMany({
+      where: {
+        user_id: id,
+      },
+    });
+  } catch (error) {
+    throw new Error("System logout failed: " + error);
+  }
+}
+
 export async function access_cookie() {
   const cookieStore = await cookies();
   return cookieStore.get("accessToken")?.value || "No access token found";
@@ -239,7 +228,7 @@ export async function refreshAccessTokenAction(token: string) {
         photo: decodedToken.photo,
         playlists: decodedToken.playlists,
         updated_at: decodedToken.updated_at,
-        created_at: decodedToken.created_at
+        created_at: decodedToken.created_at,
       });
       //verify new token
       const decodedPayload = jose.decodeJwt(newAccessToken) as UserPayload;

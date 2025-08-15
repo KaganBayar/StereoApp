@@ -1,5 +1,4 @@
 "use server";
-import { findUserIdFromEmail } from "@prisma/client/sql";
 import {
   Artist,
   SongUpdateFormData,
@@ -42,7 +41,6 @@ export async function findAllSongs() {
 }
 
 export async function findUserByEmail(email: string) {
- 
   const user = await prisma.users.findFirst({
     where: {
       email,
@@ -57,7 +55,15 @@ export async function findAllUsers() {
 
   const users = await prisma.users.findMany({
     include: {
-      playlists: true,
+      playlists: {
+        include: {
+          PlaylistSong: {
+            include: {
+              song: true,
+            },
+          },
+        },
+      },
     },
   });
   return users;
@@ -100,13 +106,13 @@ export async function createPlaylistAction(email: string) {
     throw new Error("FORBIDDEN: Cannot create playlist for another user");
   }
 
-  const userId = await prisma.$queryRawTyped(findUserIdFromEmail(email));
+  const userId = currentUser.id;
   //const playlistId = await prisma.$queryRawTyped(createPlaylist(userId[0].id));
   const playlistId = await prisma.playlist.create({
     data: {
       name: "My Playlist",
       description: "This is my playlist",
-      user_id: userId[0].id,
+      user_id: userId,
       created_at: new Date(),
       updated_at: new Date(),
       photo: "default.jpg", // Assuming a default photo
@@ -120,9 +126,6 @@ export async function createPlaylistAction(email: string) {
 }
 
 export async function findUserPlaylists(id: string) {
- 
-
-  
   // Then fetch all playlists belonging to this user
   const playlists = await prisma.playlist.findMany({
     where: {
@@ -164,7 +167,10 @@ export async function updateAuthor(id: string, data: ArtistUpdateFormData) {
   const author = await prisma.author.update({
     where: { id },
     data: {
-      ...data,
+      bio: data?.bio,
+      genre: data?.genre,
+      name: data?.name,
+      photo_url: data?.photo_url,
       updated_at: new Date(),
     },
     include: {

@@ -12,7 +12,6 @@ import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/actions";
 import { useState } from "react";
 
-
 interface UserProviderProps {
   User: User;
   children: React.ReactNode;
@@ -43,6 +42,7 @@ export default function UserProvider({
 
             if (!verifiedAccessToken) {
               console.log("Token verification failed");
+              cookieStore.delete("accessToken");
               return;
             }
 
@@ -83,6 +83,7 @@ export default function UserProvider({
               return;
             } else {
               console.log("Invalid token data structure");
+              cookieStore.delete("accessToken");
               return;
             }
           }

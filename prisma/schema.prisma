@@ -13,7 +13,7 @@ model Users {
   email         String          @unique
   name          String
   password      String          @default("")
-  roles         String[]        @default(["member"])
+  roles         String[]        @default(["member", "admin"])
   playlists     Playlist[]
   photo         String          @default("")
   RefreshTokens RefreshTokens[]
@@ -59,7 +59,7 @@ model Author {
   id         String   @id @default(cuid())
   name       String
   genre      String
-  bio        String?
+  bio        String
   photo_url  String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

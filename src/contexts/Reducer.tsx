@@ -51,7 +51,9 @@ export default function reducer(state: User, action: actionType) {
     case "REMOVEPLAYLIST":
       return {
         ...state,
-        playlists: state.playlists.filter(playlist => playlist.id !== action.payload),
+        playlists: state.playlists.filter(
+          (playlist) => playlist.id !== action.payload
+        ),
       };
     default:
       return state;
