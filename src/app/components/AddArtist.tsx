@@ -16,6 +16,7 @@ import {
   FaMusic,
 } from "react-icons/fa";
 import Image from "next/image";
+import Image from "next/image";
 import { ArtistCreateFormData, ArtistUpdateFormData } from "@/lib/types";
 import { musicImagesRef } from "../../../config/firebase";
 import { uploadString, getDownloadURL, ref } from "firebase/storage";
@@ -315,10 +316,16 @@ const AddAuthor = () => {
                   Photo
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Photo
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Genre
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Bio
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Bio
@@ -360,6 +367,11 @@ const AddAuthor = () => {
                     <span className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-full">
                       {author.genre}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-300 max-w-xs truncate">
+                      {author.bio || "No bio available"}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300 max-w-xs truncate">

@@ -415,22 +415,6 @@ const AddSong = () => {
               {songs.map((song) => (
                 <tr key={song.id} className="bg-gray-800 hover:bg-gray-750">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Image
-                      src={
-                        songImages[song.id] ||
-                        "https://placehold.co/40x40.png?text=Song"
-                      }
-                      alt="Song cover"
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://placehold.co/40x40.png?text=Song";
-                      }}
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-white">
                       {song.name}
                     </div>
