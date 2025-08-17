@@ -15,7 +15,7 @@ import {
   FaTimes,
   FaMusic,
 } from "react-icons/fa";
-import Image from "next/image";
+
 import Image from "next/image";
 import { ArtistCreateFormData, ArtistUpdateFormData } from "@/lib/types";
 import { musicImagesRef } from "../../../config/firebase";
@@ -105,8 +105,8 @@ const AddAuthor = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formData.name || !formData.genre || !formData.bio) {
+    //cover ve bio frontende implemente edildiği zaman onları da ekle
+    if (!formData.name || !formData.genre) {
       setError("Please fill in all required fields");
       return;
     }
@@ -127,10 +127,8 @@ const AddAuthor = () => {
       if (editingAuthor) {
         // Update existing author
         const updatedAuthor = await updateAuthor(editingAuthor, {
-          name: formData?.name,
-          genre: formData?.genre,
-          bio: formData?.bio,
-          photo_url: formData?.photo_url,
+          name: formData.name!,
+          genre: formData.genre!,
         });
         await loadAuthorImages([...authors, updatedAuthor]);
         //Update frontend
@@ -246,46 +244,6 @@ const AddAuthor = () => {
                   required
                 />
               </div>
-
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Profile Photo
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-indigo-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-indigo-700"
-                />
-                {imagePreview && (
-                  <div className="mt-2">
-                    <Image
-                      src={imagePreview}
-                      alt="Author preview"
-                      width={64}
-                      height={64}
-                      className="w-16 h-16 rounded-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src =
-                          "https://placehold.co/64x64.png?text=Author";
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Biography
-                </label>
-                <textarea
-                  value={formData.bio || ""}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
-                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-indigo-500 focus:outline-none h-24 resize-none"
-                  placeholder="Tell us about the author..."
-                />
-              </div>
             </div>
 
             <div className="flex space-x-3">
@@ -316,16 +274,10 @@ const AddAuthor = () => {
                   Photo
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Photo
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Genre
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Bio
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Bio
@@ -339,23 +291,6 @@ const AddAuthor = () => {
               {authors.map((author) => (
                 <tr key={author.id} className="bg-gray-800 hover:bg-gray-750">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Image
-                      src={
-                        authorImages[author.id] ||
-                        "https://placehold.co/40x40.png?text=Author"
-                      }
-                      alt="Author"
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src =
-                          "https://placehold.co/40x40.png?text=Author";
-                      }}
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <FaMusic className="text-indigo-400 mr-3" />
                       <div className="text-sm font-medium text-white">
@@ -367,11 +302,6 @@ const AddAuthor = () => {
                     <span className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-full">
                       {author.genre}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-300 max-w-xs truncate">
-                      {author.bio || "No bio available"}
-                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300 max-w-xs truncate">

@@ -10,7 +10,6 @@ import {
   FaCalendar,
 } from "react-icons/fa";
 import Image from "next/image";
-import Image from "next/image";
 import {
   findAllAlbums,
   findAllAuthors,
@@ -116,7 +115,29 @@ const AddAlbum = () => {
       setError("Please fill in all required fields");
       return;
     }
+
+    if (formData.cover_url && typeof formData.cover_url !== "string") {
+      setError("Invalid cover URL format");
+      return;
+    }
     try {
+      // Upload image to Firebase if there's a new image selected
+      if (formData.cover_url && imagePreview) {
+        const imageRef = ref(storage, formData.cover_url);
+        // Convert Data URL to base64 for Firebase upload
+        const base64 = imagePreview.split(",")[1];
+        // Upload image to Firebase Storage
+        await uploadString(imageRef, base64, "base64");
+      }
+
+      const submitData = {
+        ...formData,
+        releaseDate:
+          typeof formData.releaseDate === "string"
+            ? new Date(formData.releaseDate)
+            : formData.releaseDate,
+      };
+
       if (editingAlbum) {
         const updatedAlbum = await updateAlbum(editingAlbum, submitData);
         // Reload album images to include the new/updated image
@@ -288,6 +309,34 @@ const AddAlbum = () => {
                   required
                 />
               </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Album Cover Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-purple-700"
+                />
+                {imagePreview && (
+                  <div className="mt-2">
+                    <Image
+                      src={imagePreview}
+                      alt="Album cover preview"
+                      width={64}
+                      height={64}
+                      className="w-16 h-16 rounded-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://placehold.co/64x64.png?text=Album";
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex space-x-3">
@@ -334,6 +383,23 @@ const AddAlbum = () => {
             <tbody className="divide-y divide-gray-600">
               {albums.map((album) => (
                 <tr key={album.id} className="bg-gray-800 hover:bg-gray-750">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Image
+                      src={
+                        albumImages[album.id] ||
+                        "https://placehold.co/40x40.png?text=Album"
+                      }
+                      alt="Album cover"
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://placehold.co/40x40.png?text=Album";
+                      }}
+                    />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-white">
                       {album.title}
