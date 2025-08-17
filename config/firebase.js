@@ -24,6 +24,7 @@ const profileImagesRef = ref(storageRef, "images/profile_pictures");
 const musicImagesRef = ref(storageRef, "images/songs");
 const artistImagesRef = ref(storageRef, "images/artists");
 const albumImagesRef = ref(storageRef, "images/albums");
+const songsRef = ref(storageRef, "songs");
 export default app;
 export {
   auth,
@@ -33,4 +34,5 @@ export {
   musicImagesRef,
   artistImagesRef,
   albumImagesRef,
+  songsRef,
 };

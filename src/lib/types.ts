@@ -44,14 +44,19 @@ export type Songs = Prisma.SongGetPayload<{}>;
 export type SongCreateFormData = {
   name: string;
   author_id: string;
-  length: number;
+  song_url: string;
   albumsId: string;
   photo: string;
+  length: number;
 };
 
 export type SongUpdateFormData = Partial<
-  Pick<Songs, "name" | "albumsId" | "author_id" | "length" | "photo">
+  Pick<
+    Songs,
+    "name" | "albumsId" | "author_id" | "photo" | "song_url" | "length"
+  >
 >;
+
 export type Album = Prisma.AlbumsGetPayload<{
   include: {
     song: true;

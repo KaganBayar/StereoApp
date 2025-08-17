@@ -30,7 +30,6 @@ const AddAlbum = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<string | null>(null);
   const [formData, setFormData] = useState<AlbumUpdateFormData>({});
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   // State to store loaded album cover images from Firebase
   const [albumImages, setAlbumImages] = useState<{ [key: string]: string }>({});
@@ -97,7 +96,6 @@ const AddAlbum = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
       const reader = new FileReader();
       // When file is loaded, set preview and store Firebase path (not base64)
       reader.onloadend = () => {
@@ -124,7 +122,7 @@ const AddAlbum = () => {
     }
     try {
       // Upload image to Firebase if there's a new image selected
-      if (formData.cover_url && imagePreview && selectedImage) {
+      if (formData.cover_url && imagePreview) {
         const imageRef = ref(storage, formData.cover_url);
         // Convert Data URL to base64 for Firebase upload
         const base64 = imagePreview.split(",")[1];
@@ -161,7 +159,6 @@ const AddAlbum = () => {
         setShowAddForm(false);
       }
       setFormData({});
-      setSelectedImage(null);
       setImagePreview(null);
       setError(null);
     } catch (err) {
@@ -182,7 +179,6 @@ const AddAlbum = () => {
     // Set image preview from loaded Firebase images or fallback to stored URL
     const loadedImage = albumImages[album.id];
     setImagePreview(loadedImage || album.cover_url || null);
-    setSelectedImage(null);
   };
 
   const handleDelete = async (albumId: string) => {
@@ -200,7 +196,6 @@ const AddAlbum = () => {
     setEditingAlbum(null);
     setShowAddForm(false);
     setFormData({});
-    setSelectedImage(null);
     setImagePreview(null);
     setError(null);
   };

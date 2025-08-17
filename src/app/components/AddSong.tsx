@@ -8,6 +8,11 @@ import { findAllAuthors } from "@/lib/dbActions";
 import { findAllAlbums } from "@/lib/dbActions";
 import { updateSong, createSong, deleteSong } from "@/lib/dbActions";
 import { SongUpdateFormData, SongCreateFormData } from "@/lib/types";
+import { photoUse, songUse } from "@/lib/firebaseActions";
+import { songsRef, storage } from "../../../config/firebase";
+import { Howl, Howler } from "howler";
+import { ref, uploadBytes, uploadString } from "firebase/storage";
+import { getAudioDuration } from "@/lib/utils";
 
 const AddSong = () => {
   const [songs, setSongs] = useState<Songs[]>([]);
@@ -20,6 +25,10 @@ const AddSong = () => {
   const [formData, setFormData] = useState<SongUpdateFormData>({});
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const [selectedSongFile, setSelectedSongFile] = useState<File | null>(null); //not yet implemented
+  const [loadedSongs, setLoadedSongs] = useState<{ [key: string]: File }>({});
+  const [songImages, setSongImages] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     loadData();
@@ -34,6 +43,12 @@ const AddSong = () => {
         findAllAuthors(),
         findAllAlbums(),
       ]);
+
+      if (songsData.length > 0) {
+        await loadSongImages(songsData);
+        await loadSongs(songsData);
+      }
+
       setSongs(songsData);
       setArtists(artistsData);
       setAlbums(albumsData);
@@ -45,6 +60,42 @@ const AddSong = () => {
       setLoading(false);
     }
   };
+
+  const loadSongImages = async (songsData: Songs[]) => {
+    const newSongImages: { [key: string]: string } = {};
+
+    for (const song of songsData) {
+      if (song.photo) {
+        try {
+          const imageUrl = await photoUse(song.photo);
+          newSongImages[song.id] = imageUrl;
+        } catch (error) {
+          console.error(`Failed to load photo for song ${song.id}:`, error);
+        }
+      }
+    }
+
+    setSongImages(newSongImages);
+  };
+
+  const loadSongs = async (songsData: Songs[]) => {
+    const newSongs: { [key: string]: File } = {};
+
+    for (const song of songsData) {
+      if (song.song_url) {
+        try {
+          const songFile = await songUse(song.song_url);
+          newSongs[song.id] = songFile;
+        } catch (error) {
+          console.error(`Failed to load song file for song ${song.id}:`, error);
+        }
+      }
+    }
+
+    setLoadedSongs(newSongs);
+  };
+
+  //bu belki cachelenebilir
 
   const handleInputChange = (
     field: keyof SongUpdateFormData,
@@ -61,7 +112,7 @@ const AddSong = () => {
       reader.onloadend = () => {
         const result = reader.result as string;
         setImagePreview(result);
-        setFormData({ ...formData, photo: result });
+        setFormData({ ...formData, photo: "images/songs/" + file.name });
       };
       reader.readAsDataURL(file);
     }
@@ -73,9 +124,9 @@ const AddSong = () => {
       !formData.name ||
       !formData.author_id ||
       !formData.albumsId ||
-      !formData.length
+      !formData.song_url
     ) {
-      setError("Please fill in all required fields");
+      setError("Please fill in all required fields (including audio file)");
       return;
     }
 
@@ -83,29 +134,47 @@ const AddSong = () => {
       setError("Invalid photo URL format");
       return;
     }
-
     try {
+      if (formData.photo && imagePreview) {
+        const photoRef = ref(storage, formData.photo);
+        const base64 = imagePreview?.split(",")[1];
+        await uploadString(photoRef, base64, "base64");
+      }
+      if (formData.song_url && selectedSongFile) {
+        const songRef = ref(storage, formData.song_url);
+        await uploadBytes(songRef, selectedSongFile);
+        formData.length = (await getAudioDuration(selectedSongFile)) || 0;
+      }
+
       if (editingSong) {
         await updateSong(editingSong, formData);
-        setSongs(
-          songs.map((song) =>
-            song.id === editingSong ? { ...song, ...(formData as Songs) } : song
-          )
+        //all songs + newly updated song
+        const songsAndNewlyUpdated = songs.map((song) =>
+          song.id === editingSong ? { ...song, ...(formData as Songs) } : song
         );
+        setSongs(songsAndNewlyUpdated);
+        await loadSongImages(songsAndNewlyUpdated);
+        await loadSongs(songsAndNewlyUpdated);
         setEditingSong(null);
+        setImagePreview(null);
       } else {
         const songData: SongCreateFormData = {
           name: formData.name!,
           author_id: formData.author_id!,
-          length: formData.length!,
+          song_url: formData.song_url!,
           albumsId: formData.albumsId!,
-          photo: formData.photo || "",
+          photo: formData.photo!,
+          length: formData.length!,
         };
         const newSong = await createSong(songData);
         setSongs([...songs, newSong]);
+        await loadSongImages([...songs, newSong]);
+        await loadSongs([...songs, newSong]);
         setShowAddForm(false);
       }
       setFormData({});
+      setSelectedSongFile(null);
+      setImagePreview(null);
       setError(null);
     } catch (err) {
       setError("Failed to save song");
@@ -116,7 +185,7 @@ const AddSong = () => {
   const handleEdit = (song: Songs) => {
     setEditingSong(song.id);
     setFormData(song);
-    setImagePreview(song.photo || null);
+    setImagePreview(songImages[song.id] || null);
     setSelectedImage(null);
   };
 
@@ -138,6 +207,7 @@ const AddSong = () => {
     setFormData({});
     setSelectedImage(null);
     setImagePreview(null);
+    setSelectedSongFile(null);
     setError(null);
   };
 
@@ -246,18 +316,27 @@ const AddSong = () => {
 
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Duration (seconds) *
+                  Audio File *
                 </label>
                 <input
-                  type="number"
-                  min="1"
-                  value={formData.length || ""}
-                  onChange={(e) =>
-                    handleInputChange("length", parseInt(e.target.value))
-                  }
-                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+                  type="file"
+                  accept="audio/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setSelectedSongFile(file);
+                      // Store file path reference for backend
+                      handleInputChange("song_url", "audio/songs/" + file.name);
+                    }
+                  }}
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-blue-700"
                   required
                 />
+                {selectedSongFile && (
+                  <div className="mt-2 text-sm text-gray-300">
+                    Selected: {selectedSongFile.name}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -277,7 +356,7 @@ const AddSong = () => {
                       alt="Song cover preview"
                       width={64}
                       height={64}
-                      className="w-16 h-16 rounded object-cover"
+                      className="w-16 h-16 rounded-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://placehold.co/64x64.png?text=Song";
@@ -338,12 +417,13 @@ const AddSong = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Image
                       src={
-                        song.photo || "https://placehold.co/40x40.png?text=Song"
+                        songImages[song.id] ||
+                        "https://placehold.co/40x40.png?text=Song"
                       }
                       alt="Song cover"
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded object-cover"
+                      className="w-10 h-10 rounded-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://placehold.co/40x40.png?text=Song";

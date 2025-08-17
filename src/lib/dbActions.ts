@@ -242,9 +242,10 @@ export async function createSong(data: SongCreateFormData) {
     data: {
       name: data.name,
       author_id: data.author_id,
-      length: data.length,
       albumsId: data.albumsId,
+      song_url: data.song_url,
       photo: data.photo || "",
+      length: data.length || 0,
     },
   });
   return song;
