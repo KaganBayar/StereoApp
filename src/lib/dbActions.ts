@@ -3,6 +3,10 @@ import {
   Artist,
   SongUpdateFormData,
   SongCreateFormData,
+<<<<<<< HEAD
+=======
+  User,
+>>>>>>> 1dea195254c14cef8dbe2f9e72aef3adbecdba4d
   UserAdminEditForm,
 } from "@/lib/types";
 import { Albums } from "@/lib/types";
@@ -242,10 +246,17 @@ export async function createSong(data: SongCreateFormData) {
     data: {
       name: data.name,
       author_id: data.author_id,
+<<<<<<< HEAD
+=======
+      length: data.length,
+>>>>>>> 1dea195254c14cef8dbe2f9e72aef3adbecdba4d
       albumsId: data.albumsId,
       song_url: data.song_url,
       photo: data.photo || "",
+<<<<<<< HEAD
       length: data.length || 0,
+=======
+>>>>>>> 1dea195254c14cef8dbe2f9e72aef3adbecdba4d
     },
   });
   return song;

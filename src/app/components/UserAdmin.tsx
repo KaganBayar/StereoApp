@@ -4,7 +4,6 @@ import { User } from "@/lib/types";
 import { findAllUsers } from "@/lib/dbActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
-
 import { updateUser } from "@/lib/dbActions";
 import { deleteUser } from "@/lib/dbActions";
 import { logout, systemLogout } from "@/lib/actions";
