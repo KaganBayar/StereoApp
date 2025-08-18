@@ -24,7 +24,15 @@ export async function validateUserSession(): Promise<User> {
         id: tokenPayload.id,
       },
       include: {
-        playlists: true,
+        playlists: {
+          include: {
+            PlaylistSong: {
+              include: {
+                song: true,
+              },
+            },
+          },
+        },
       },
     });
 
