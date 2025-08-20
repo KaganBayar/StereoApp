@@ -4,22 +4,9 @@ import { ref } from "firebase/storage";
 import { storage } from "../../config/firebase";
 import { getBytes } from "firebase/storage";
 import { Howl, Howler } from "howler";
+import { photoUse, songUse } from "./firebaseActions";
+import { Album, Artist, Songs } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-export function getAudioDuration(file: File): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const audio = new Howl({
-      src: [URL.createObjectURL(file)],
-      format: ["mp3"],
-      onload: () => {
-        resolve(Math.floor(audio.duration()));
-      },
-      onloaderror: (error) => {
-        reject(error);
-      },
-    });
-  });
 }

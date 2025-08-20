@@ -20,7 +20,7 @@ import { ArtistCreateFormData, ArtistUpdateFormData } from "@/lib/types";
 import { musicImagesRef } from "../../../config/firebase";
 import { uploadString, getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../../../config/firebase";
-import { photoUse } from "@/lib/firebaseActions";
+import { photoUse, loadAuthorImages } from "@/lib/firebaseActions";
 
 const AddAuthor = () => {
   const [authors, setAuthors] = useState<Artist[]>([]);
@@ -51,7 +51,8 @@ const AddAuthor = () => {
       const authorsData = await findAllAuthors();
       setAuthors(authorsData);
       if (authorsData.length > 0) {
-        await loadAuthorImages(authorsData);
+        const authorImages = await loadAuthorImages(authorsData);
+        setAuthorImages(authorImages);
       }
       setError(null);
     } catch (err) {
@@ -63,23 +64,6 @@ const AddAuthor = () => {
   };
 
   //effect2
-  const loadAuthorImages = async (authorsData: Artist[]) => {
-    const newAuthorImages: { [key: string]: string } = {};
-
-    for (const author of authorsData) {
-      if (author.photo_url) {
-        try {
-          const imageUrl = await photoUse(author.photo_url);
-          newAuthorImages[author.id] = imageUrl;
-        } catch (error) {
-          console.error(`Failed to load image for author ${author.id}:`, error);
-          // Don't add to newAuthorImages if failed, will use placeholder
-        }
-      }
-    }
-
-    setAuthorImages(newAuthorImages);
-  };
 
   const handleInputChange = (
     field: keyof ArtistUpdateFormData,

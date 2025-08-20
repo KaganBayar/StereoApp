@@ -3,6 +3,7 @@ import UserContext from "@/contexts/UserContext";
 import {
   DispatchContext,
   UserInformationLoadingContext,
+  selectedSongByUserContext,
 } from "@/contexts/UserContext";
 import { useReducer } from "react";
 import { actionType } from "@/contexts/Reducer";
@@ -100,7 +101,11 @@ export default function UserProvider({
     <UserContext.Provider value={user}>
       <DispatchContext.Provider value={dispatch}>
         <UserInformationLoadingContext.Provider value={isAuthLoading}>
-          {children}
+          <selectedSongByUserContext.Provider
+            value={useState<string | null>(null)}
+          >
+            {children}
+          </selectedSongByUserContext.Provider>
         </UserInformationLoadingContext.Provider>
       </DispatchContext.Provider>
     </UserContext.Provider>

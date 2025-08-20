@@ -8,11 +8,16 @@ import { findAllAuthors } from "@/lib/dbActions";
 import { findAllAlbums } from "@/lib/dbActions";
 import { updateSong, createSong, deleteSong } from "@/lib/dbActions";
 import { SongUpdateFormData, SongCreateFormData } from "@/lib/types";
-import { photoUse, songUse } from "@/lib/firebaseActions";
+import {
+  photoUse,
+  songUse,
+  loadSongImages,
+  loadSongs,
+} from "@/lib/firebaseActions";
 import { songsRef, storage } from "../../../config/firebase";
 import { Howl, Howler } from "howler";
 import { ref, uploadBytes, uploadString } from "firebase/storage";
-import { getAudioDuration } from "@/lib/utils";
+import { getAudioDuration } from "@/lib/audioUtils";
 
 const AddSong = () => {
   const [songs, setSongs] = useState<Songs[]>([]);
@@ -45,8 +50,10 @@ const AddSong = () => {
       ]);
 
       if (songsData.length > 0) {
-        await loadSongImages(songsData);
-        await loadSongs(songsData);
+        const loadedSongImages = await loadSongImages(songsData);
+        setSongImages(loadedSongImages);
+        const loadedSongs = await loadSongs(songsData);
+        setLoadedSongs(loadedSongs);
       }
 
       setSongs(songsData);
@@ -59,40 +66,6 @@ const AddSong = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const loadSongImages = async (songsData: Songs[]) => {
-    const newSongImages: { [key: string]: string } = {};
-
-    for (const song of songsData) {
-      if (song.photo) {
-        try {
-          const imageUrl = await photoUse(song.photo);
-          newSongImages[song.id] = imageUrl;
-        } catch (error) {
-          console.error(`Failed to load photo for song ${song.id}:`, error);
-        }
-      }
-    }
-
-    setSongImages(newSongImages);
-  };
-
-  const loadSongs = async (songsData: Songs[]) => {
-    const newSongs: { [key: string]: File } = {};
-
-    for (const song of songsData) {
-      if (song.song_url) {
-        try {
-          const songFile = await songUse(song.song_url);
-          newSongs[song.id] = songFile;
-        } catch (error) {
-          console.error(`Failed to load song file for song ${song.id}:`, error);
-        }
-      }
-    }
-
-    setLoadedSongs(newSongs);
   };
 
   //bu belki cachelenebilir

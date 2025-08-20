@@ -38,7 +38,7 @@ export async function findAllAuthors() {
 
 export async function findAllSongs() {
   const songs = await prisma.song.findMany({});
-  return songs satisfies Songs[];
+  return songs;
 }
 
 export async function findUserByEmail(email: string) {

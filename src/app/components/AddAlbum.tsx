@@ -19,7 +19,7 @@ import {
 import { AlbumCreateFormData, AlbumUpdateFormData } from "@/lib/types";
 import { uploadString, ref } from "firebase/storage";
 import { storage } from "../../../config/firebase";
-import { photoUse } from "@/lib/firebaseActions";
+import { photoUse, loadAlbumImages } from "@/lib/firebaseActions";
 import { albumImagesRef } from "../../../config/firebase";
 
 const AddAlbum = () => {
@@ -39,27 +39,6 @@ const AddAlbum = () => {
   }, []);
 
   // Load album cover images from Firebase storage
-  const loadAlbumImages = async (albumsData: Album[]) => {
-    const newAlbumImages: { [key: string]: string } = {};
-
-    for (const album of albumsData) {
-      if (album.cover_url) {
-        try {
-          // Use photoUse function to get image data URL from Firebase
-          const imageUrl = await photoUse(album.cover_url);
-          newAlbumImages[album.id] = imageUrl;
-        } catch (error) {
-          console.error(
-            `Failed to load cover image for album ${album.id}:`,
-            error
-          );
-          // Don't add to newAlbumImages if failed, will use placeholder
-        }
-      }
-    }
-
-    setAlbumImages(newAlbumImages);
-  };
 
   const loadData = async () => {
     try {
@@ -74,7 +53,8 @@ const AddAlbum = () => {
 
       // Load album cover images from Firebase if albums exist
       if (albumsData.length > 0) {
-        await loadAlbumImages(albumsData);
+        const albumImages = await loadAlbumImages(albumsData);
+        setAlbumImages(albumImages);
       }
 
       setError(null);
