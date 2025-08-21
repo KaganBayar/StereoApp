@@ -37,7 +37,12 @@ export async function findAllAuthors() {
 }
 
 export async function findAllSongs() {
-  const songs = await prisma.song.findMany({});
+  const songs = await prisma.song.findMany({
+    include: {
+      Albums: true,
+      author: true,
+    },
+  });
   return songs;
 }
 

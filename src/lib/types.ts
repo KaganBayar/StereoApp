@@ -39,7 +39,9 @@ export type UserAdminEditForm = Partial<
 export type Albums = Prisma.AlbumsGetPayload<{
   include: { song: true };
 }>;
-export type Songs = Prisma.SongGetPayload<{}>;
+export type Songs = Prisma.SongGetPayload<{
+  include: { albums: true; author: true };
+}>;
 
 export type SongCreateFormData = {
   name: string;

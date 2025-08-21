@@ -8,11 +8,19 @@ import { songUse } from "@/lib/firebaseActions";
 import { useState } from "react";
 import { useContext } from "react";
 import { useAudio } from "@/contexts/audioContext";
+import { photoUse } from "@/lib/firebaseActions";
+
 export const HomePageSong = (song: Songs) => {
   const [songFile, setSongFile] = useState<File | null>(null);
   const [howlFile, sethowlFile] = useState<Howl | null>(null);
-  const { currentSong, isPlaying, playSong, pauseSong, resumeSong } =
-    useAudio();
+  const {
+    currentSong,
+    songMetadata,
+    isPlaying,
+    playSong,
+    pauseSong,
+    resumeSong,
+  } = useAudio();
 
   useEffect(() => {
     async function LoadSong() {
@@ -31,9 +39,13 @@ export const HomePageSong = (song: Songs) => {
       className={
         "bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors group cursor-pointer"
       }
-      onClick={() => {
+      onClick={async () => {
         if (songFile) {
-          const howl = playSong(song.id, songFile);
+          const howl = playSong(song.id, songFile, {
+            name: song.name,
+            artist: song.author.name,
+            albumArt: await photoUse(song.photo),
+          });
         } else {
           console.error("Song file not loaded");
         }
@@ -52,7 +64,9 @@ export const HomePageSong = (song: Songs) => {
         </button>
       </div>
       <h3 className="font-semibold text-white mb-1 truncate">{song.name}</h3>
-      <p className="text-sm text-gray-400 truncate">Artist</p>
+      <p className="text-sm text-gray-400 truncate">
+        {song.author?.name ? song.author.name : "Unknown Artist"}
+      </p>
     </div>
   );
 };
