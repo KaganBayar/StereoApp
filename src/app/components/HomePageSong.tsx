@@ -6,12 +6,13 @@ import { playSong } from "@/lib/audioUtils";
 import { useEffect } from "react";
 import { songUse } from "@/lib/firebaseActions";
 import { useState } from "react";
-import { selectedSongByUserContext } from "@/contexts/UserContext";
 import { useContext } from "react";
+import { useAudio } from "@/contexts/audioContext";
 export const HomePageSong = (song: Songs) => {
   const [songFile, setSongFile] = useState<File | null>(null);
   const [howlFile, sethowlFile] = useState<Howl | null>(null);
-  const [selectedSong, setSelectedSong] = useContext(selectedSongByUserContext);
+  const { currentSong, isPlaying, playSong, pauseSong, resumeSong } =
+    useAudio();
 
   useEffect(() => {
     async function LoadSong() {
@@ -32,13 +33,7 @@ export const HomePageSong = (song: Songs) => {
       }
       onClick={() => {
         if (songFile) {
-          if (howlFile) {
-            howlFile.stop();
-            howlFile.unload();
-          }
-          setSelectedSong(song.id);
-          const howl = playSong(songFile);
-          sethowlFile(howl);
+          const howl = playSong(song.id, songFile);
         } else {
           console.error("Song file not loaded");
         }

@@ -12,6 +12,7 @@ import { User } from "@/lib/types";
 import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/actions";
 import { useState } from "react";
+import { AudioProvider } from "@/contexts/audioContext";
 
 interface UserProviderProps {
   User: User;
@@ -104,7 +105,7 @@ export default function UserProvider({
           <selectedSongByUserContext.Provider
             value={useState<string | null>(null)}
           >
-            {children}
+            <AudioProvider>{children}</AudioProvider>
           </selectedSongByUserContext.Provider>
         </UserInformationLoadingContext.Provider>
       </DispatchContext.Provider>
