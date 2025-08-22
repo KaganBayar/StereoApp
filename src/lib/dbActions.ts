@@ -138,7 +138,7 @@ export async function findUserPlaylists(id: string) {
       user_id: id,
     },
     include: {
-      PlaylistSong: {
+      playlistSongs: {
         include: {
           song: true,
         },
@@ -253,6 +253,10 @@ export async function createSong(data: SongCreateFormData) {
       photo: data.photo || "",
       length: data.length || 0,
     },
+    include: {
+      Albums: true,
+      author: true,
+    },
   });
   return song;
 }
@@ -265,6 +269,10 @@ export async function updateSong(id: string, data: SongUpdateFormData) {
     data: {
       ...data,
       updated_at: new Date(),
+    },
+    include: {
+      Albums: true,
+      author: true,
     },
   });
   return song;

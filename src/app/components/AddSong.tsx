@@ -20,9 +20,9 @@ import { ref, uploadBytes, uploadString } from "firebase/storage";
 import { getAudioDuration } from "@/lib/audioUtils";
 
 const AddSong = () => {
-  const [songs, setSongs] = useState<Songs[]>([]);
-  const [artists, setArtists] = useState<Artist[]>([]);
-  const [albums, setAlbums] = useState<Albums[]>([]);
+  const [songs, setSongs] = useState<{ [key: string]: Songs }>({});
+  const [artists, setArtists] = useState<{ [key: string]: Artist }>({});
+  const [albums, setAlbums] = useState<{ [key: string]: Albums }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -30,8 +30,7 @@ const AddSong = () => {
   const [formData, setFormData] = useState<SongUpdateFormData>({});
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const [selectedSongFile, setSelectedSongFile] = useState<File | null>(null); //not yet implemented
+  const [selectedSongFile, setSelectedSongFile] = useState<File | null>(null);
   const [loadedSongs, setLoadedSongs] = useState<{ [key: string]: File }>({});
   const [songImages, setSongImages] = useState<{ [key: string]: string }>({});
 
@@ -157,7 +156,6 @@ const AddSong = () => {
 
   const handleEdit = (song: Songs) => {
     setEditingSong(song.id);
-    setFormData(song);
     setImagePreview(songImages[song.id] || null);
     setSelectedImage(null);
   };
@@ -238,7 +236,11 @@ const AddSong = () => {
                 </label>
                 <input
                   type="text"
-                  value={formData.name || ""}
+                  value={
+                    formData.name || "" || editingSong
+                      ? songs[editingSong]?.name
+                      : ""
+                  }
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -250,9 +252,13 @@ const AddSong = () => {
                   Artist *
                 </label>
                 <select
-                  value={formData.author_id || ""}
+                  value={
+                    formData.artist_id || "" || editingSong
+                      ? songs[editingSong]?.artist_id
+                      : ""
+                  }
                   onChange={(e) =>
-                    handleInputChange("author_id", e.target.value)
+                    handleInputChange("artist_id", e.target.value)
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -271,9 +277,9 @@ const AddSong = () => {
                   Album *
                 </label>
                 <select
-                  value={formData.albumsId || ""}
+                  value={formData.album_id || ""}
                   onChange={(e) =>
-                    handleInputChange("albumsId", e.target.value)
+                    handleInputChange("album_id", e.target.value)
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required

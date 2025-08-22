@@ -1,19 +1,25 @@
-/*import { Howl } from "howler";
+import { Howl } from "howler";
 
 export function getAudioDuration(file: File): Promise<number> {
+  const url = URL.createObjectURL(file);
   return new Promise((resolve, reject) => {
     const audio = new Howl({
-      src: [URL.createObjectURL(file)],
+      src: [url],
       format: ["mp3"],
       onload: () => {
+        URL.revokeObjectURL(url);
+        audio.unload();
         resolve(Math.floor(audio.duration()));
       },
       onloaderror: (error) => {
+        URL.revokeObjectURL(url);
+        audio.unload();
         reject(error);
       },
     });
   });
 }
+/*
 
 export function playSong(file: File): Howl {
   try {

@@ -4,7 +4,6 @@ import { Songs, Albums } from "@/lib/types";
 import { findAllSongs, findAllAlbums } from "@/lib/dbActions";
 import { loadSongs, photoUse } from "@/lib/firebaseActions";
 import Image from "next/image";
-import { playSong } from "@/lib/audioUtils";
 import { HomePageSong } from "../components/HomePageSong";
 import { PhotoWithFallback } from "../components/photoWithFallback";
 

@@ -13,6 +13,7 @@ interface AudioContextType {
   currentSong: string | null;
   songMetadata: SongMetadata | null;
   isPlaying: boolean;
+  isMuted: boolean;
   currentTime: number;
   duration: number;
   volume: number;
@@ -23,6 +24,7 @@ interface AudioContextType {
   resumeSong: () => void;
   seekTo: (time: number) => void;
   setVolume: (volume: number) => void;
+  muteVolume: () => void;
   toggleLoop: () => void;
 }
 
@@ -53,6 +55,8 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const [volume, setVolumeState] = useState<number>(1);
+  const [prevVolume, setPrevVolumeState] = useState<number>(0); //private
+  const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isLooping, setIsLooping] = useState<boolean>(false);
   const howlRef = useRef<Howl | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -136,6 +140,10 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
         stopTimeUpdate();
         URL.revokeObjectURL(audioUrl);
       },
+      onmute: () => {
+        setVolumeState(0);
+        setIsMuted(true);
+      },
     });
     howlRef.current = howl;
     howlRef.current.play();
@@ -185,6 +193,19 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
     }
   };
 
+  const muteVolume = () => {
+    if (howlRef.current && isMuted) {
+      howlRef.current.volume(prevVolume);
+      setVolumeState(prevVolume);
+      setIsMuted(false);
+    } else if (howlRef.current) {
+      setPrevVolumeState(volume);
+      howlRef.current.volume(0);
+      setVolumeState(0);
+      setIsMuted(true);
+    }
+  };
+
   const toggleLoop = () => {
     const newLoopState = !isLooping;
     setIsLooping(newLoopState);
@@ -192,12 +213,14 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       howlRef.current.loop(newLoopState);
     }
   };
+
   return (
     <AudioContext.Provider
       value={{
         currentSong,
         songMetadata,
         isPlaying,
+        isMuted,
         currentTime,
         duration,
         volume,
@@ -208,6 +231,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
         resumeSong,
         seekTo,
         setVolume,
+        muteVolume,
         toggleLoop,
       }}
     >

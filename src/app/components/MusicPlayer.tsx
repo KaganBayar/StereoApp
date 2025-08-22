@@ -20,6 +20,7 @@ const MusicPlayer = () => {
   const {
     songMetadata,
     isPlaying,
+    muteVolume,
     currentTime,
     duration,
     volume,
@@ -61,16 +62,18 @@ const MusicPlayer = () => {
           <div className="flex items-center gap-4 min-w-0 w-80">
             <div className="flex-shrink-0">
               {songMetadata.albumArt ? (
-                <Image
-                  src={songMetadata.albumArt}
-                  alt={songMetadata.name}
-                  width={56}
-                  height={56}
-                  className="rounded-md object-cover shadow-lg"
-                />
+                <div className="w-16 h-16 rounded-md overflow-hidden shadow-lg">
+                  <Image
+                    src={songMetadata.albumArt}
+                    alt={songMetadata.name}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ) : (
-                <div className="w-14 h-14 bg-slate-700/50 rounded-md flex items-center justify-center shadow-lg">
-                  <div className="w-6 h-6 bg-slate-500/30 rounded"></div>
+                <div className="w-16 h-16 bg-slate-700/50 rounded-md flex items-center justify-center shadow-lg">
+                  <div className="w-8 h-8 bg-slate-500/30 rounded"></div>
                 </div>
               )}
             </div>
@@ -169,7 +172,7 @@ const MusicPlayer = () => {
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 transition-all"
-              onClick={() => setVolume(volume === 0 ? 1 : 0)}
+              onClick={() => muteVolume()}
             >
               {volume === 0 ? (
                 <VolumeX className="h-4 w-4" />

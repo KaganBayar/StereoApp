@@ -1,3 +1,6 @@
+/**
+ * isimler çok kötü yazılmış bi ara onları düzelt
+ */
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["typedSql"]
@@ -14,23 +17,23 @@ model Users {
   name          String
   password      String          @default("")
   roles         String[]        @default(["member", "admin"])
-  photo         String          @default("")
+  photo_url     String          @default("")
   created_at    DateTime        @default(now()) @db.Timestamp(6)
   updated_at    DateTime        @updatedAt @db.Timestamp(6)
   playlists     Playlist[]
-  RefreshTokens RefreshTokens[]
+  refreshTokens RefreshTokens[]
 }
 
 model Playlist {
-  id           String         @id @default(cuid())
-  name         String         @default("My Playlist")
-  description  String?
-  user_id      String
-  created_at   DateTime       @default(now())
-  photo        String         @default("")
-  updated_at   DateTime       @updatedAt @db.Timestamp(6)
-  user         Users          @relation(fields: [user_id], references: [id])
-  PlaylistSong PlaylistSong[]
+  id            String         @id @default(cuid())
+  name          String         @default("My Playlist")
+  description   String?
+  user_id       String
+  created_at    DateTime       @default(now())
+  photo         String         @default("")
+  updated_at    DateTime       @updatedAt @db.Timestamp(6)
+  user          Users          @relation(fields: [user_id], references: [id])
+  playlistSongs PlaylistSong[]
 }
 
 model PlaylistSong {
@@ -44,19 +47,19 @@ model PlaylistSong {
 model Song {
   id           String         @id @default(cuid())
   name         String         @default("defaultSong")
-  author_id    String
+  artist_id    String
   length       Int
-  photo        String         @default("")
+  photo_url    String         @default("")
   created_at   DateTime       @default(now()) @db.Timestamp(6)
   updated_at   DateTime       @updatedAt @db.Timestamp(6)
-  albumsId     String
+  album_id     String
   song_url     String
-  PlaylistSong PlaylistSong[]
-  Albums       Albums         @relation(fields: [albumsId], references: [id])
-  author       Author         @relation(fields: [author_id], references: [id])
+  playlistSong PlaylistSong[]
+  album        Albums         @relation(fields: [album_id], references: [id])
+  artist       Artists        @relation(fields: [artist_id], references: [id])
 }
 
-model Author {
+model Artists {
   id         String   @id @default(cuid())
   name       String
   created_at DateTime @default(now())
@@ -71,13 +74,13 @@ model Author {
 model Albums {
   id          String   @id @default(cuid())
   title       String
-  artistId    String
+  artist_id   String
   releaseDate DateTime
-  cover_url   String?
+  photo_url   String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  author      Author   @relation(fields: [artistId], references: [id], onDelete: Cascade)
-  song        Song[]
+  artist      Artists  @relation(fields: [artist_id], references: [id], onDelete: Cascade)
+  songs       Song[]
 }
 
 model RefreshTokens {

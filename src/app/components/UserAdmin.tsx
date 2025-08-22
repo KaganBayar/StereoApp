@@ -7,15 +7,14 @@ import Image from "next/image";
 import { updateUser } from "@/lib/dbActions";
 import { deleteUser } from "@/lib/dbActions";
 import { logout, systemLogout } from "@/lib/actions";
+import { UserAdminEditForm } from "@/lib/types";
 
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<
-    Partial<Pick<User, "name" | "email" | "roles" | "photo">>
-  >({});
+  const [editForm, setEditForm] = useState<UserAdminEditForm>({});
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
