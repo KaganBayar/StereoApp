@@ -1,8 +1,8 @@
 "use server";
 import { cookies } from "next/headers";
-import prisma from "@/lib/db";
-import { User, UserPayload } from "@/lib/types";
-import { verifyAuthTokenAction } from "@/lib/actions";
+import prisma from "@/lib/server/db";
+import { User, UserPayload } from "@/lib/shared/types";
+import { verifyAuthTokenAction } from "@/lib/server/actions";
 
 export async function validateUserSession(): Promise<User> {
   const cookieStore = await cookies();

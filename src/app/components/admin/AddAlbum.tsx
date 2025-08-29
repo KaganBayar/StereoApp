@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Album, Artist } from "@/lib/types";
+import { Album, Artist } from "@/lib/shared/types";
 import {
   FaPlus,
   FaEdit,
@@ -15,12 +15,12 @@ import {
   findAllAuthors,
   updateAlbum,
   createAlbum,
-} from "@/lib/dbActions";
-import { AlbumCreateFormData, AlbumUpdateFormData } from "@/lib/types";
+} from "@/lib/server/dbActions";
+import { AlbumCreateFormData, AlbumUpdateFormData } from "@/lib/shared/types";
 import { uploadString, ref } from "firebase/storage";
-import { storage } from "../../../config/firebase";
-import { photoUse, loadAlbumImages } from "@/lib/firebaseActions";
-import { albumImagesRef } from "../../../config/firebase";
+import { storage } from "../../../../config/firebase";
+import { photoUse, loadAlbumImages } from "@/lib/client/firebaseActions";
+import { albumImagesRef } from "../../../../config/firebase";
 
 const AddAlbum = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -33,7 +33,9 @@ const AddAlbum = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   // State to store loaded album cover images from Firebase
   const [albumImages, setAlbumImages] = useState<{ [key: string]: string }>({});
-  //"title" | "artistId" | "releaseDate" | "cover_url
+
+  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect.
+  //but if you want to use fetch you need to add a return and ignore variable. clean should make ignore true and if ignore true fetching effect shouldnt apply
   useEffect(() => {
     loadData();
   }, []);

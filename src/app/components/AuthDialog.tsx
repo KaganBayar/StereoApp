@@ -8,11 +8,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/app/components/ui/dialog";
-import { login, register } from "@/lib/actions";
+import { login, register } from "@/lib/server/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useContext } from "react";
 import { DispatchContext } from "@/contexts/UserContext";
-import { findUserByEmail, findUserPlaylists } from "@/lib/dbActions";
+import { findUserByEmail, findUserPlaylists } from "@/lib/server/dbActions";
 import { auth } from "@/../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Loader2 } from "lucide-react";

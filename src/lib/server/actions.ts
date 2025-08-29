@@ -1,15 +1,18 @@
 "use server";
-import prisma from "@/lib/db";
+import prisma from "@/lib/server/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { signToken } from "@/lib/auth";
-import { findUserPlaylists } from "@/lib/dbActions";
+import { signToken } from "@/lib/server/auth";
+import { findUserPlaylists } from "@/lib/server/dbActions";
 import { cookies } from "next/headers";
 import * as jose from "jose";
-import { Playlists } from "../lib/types";
-import { UserPayload } from "../lib/types";
-import { requireValidUser, requireAdminUser } from "@/lib/serverValidation";
+import { Playlists } from "../shared/types";
+import { UserPayload } from "../shared/types";
+import {
+  requireValidUser,
+  requireAdminUser,
+} from "@/lib/server/serverValidation";
 
 const formRegisterSchema = z.object({
   email: z.string().email(),

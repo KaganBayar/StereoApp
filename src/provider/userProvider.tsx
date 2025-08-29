@@ -8,9 +8,9 @@ import {
 import { useReducer } from "react";
 import { actionType } from "@/contexts/Reducer";
 
-import { User } from "@/lib/types";
+import { User } from "@/lib/shared/types";
 import { useEffect } from "react";
-import { access_cookie, verifyAuthTokenAction } from "@/lib/actions";
+import { access_cookie, verifyAuthTokenAction } from "@/lib/server/actions";
 import { useState } from "react";
 import { AudioProvider } from "@/contexts/audioContext";
 
@@ -26,7 +26,7 @@ export default function UserProvider({
 }: UserProviderProps) {
   const [user, dispatch] = useReducer(reduce, User);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-
+  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
   useEffect(() => {
     async function fetchUser() {
       try {

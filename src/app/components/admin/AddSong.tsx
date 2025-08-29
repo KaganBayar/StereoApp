@@ -1,23 +1,23 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Songs, Artist, Albums } from "@/lib/types";
+import { Songs, Artist, Albums } from "@/lib/shared/types";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
-import { findAllSongs } from "@/lib/dbActions";
-import { findAllAuthors } from "@/lib/dbActions";
-import { findAllAlbums } from "@/lib/dbActions";
-import { updateSong, createSong, deleteSong } from "@/lib/dbActions";
-import { SongUpdateFormData, SongCreateFormData } from "@/lib/types";
+import { findAllSongs } from "@/lib/server/dbActions";
+import { findAllAuthors } from "@/lib/server/dbActions";
+import { findAllAlbums } from "@/lib/server/dbActions";
+import { updateSong, createSong, deleteSong } from "@/lib/server/dbActions";
+import { SongUpdateFormData, SongCreateFormData } from "@/lib/shared/types";
 import {
   photoUse,
   songUse,
   loadSongImages,
   loadSongs,
-} from "@/lib/firebaseActions";
+} from "@/lib/client/firebaseActions";
 import { songsRef, storage } from "../../../config/firebase";
 import { Howl, Howler } from "howler";
 import { ref, uploadBytes, uploadString } from "firebase/storage";
-import { getAudioDuration } from "@/lib/audioUtils";
+import { getAudioDuration } from "@/lib/client/audioUtils";
 
 const AddSong = () => {
   const [songs, setSongs] = useState<{ [key: string]: Songs }>({});
@@ -33,7 +33,7 @@ const AddSong = () => {
   const [selectedSongFile, setSelectedSongFile] = useState<File | null>(null);
   const [loadedSongs, setLoadedSongs] = useState<{ [key: string]: File }>({});
   const [songImages, setSongImages] = useState<{ [key: string]: string }>({});
-
+  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
   useEffect(() => {
     loadData();
   }, []);

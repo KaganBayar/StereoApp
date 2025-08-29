@@ -1,6 +1,6 @@
 "use client";
-import { User } from "@/lib/types";
-import { Playlists } from "@/lib/types";
+import { User } from "@/lib/shared/types";
+import { Playlists } from "@/lib/shared/types";
 
 export type actionType =
   | {

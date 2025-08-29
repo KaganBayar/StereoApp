@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Artist } from "@/lib/types";
+import { Artist } from "@/lib/shared/types";
 import {
   findAllAuthors,
   createAuthor,
   updateAuthor,
   deleteAuthor,
-} from "@/lib/dbActions";
+} from "@/lib/server/dbActions";
 import {
   FaPlus,
   FaEdit,
@@ -16,11 +16,11 @@ import {
   FaMusic,
 } from "react-icons/fa";
 import Image from "next/image";
-import { ArtistCreateFormData, ArtistUpdateFormData } from "@/lib/types";
-import { musicImagesRef } from "../../../config/firebase";
+import { ArtistCreateFormData, ArtistUpdateFormData } from "@/lib/shared/types";
+import { musicImagesRef } from "../../../../config/firebase";
 import { uploadString, getDownloadURL, ref } from "firebase/storage";
-import { storage } from "../../../config/firebase";
-import { photoUse, loadAuthorImages } from "@/lib/firebaseActions";
+import { storage } from "../../../../config/firebase";
+import { photoUse, loadAuthorImages } from "@/lib/client/firebaseActions";
 
 const AddAuthor = () => {
   const [authors, setAuthors] = useState<Artist[]>([]);
@@ -35,7 +35,7 @@ const AddAuthor = () => {
   );
 
   // name: string |genre: string; bio | string; photo_url | string;
-
+  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
   useEffect(() => {
     async function loadData() {
       await loadAuthors();

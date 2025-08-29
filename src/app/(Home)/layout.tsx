@@ -1,5 +1,5 @@
 import Sidebar from "../components/Sidebar";
-import Box from "../components/Box";
+import Box from "../components/misc/Box";
 import MusicPlayer from "../components/MusicPlayer";
 
 interface Props {

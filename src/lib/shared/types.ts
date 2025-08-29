@@ -1,12 +1,12 @@
 // src/app/interfaces/User.ts
 
 import * as jose from "jose";
-import prisma from "./db";
+import prisma from "../server/db";
 import { Prisma } from "@prisma/client";
 import { GetPayloadResult } from "@prisma/client/runtime/library";
 import { Album } from "lucide-react";
 
-export type User = Prisma.UsersGetPayload<{
+export type User = Prisma.UserGetPayload<{
   include: {
     playlists: {
       include: { playlistSongs: { include: { song: true } } };
@@ -14,13 +14,15 @@ export type User = Prisma.UsersGetPayload<{
   };
 }>;
 
-export type Artist = Prisma.ArtistsGetPayload<{
+
+
+export type Artist = Prisma.ArtistGetPayload<{
   include: { albums: true; songs: true };
 }>; // Databasede author ayrıca photo_url kullanmıyorum photo_name kullanıyorum
 
 export interface UserPayload
   extends jose.JWTPayload,
-    Prisma.UsersGetPayload<{
+    Prisma.UserGetPayload<{
       include: {
         playlists: { include: { playlistSongs: { include: { song: true } } } };
       };
@@ -30,10 +32,10 @@ export type UserAdminEditForm = Partial<
   Pick<User, "name" | "email" | "photo_url" | "roles">
 >;
 
-export type Albums = Prisma.AlbumsGetPayload<{
+export type Albums = Prisma.AlbumGetPayload<{
   include: { songs: true; artist: true };
 }>;
-export type Songs = Prisma.SongGetPayload<{
+export type Song = Prisma.SongGetPayload<{
   include: { albums: true; artist: true };
 }>;
 
@@ -48,14 +50,15 @@ export type SongCreateFormData = {
 
 export type SongUpdateFormData = Partial<
   Pick<
-    Songs,
+    Song,
     "name" | "album_id" | "artist_id" | "photo_url" | "song_url" | "length"
   >
 >;
 
-export type Album = Prisma.AlbumsGetPayload<{
+export type Album = Prisma.AlbumGetPayload<{
   include: {
     songs: true;
+    artist: true;
   };
 }>;
 
@@ -99,12 +102,3 @@ export type PlaylistSong = Prisma.PlaylistSongGetPayload<{
   };
 }>;
 
-export interface refreshPageOrder {
-  success: true;
-  action: "refresh";
-}
-
-export interface demandLoginOrder {
-  success: false;
-  action: "login";
-}

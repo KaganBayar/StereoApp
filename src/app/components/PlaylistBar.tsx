@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { findUserPlaylists } from "@/lib/dbActions";
+import { findUserPlaylists } from "@/lib/server/dbActions";
 import { useContext } from "react";
 import UserContext from "@/contexts/UserContext";
-import { Playlists as PlaylistType } from "@/lib/types";
+import { Playlists as PlaylistType } from "@/lib/shared/types";
 import Link from "next/link";
 import { AddPlaylistButton } from "@/app/components/AddPlaylistButton";
 import { PlaylistRefreshProvider } from "@/contexts/playlistRefreshed";

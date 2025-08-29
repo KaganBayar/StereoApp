@@ -5,17 +5,20 @@ import {
   SongCreateFormData,
   User,
   UserAdminEditForm,
-} from "@/lib/types";
-import { Albums } from "@/lib/types";
-import prisma from "@/lib/db";
+} from "@/lib/shared/types";
+import { Albums } from "@/lib/shared/types";
+import prisma from "@/lib/server/db";
 import {
   AlbumUpdateFormData,
   AlbumCreateFormData,
   ArtistCreateFormData,
   ArtistUpdateFormData,
-} from "@/lib/types";
-import { requireValidUser, requireAdminUser } from "@/lib/serverValidation";
-import { Songs } from "@/lib/types";
+} from "@/lib/shared/types";
+import {
+  requireValidUser,
+  requireAdminUser,
+} from "@/lib/server/serverValidation";
+import { Songs } from "@/lib/shared/types";
 
 export async function findAllAlbums() {
   const albums = await prisma.albums.findMany({

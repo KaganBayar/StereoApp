@@ -1,14 +1,14 @@
 "use client";
 import { PhotoWithFallback } from "./photoWithFallback";
 import { FaPlay } from "react-icons/fa";
-import { Songs } from "@/lib/types";
-import { playSong } from "@/lib/audioUtils";
+import { Songs } from "@/lib/shared/types";
+import { playSong } from "@/lib/client/audioUtils";
 import { useEffect } from "react";
-import { songUse } from "@/lib/firebaseActions";
+import { songUse } from "@/lib/client/firebaseActions";
 import { useState } from "react";
 import { useContext } from "react";
 import { useAudio } from "@/contexts/audioContext";
-import { photoUse } from "@/lib/firebaseActions";
+import { photoUse } from "@/lib/client/firebaseActions";
 
 export const HomePageSong = (song: Songs) => {
   const [songFile, setSongFile] = useState<File | null>(null);
@@ -21,7 +21,7 @@ export const HomePageSong = (song: Songs) => {
     pauseSong,
     resumeSong,
   } = useAudio();
-
+  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
   useEffect(() => {
     async function LoadSong() {
       try {

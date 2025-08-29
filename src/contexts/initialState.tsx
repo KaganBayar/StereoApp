@@ -1,4 +1,4 @@
-import { Playlists, User } from "@/lib/types";
+import { Playlists, User } from "@/lib/shared/types";
 
 const initialUser: Omit<User, "password"> = {
   id: "",

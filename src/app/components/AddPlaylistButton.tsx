@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
-import { createPlaylistAction } from "@/lib/dbActions";
+import { createPlaylistAction } from "@/lib/server/dbActions";
 import { useContext } from "react";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";

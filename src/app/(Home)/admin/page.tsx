@@ -1,11 +1,11 @@
 "use client";
 
-import Box from "@/app/components/Box";
-import UserAdmin from "@/app/components/UserAdmin";
+import Box from "@/app/components/misc/Box";
+import UserAdmin from "@/app/components/admin/UserAdmin";
 import { useState } from "react";
 import AddSong from "@/app/components/AddSong";
-import AddAlbum from "@/app/components/AddAlbum";
-import AddArtist from "@/app/components/AddArtist";
+import AddAlbum from "@/app/components/admin/AddAlbum";
+import AddArtist from "@/app/components/admin/AddArtist";
 export default function Home() {
   const [showWhichPanel, setShowWhichPanel] = useState<
     "userList" | "addSong" | "addAlbum" | "addArtist"

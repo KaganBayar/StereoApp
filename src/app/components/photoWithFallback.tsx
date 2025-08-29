@@ -1,5 +1,5 @@
 "use client";
-import { photoUse } from "@/lib/firebaseActions";
+import { photoUse } from "@/lib/client/firebaseActions";
 import { useEffect, useState } from "react";
 import { MdAlbum } from "react-icons/md";
 import Image from "next/image";
@@ -15,7 +15,7 @@ export function PhotoWithFallback({
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
+  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
   useEffect(() => {
     if (photoPath) {
       photoUse(photoPath)

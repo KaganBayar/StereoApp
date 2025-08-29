@@ -1,8 +1,8 @@
 "use client";
 import { ref } from "firebase/storage";
-import { storage } from "../../config/firebase";
+import { storage } from "../../../config/firebase";
 import { getBytes } from "firebase/storage";
-import { Album, Artist, Songs } from "./types";
+import { Album, Artist, Songs } from "../shared/types";
 export async function photoUse(photo_url: string): Promise<string> {
   try {
     const photoRef = ref(storage, photo_url);

@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { User } from "@/lib/types";
-import { findAllUsers } from "@/lib/dbActions";
+import { User } from "@/lib/shared/types";
+import { findAllUsers } from "@/lib/server/dbActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
-import { updateUser } from "@/lib/dbActions";
-import { deleteUser } from "@/lib/dbActions";
-import { logout, systemLogout } from "@/lib/actions";
-import { UserAdminEditForm } from "@/lib/types";
+import { updateUser } from "@/lib/server/dbActions";
+import { deleteUser } from "@/lib/server/dbActions";
+import { logout, systemLogout } from "@/lib/server/actions";
+import { UserAdminEditForm } from "@/lib/shared/types";
 
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -17,7 +17,7 @@ const UserAdmin = () => {
   const [editForm, setEditForm] = useState<UserAdminEditForm>({});
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
   useEffect(() => {
     loadUsers();
   }, []);

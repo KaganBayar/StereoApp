@@ -1,6 +1,6 @@
 "use client";
 
-import Box from "./Box";
+import Box from "./misc/Box";
 import PlaylistBar from "./PlaylistBar";
 import UserContext from "@/contexts/UserContext";
 import { useContext } from "react";
