@@ -12,15 +12,18 @@ import {
 import Image from "next/image";
 import {
   findAllAlbums,
-  findAllAuthors,
+  findAllArtists,
   updateAlbum,
   createAlbum,
 } from "@/lib/server/dbActions";
-import { AlbumCreateFormData, AlbumUpdateFormData } from "@/lib/shared/types";
+import { AlbumFormData } from "@/lib/shared/types";
 import { uploadString, ref } from "firebase/storage";
 import { storage } from "../../../../config/firebase";
-import { photoUse, loadAlbumImages } from "@/lib/client/firebaseActions";
+import { photoUse, Loader } from "@/lib/client/firebaseActions";
 import { albumImagesRef } from "../../../../config/firebase";
+import { z } from "zod";
+import { uploadDataUrlPhoto } from "@/lib/client/firebaseActions";
+import { initialAlbum } from "@/lib/shared/initialState";
 
 const AddAlbum = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -29,50 +32,61 @@ const AddAlbum = () => {
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<string | null>(null);
-  const [formData, setFormData] = useState<AlbumUpdateFormData>({});
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [formData, setFormData] = useState<AlbumFormData>(initialAlbum);
+  const [updateFormData, setUpdateFormData] = useState<Partial<AlbumFormData>>(
+    {}
+  );
+  const [imagePreviewDataUrl, setImagePreviewDataUrl] = useState<string | null>(
+    null
+  );
   // State to store loaded album cover images from Firebase
-  const [albumImages, setAlbumImages] = useState<{ [key: string]: string }>({});
-
-  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect.
-  //but if you want to use fetch you need to add a return and ignore variable. clean should make ignore true and if ignore true fetching effect shouldnt apply
-  useEffect(() => {
-    loadData();
-  }, []);
+  const [albumImagesDataUrl, setAlbumImagesDataUrl] = useState<{
+    [key: string]: string;
+  }>({});
 
   // Load album cover images from Firebase storage
+  //dont have caching functionality
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
+  useEffect(() => {
+    let ignore = false;
+    const loadData = async () => {
+      try {
+        setLoading(true);
 
-      const [albumsData, artistsData] = await Promise.all([
-        findAllAlbums(),
-        findAllAuthors(),
-      ]);
-      setAlbums(albumsData);
-      setArtists(artistsData);
+        const [albumsData, artistsData] = await Promise.all([
+          findAllAlbums(),
+          findAllArtists(),
+        ]);
+        // Load album cover images from Firebase if albums exist
 
-      // Load album cover images from Firebase if albums exist
-      if (albumsData.length > 0) {
-        const albumImages = await loadAlbumImages(albumsData);
-        setAlbumImages(albumImages);
+        if (albumsData.length > 0) {
+          const albumImages = await Loader.loadAlbumImages(albumsData);
+          if (ignore) return;
+          setAlbumImagesDataUrl(albumImages);
+        }
+        if (ignore) return;
+        setAlbums(albumsData);
+        setArtists(artistsData);
+        setError(null);
+      } catch (err) {
+        setError("Failed to load data");
+        console.error("Error loading data:", err);
+      } finally {
+        setLoading(false);
       }
-
-      setError(null);
-    } catch (err) {
-      setError("Failed to load data");
-      console.error("Error loading data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    loadData();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleInputChange = (
-    field: keyof AlbumUpdateFormData,
+    field: keyof AlbumFormData,
     value: string | number | Date
   ) => {
     setFormData({ ...formData, [field]: value });
+    setUpdateFormData({ ...updateFormData, [field]: value });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,9 +96,10 @@ const AddAlbum = () => {
       // When file is loaded, set preview and store Firebase path (not base64)
       reader.onloadend = () => {
         const result = reader.result as string; // Data URL for preview
-        setImagePreview(result);
+        setImagePreviewDataUrl(result);
         // Store Firebase storage path instead of base64 data
-        setFormData({ ...formData, cover_url: "images/albums/" + file.name });
+        const parentPath = "images/albums/";
+        setFormData({ ...formData, photo_url: parentPath + file.name });
       };
       reader.readAsDataURL(file);
     }
@@ -93,23 +108,26 @@ const AddAlbum = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // must be same as AlbumCreateFormData
-    if (!formData.title || !formData.artistId || !formData.releaseDate) {
+    if (!formData.title || !formData.artist_id || !formData.releaseDate) {
       setError("Please fill in all required fields");
       return;
     }
 
-    if (formData.cover_url && typeof formData.cover_url !== "string") {
-      setError("Invalid cover URL format");
+    if (formData.photo_url && typeof formData.photo_url !== "string") {
+      setError("Invalid photo URL format");
       return;
     }
     try {
       // Upload image to Firebase if there's a new image selected
-      if (formData.cover_url && imagePreview) {
-        const imageRef = ref(storage, formData.cover_url);
+      if (formData.photo_url && imagePreviewDataUrl) {
+        await uploadDataUrlPhoto(imagePreviewDataUrl, formData.photo_url);
+        /*
+        const imageRef = ref(storage, formData.photo_url);
         // Convert Data URL to base64 for Firebase upload
         const base64 = imagePreview.split(",")[1];
         // Upload image to Firebase Storage
         await uploadString(imageRef, base64, "base64");
+        */
       }
 
       const submitData = {
@@ -140,8 +158,9 @@ const AddAlbum = () => {
         setAlbums([...albums, newAlbum]);
         setShowAddForm(false);
       }
+
       setFormData({});
-      setImagePreview(null);
+      setImagePreviewDataUrl(null);
       setError(null);
     } catch (err) {
       setError("Failed to save album");
@@ -160,8 +179,8 @@ const AddAlbum = () => {
           : new Date(album.releaseDate).toISOString().split("T")[0],
     });
     // Set image preview from loaded Firebase images or fallback to stored URL
-    const loadedImage = albumImages[album.id];
-    setImagePreview(loadedImage || album.cover_url || null);
+    const loadedImage = albumImagesDataUrl[album.id];
+    setImagePreviewDataUrl(loadedImage || album.cover_url || null);
   };
 
   const handleDelete = async (albumId: string) => {
@@ -179,7 +198,7 @@ const AddAlbum = () => {
     setEditingAlbum(null);
     setShowAddForm(false);
     setFormData({});
-    setImagePreview(null);
+    setImagePreviewDataUrl(null);
     setError(null);
   };
 
@@ -302,10 +321,10 @@ const AddAlbum = () => {
                   onChange={handleImageChange}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-purple-700"
                 />
-                {imagePreview && (
+                {imagePreviewDataUrl && (
                   <div className="mt-2">
                     <Image
-                      src={imagePreview}
+                      src={imagePreviewDataUrl}
                       alt="Album cover preview"
                       width={64}
                       height={64}
@@ -368,7 +387,7 @@ const AddAlbum = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Image
                       src={
-                        albumImages[album.id] ||
+                        albumImagesDataUrl[album.id] ||
                         "https://placehold.co/40x40.png?text=Album"
                       }
                       alt="Album cover"

@@ -6,11 +6,10 @@ import {
   User,
   UserAdminEditForm,
 } from "@/lib/shared/types";
-import { Albums } from "@/lib/shared/types";
+import { Album } from "@/lib/shared/types";
 import prisma from "@/lib/server/db";
 import {
-  AlbumUpdateFormData,
-  AlbumCreateFormData,
+  AlbumFormData,
   ArtistCreateFormData,
   ArtistUpdateFormData,
 } from "@/lib/shared/types";
@@ -18,41 +17,53 @@ import {
   requireValidUser,
   requireAdminUser,
 } from "@/lib/server/serverValidation";
-import { Songs } from "@/lib/shared/types";
+import { Song } from "@/lib/shared/types";
 
 export async function findAllAlbums() {
-  const albums = await prisma.albums.findMany({
+  const albums: Album[] = await prisma.album.findMany({
     include: {
-      song: true,
+      songs: true,
+      artist: true,
     },
   });
-  return albums satisfies Albums[];
+  return albums;
 }
 
-export async function findAllAuthors() {
-  const authors = await prisma.author.findMany({
+export async function findAllArtists() {
+  const artists: Artist[] = await prisma.artist.findMany({
     include: {
       albums: true,
       songs: true,
     },
   });
-  return authors satisfies Artist[];
+  return artists;
 }
 
 export async function findAllSongs() {
-  const songs = await prisma.song.findMany({
+  const songs: Song[] = await prisma.song.findMany({
     include: {
-      Albums: true,
-      author: true,
+      album: true,
+      artist: true,
     },
   });
   return songs;
 }
 
 export async function findUserByEmail(email: string) {
-  const user = await prisma.users.findFirst({
+  const user: User | null = await prisma.user.findFirst({
     where: {
       email,
+    },
+    include: {
+      playlists: {
+        include: {
+          playlistSongs: {
+            include: {
+              song: true,
+            },
+          },
+        },
+      },
     },
   });
   return user;
@@ -62,11 +73,11 @@ export async function findAllUsers() {
   // Require admin access
   await requireAdminUser();
 
-  const users = await prisma.users.findMany({
+  const users: User[] = await prisma.user.findMany({
     include: {
       playlists: {
         include: {
-          PlaylistSong: {
+          playlistSongs: {
             include: {
               song: true,
             },
@@ -82,13 +93,24 @@ export async function updateUser(id: string, dataForm: UserAdminEditForm) {
   // Require admin access
   await requireAdminUser();
 
-  const updatedUser = await prisma.users.update({
+  const updatedUser: User = await prisma.user.update({
     where: {
       id: id,
     },
     data: {
       ...dataForm,
       updated_at: new Date(),
+    },
+    include: {
+      playlists: {
+        include: {
+          playlistSongs: {
+            include: {
+              song: true,
+            },
+          },
+        },
+      },
     },
   });
   return updatedUser;
@@ -98,7 +120,7 @@ export async function deleteUser(id: string) {
   // Require admin access
   await requireAdminUser();
 
-  const deletedUser = await prisma.users.delete({
+  const deletedUser = await prisma.user.delete({
     where: {
       id: id,
     },

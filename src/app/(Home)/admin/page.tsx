@@ -3,7 +3,7 @@
 import Box from "@/app/components/misc/Box";
 import UserAdmin from "@/app/components/admin/UserAdmin";
 import { useState } from "react";
-import AddSong from "@/app/components/AddSong";
+import AddSong from "@/app/components/admin/AddSong";
 import AddAlbum from "@/app/components/admin/AddAlbum";
 import AddArtist from "@/app/components/admin/AddArtist";
 export default function Home() {

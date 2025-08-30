@@ -14,8 +14,6 @@ export type User = Prisma.UserGetPayload<{
   };
 }>;
 
-
-
 export type Artist = Prisma.ArtistGetPayload<{
   include: { albums: true; songs: true };
 }>; // Databasede author ayrıca photo_url kullanmıyorum photo_name kullanıyorum
@@ -32,13 +30,10 @@ export type UserAdminEditForm = Partial<
   Pick<User, "name" | "email" | "photo_url" | "roles">
 >;
 
-export type Albums = Prisma.AlbumGetPayload<{
-  include: { songs: true; artist: true };
-}>;
 export type Song = Prisma.SongGetPayload<{
-  include: { albums: true; artist: true };
+  include: { album: true; artist: true };
 }>;
-
+//bunu kaldır
 export type SongCreateFormData = {
   name: string;
   artist_id: string;
@@ -48,6 +43,7 @@ export type SongCreateFormData = {
   length: number;
 };
 
+//bunun ismindeki updateyi kaldır
 export type SongUpdateFormData = Partial<
   Pick<
     Song,
@@ -62,22 +58,16 @@ export type Album = Prisma.AlbumGetPayload<{
   };
 }>;
 
-export type AlbumUpdateFormData = Pick<
+export type AlbumFormData = Pick<
   Album,
   "title" | "artist_id" | "releaseDate" | "photo_url"
 >;
 
-export type AlbumCreateFormData = {
-  title: string;
-  artistId: string;
-  releaseDate: Date;
-  cover_url: string;
-};
-
+//bunun ismindeki updateyi kaldır
 export type ArtistUpdateFormData = Partial<
   Pick<Artist, "name" | "genre" | "bio" | "photo_url">
 >;
-
+//bunu kaldır
 export type ArtistCreateFormData = {
   name: string;
   genre: string;
@@ -101,4 +91,3 @@ export type PlaylistSong = Prisma.PlaylistSongGetPayload<{
     playlist: true;
   };
 }>;
-

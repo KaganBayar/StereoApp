@@ -1,8 +1,8 @@
 import { FaPlay, FaHeart, FaEllipsisH } from "react-icons/fa";
 import { MdAlbum } from "react-icons/md";
-import { Songs, Albums } from "@/lib/shared/types";
+import { Song, Album } from "@/lib/shared/types";
 import { findAllSongs, findAllAlbums } from "@/lib/server/dbActions";
-import { loadSongs, photoUse } from "@/lib/client/firebaseActions";
+import { Loader, photoUse } from "@/lib/client/firebaseActions";
 import Image from "next/image";
 import { HomePageSong } from "../components/HomePageSong";
 import { PhotoWithFallback } from "../components/photoWithFallback";
@@ -51,7 +51,7 @@ export default async function Home() {
               <div className="relative mb-4">
                 <div className="w-full aspect-square relative">
                   <PhotoWithFallback
-                    photoPath={album.cover_url}
+                    photoPath={album.photo_url}
                     alt={album.title}
                     className="w-full aspect-square"
                   />

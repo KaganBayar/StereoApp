@@ -16,17 +16,17 @@ export async function validateUserSession(): Promise<User> {
     // Verify the JWT token
     //access_token bittiğinde refreshlemiyor
     const verifiedToken = await verifyAuthTokenAction(accessToken);
-    const tokenPayload = verifiedToken as UserPayload;
+    const tokenPayload: UserPayload = verifiedToken;
 
     // Check if user still exists and is active in database
-    const currentUser = await prisma.users.findFirst({
+    const currentUser: User | null = await prisma.user.findFirst({
       where: {
         id: tokenPayload.id,
       },
       include: {
         playlists: {
           include: {
-            PlaylistSong: {
+            playlistSongs: {
               include: {
                 song: true,
               },
@@ -45,7 +45,7 @@ export async function validateUserSession(): Promise<User> {
     const userLastUpdated = currentUser.updated_at || currentUser.created_at;
 
     if (userLastUpdated && userLastUpdated > tokenIssuedAt) {
-      await prisma.refreshTokens.deleteMany({
+      await prisma.refreshToken.deleteMany({
         where: {
           user_id: currentUser.id,
         },
@@ -57,23 +57,14 @@ export async function validateUserSession(): Promise<User> {
     }
 
     // Return fresh user data from database instead of token data
-    return {
-      id: currentUser.id,
-      password: currentUser.password,
-      email: currentUser.email,
-      name: currentUser.name,
-      roles: currentUser.roles,
-      photo: currentUser.photo,
-      playlists: currentUser.playlists,
-      created_at: currentUser.created_at,
-      updated_at: currentUser.updated_at,
-    };
+    const result: User = { ...currentUser };
+    return result;
   } catch (error) {
     throw error;
   }
 }
 
-export async function requireValidUser(): Promise<UserPayload> {
+export async function requireValidUser(): Promise<User> {
   try {
     return await validateUserSession();
   } catch (error) {
@@ -85,8 +76,8 @@ export async function requireValidUser(): Promise<UserPayload> {
   }
 }
 
-export async function requireAdminUser(): Promise<UserPayload> {
-  const user = await requireValidUser();
+export async function requireAdminUser(): Promise<User> {
+  const user: User = await requireValidUser();
 
   if (!user.roles.includes("admin")) {
     throw new Error("FORBIDDEN: Admin access required");

@@ -1,7 +1,7 @@
 "use client";
 import { PhotoWithFallback } from "./photoWithFallback";
 import { FaPlay } from "react-icons/fa";
-import { Songs } from "@/lib/shared/types";
+import { Song } from "@/lib/shared/types";
 import { playSong } from "@/lib/client/audioUtils";
 import { useEffect } from "react";
 import { songUse } from "@/lib/client/firebaseActions";
@@ -10,7 +10,7 @@ import { useContext } from "react";
 import { useAudio } from "@/contexts/audioContext";
 import { photoUse } from "@/lib/client/firebaseActions";
 
-export const HomePageSong = (song: Songs) => {
+export const HomePageSong = (song: Song) => {
   const [songFile, setSongFile] = useState<File | null>(null);
   const [howlFile, sethowlFile] = useState<Howl | null>(null);
   const {
@@ -43,7 +43,7 @@ export const HomePageSong = (song: Songs) => {
         if (songFile) {
           const howl = playSong(song.id, songFile, {
             name: song.name,
-            artist: song.author.name,
+            artist: song.artist.name,
             albumArt: await photoUse(song.photo),
           });
         } else {

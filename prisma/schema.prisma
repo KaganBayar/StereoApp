@@ -66,7 +66,7 @@ model Artist {
   updated_at DateTime @updatedAt
   bio        String
   genre      String
-  photo_url  String?  @default("")
+  photo_url  String   @default("")
   albums     Album[]
   songs      Song[]
 }
@@ -76,7 +76,7 @@ model Album {
   title       String
   artist_id   String
   releaseDate DateTime
-  photo_url   String?
+  photo_url   String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   artist      Artist   @relation(fields: [artist_id], references: [id], onDelete: Cascade)

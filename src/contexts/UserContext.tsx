@@ -1,7 +1,7 @@
 "use client";
 import { actionType } from "@/contexts/Reducer";
 import { createContext, useState } from "react";
-import { User } from "@/contexts/initialState";
+import { User } from "@/lib/shared/initialState";
 const selectedSongByUserContext = createContext<
   [string | null, React.Dispatch<React.SetStateAction<string | null>>]
 >([null, () => {}]);

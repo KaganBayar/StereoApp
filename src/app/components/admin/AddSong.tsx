@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Songs, Artist, Albums } from "@/lib/shared/types";
+import { Songs, Artist, Album } from "@/lib/shared/types";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import { findAllSongs } from "@/lib/server/dbActions";
-import { findAllAuthors } from "@/lib/server/dbActions";
+import { findAllArtists } from "@/lib/server/dbActions";
 import { findAllAlbums } from "@/lib/server/dbActions";
 import { updateSong, createSong, deleteSong } from "@/lib/server/dbActions";
 import { SongUpdateFormData, SongCreateFormData } from "@/lib/shared/types";
@@ -22,7 +22,7 @@ import { getAudioDuration } from "@/lib/client/audioUtils";
 const AddSong = () => {
   const [songs, setSongs] = useState<{ [key: string]: Songs }>({});
   const [artists, setArtists] = useState<{ [key: string]: Artist }>({});
-  const [albums, setAlbums] = useState<{ [key: string]: Albums }>({});
+  const [albums, setAlbums] = useState<{ [key: string]: Album }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -44,7 +44,7 @@ const AddSong = () => {
 
       const [songsData, artistsData, albumsData] = await Promise.all([
         findAllSongs(),
-        findAllAuthors(),
+        findAllArtists(),
         findAllAlbums(),
       ]);
 

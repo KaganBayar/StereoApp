@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Artist } from "@/lib/shared/types";
 import {
-  findAllAuthors,
+  findAllArtists,
   createAuthor,
   updateAuthor,
   deleteAuthor,
