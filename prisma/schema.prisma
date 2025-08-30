@@ -30,7 +30,7 @@ model Playlist {
   description   String?
   user_id       String
   created_at    DateTime       @default(now())
-  photo         String         @default("")
+  photo_url     String         @default("")
   updated_at    DateTime       @updatedAt @db.Timestamp(6)
   user          User           @relation(fields: [user_id], references: [id])
   playlistSongs PlaylistSong[]
@@ -42,6 +42,8 @@ model PlaylistSong {
   song_id     String
   playlist    Playlist @relation(fields: [playlist_id], references: [id])
   song        Song     @relation(fields: [song_id], references: [id])
+  updated_at  DateTime @updatedAt @db.Timestamp(6)
+  created_at  DateTime @default(now()) @db.Timestamp(6)
 }
 
 model Song {
@@ -52,11 +54,13 @@ model Song {
   photo_url    String         @default("")
   created_at   DateTime       @default(now()) @db.Timestamp(6)
   updated_at   DateTime       @updatedAt @db.Timestamp(6)
+  genre        String
   album_id     String
   song_url     String
   playlistSong PlaylistSong[]
   album        Album          @relation(fields: [album_id], references: [id])
   artist       Artist         @relation(fields: [artist_id], references: [id])
+  releaseDate  DateTime
 }
 
 model Artist {

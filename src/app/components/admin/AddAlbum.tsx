@@ -26,6 +26,8 @@ import { uploadDataUrlPhoto } from "@/lib/client/firebaseActions";
 import { initialAlbum } from "@/lib/shared/initialState";
 
 const AddAlbum = () => {
+  const [parentPath, setParentPath] = useState<string>("images/albums/");
+
   const [albums, setAlbums] = useState<Album[]>([]);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,7 +100,6 @@ const AddAlbum = () => {
         const result = reader.result as string; // Data URL for preview
         setImagePreviewDataUrl(result);
         // Store Firebase storage path instead of base64 data
-        const parentPath = "images/albums/";
         setFormData({ ...formData, photo_url: parentPath + file.name });
       };
       reader.readAsDataURL(file);
@@ -121,45 +122,45 @@ const AddAlbum = () => {
       // Upload image to Firebase if there's a new image selected
       if (formData.photo_url && imagePreviewDataUrl) {
         await uploadDataUrlPhoto(imagePreviewDataUrl, formData.photo_url);
-        /*
-        const imageRef = ref(storage, formData.photo_url);
-        // Convert Data URL to base64 for Firebase upload
-        const base64 = imagePreview.split(",")[1];
-        // Upload image to Firebase Storage
-        await uploadString(imageRef, base64, "base64");
-        */
       }
 
-      const submitData = {
-        ...formData,
-        releaseDate:
-          typeof formData.releaseDate === "string"
-            ? new Date(formData.releaseDate)
-            : formData.releaseDate,
-      };
-
       if (editingAlbum) {
+        // only includes places where you updated
+        const submitData = updateFormData;
+
         const updatedAlbum = await updateAlbum(editingAlbum, submitData);
         // Reload album images to include the new/updated image
-        await loadAlbumImages([
+
+        await Loader.loadAlbumImages([
           ...albums.filter((a) => a.id !== editingAlbum),
           updatedAlbum,
         ]);
+
         setAlbums(
           albums.map((album) =>
             album.id === editingAlbum ? updatedAlbum : album
           )
         );
+
         setEditingAlbum(null);
       } else {
-        const newAlbum = await createAlbum(submitData as AlbumCreateFormData);
+        const submitData = {
+          ...formData,
+          releaseDate:
+            typeof formData.releaseDate === "string"
+              ? new Date(formData.releaseDate)
+              : formData.releaseDate,
+        };
+
+        const newAlbum: Album = await createAlbum(submitData);
         // Reload album images to include the new album's image
-        await loadAlbumImages([...albums, newAlbum]);
+        await Loader.loadAlbumImages([...albums, newAlbum]);
         setAlbums([...albums, newAlbum]);
         setShowAddForm(false);
       }
 
-      setFormData({});
+      setFormData(initialAlbum);
+      setUpdateFormData({});
       setImagePreviewDataUrl(null);
       setError(null);
     } catch (err) {
@@ -172,15 +173,15 @@ const AddAlbum = () => {
     setEditingAlbum(album.id);
     setFormData({
       ...album,
-      releaseDate:
-        //bu bozuyor burada hata var ayrıca frontendine yazması çok meşakatlı
+      /*releaseDate:
         album.releaseDate instanceof Date
           ? album.releaseDate.toISOString().split("T")[0]
           : new Date(album.releaseDate).toISOString().split("T")[0],
+          */
     });
     // Set image preview from loaded Firebase images or fallback to stored URL
     const loadedImage = albumImagesDataUrl[album.id];
-    setImagePreviewDataUrl(loadedImage || album.cover_url || null);
+    setImagePreviewDataUrl(loadedImage || album.photo_url || null);
   };
 
   const handleDelete = async (albumId: string) => {
@@ -197,7 +198,8 @@ const AddAlbum = () => {
   const handleCancel = () => {
     setEditingAlbum(null);
     setShowAddForm(false);
-    setFormData({});
+    setFormData(initialAlbum);
+    setUpdateFormData({});
     setImagePreviewDataUrl(null);
     setError(null);
   };
@@ -266,9 +268,9 @@ const AddAlbum = () => {
                   Artist *
                 </label>
                 <select
-                  value={formData.artistId || ""}
+                  value={formData.artist_id || ""}
                   onChange={(e) =>
-                    handleInputChange("artistId", e.target.value)
+                    handleInputChange("artist_id", e.target.value)
                   }
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
                   required
@@ -408,7 +410,7 @@ const AddAlbum = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
-                      {getArtistName(album.artistId)}
+                      {getArtistName(album.artist_id)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

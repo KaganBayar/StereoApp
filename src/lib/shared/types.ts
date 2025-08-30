@@ -16,7 +16,7 @@ export type User = Prisma.UserGetPayload<{
 
 export type Artist = Prisma.ArtistGetPayload<{
   include: { albums: true; songs: true };
-}>; // Databasede author ayrıca photo_url kullanmıyorum photo_name kullanıyorum
+}>;
 
 export interface UserPayload
   extends jose.JWTPayload,
@@ -33,22 +33,16 @@ export type UserAdminEditForm = Partial<
 export type Song = Prisma.SongGetPayload<{
   include: { album: true; artist: true };
 }>;
-//bunu kaldır
-export type SongCreateFormData = {
-  name: string;
-  artist_id: string;
-  song_url: string;
-  albumsId: string;
-  photo: string;
-  length: number;
-};
 
-//bunun ismindeki updateyi kaldır
-export type SongUpdateFormData = Partial<
-  Pick<
-    Song,
-    "name" | "album_id" | "artist_id" | "photo_url" | "song_url" | "length"
-  >
+export type SongFormData = Pick<
+  Song,
+  | "name"
+  | "album_id"
+  | "artist_id"
+  | "photo_url"
+  | "song_url"
+  | "length"
+  | "genre"
 >;
 
 export type Album = Prisma.AlbumGetPayload<{
@@ -63,17 +57,10 @@ export type AlbumFormData = Pick<
   "title" | "artist_id" | "releaseDate" | "photo_url"
 >;
 
-//bunun ismindeki updateyi kaldır
-export type ArtistUpdateFormData = Partial<
-  Pick<Artist, "name" | "genre" | "bio" | "photo_url">
+export type ArtistFormData = Pick<
+  Artist,
+  "name" | "genre" | "bio" | "photo_url"
 >;
-//bunu kaldır
-export type ArtistCreateFormData = {
-  name: string;
-  genre: string;
-  bio: string;
-  photo_url: string;
-};
 
 export type Playlists = Prisma.PlaylistGetPayload<{
   include: {

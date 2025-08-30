@@ -1,38 +1,34 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Songs, Artist, Album } from "@/lib/shared/types";
+import { Song, Artist, Album } from "@/lib/shared/types";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import { findAllSongs } from "@/lib/server/dbActions";
 import { findAllArtists } from "@/lib/server/dbActions";
 import { findAllAlbums } from "@/lib/server/dbActions";
 import { updateSong, createSong, deleteSong } from "@/lib/server/dbActions";
-import { SongUpdateFormData, SongCreateFormData } from "@/lib/shared/types";
-import {
-  photoUse,
-  songUse,
-  loadSongImages,
-  loadSongs,
-} from "@/lib/client/firebaseActions";
-import { songsRef, storage } from "../../../config/firebase";
+import { SongFormData } from "@/lib/shared/types";
+import { photoUse, songUse, Loader } from "@/lib/client/firebaseActions";
+import { songsRef, storage } from "@/../../config/firebase";
 import { Howl, Howler } from "howler";
 import { ref, uploadBytes, uploadString } from "firebase/storage";
 import { getAudioDuration } from "@/lib/client/audioUtils";
 
 const AddSong = () => {
-  const [songs, setSongs] = useState<{ [key: string]: Songs }>({});
+  const [songs, setSongs] = useState<{ [key: string]: Song }>({});
   const [artists, setArtists] = useState<{ [key: string]: Artist }>({});
   const [albums, setAlbums] = useState<{ [key: string]: Album }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSong, setEditingSong] = useState<string | null>(null);
-  const [formData, setFormData] = useState<SongUpdateFormData>({});
+  const [formData, setFormData] = useState<SongFormData>();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedSongFile, setSelectedSongFile] = useState<File | null>(null);
   const [loadedSongs, setLoadedSongs] = useState<{ [key: string]: File }>({});
   const [songImages, setSongImages] = useState<{ [key: string]: string }>({});
+
   //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
   useEffect(() => {
     loadData();

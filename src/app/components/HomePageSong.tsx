@@ -2,7 +2,6 @@
 import { PhotoWithFallback } from "./photoWithFallback";
 import { FaPlay } from "react-icons/fa";
 import { Song } from "@/lib/shared/types";
-import { playSong } from "@/lib/client/audioUtils";
 import { useEffect } from "react";
 import { songUse } from "@/lib/client/firebaseActions";
 import { useState } from "react";
@@ -44,7 +43,7 @@ export const HomePageSong = (song: Song) => {
           const howl = playSong(song.id, songFile, {
             name: song.name,
             artist: song.artist.name,
-            albumArt: await photoUse(song.photo),
+            albumArt: await photoUse(song.photo_url),
           });
         } else {
           console.error("Song file not loaded");
@@ -54,7 +53,7 @@ export const HomePageSong = (song: Song) => {
       <div className="relative mb-4">
         <div className="w-full aspect-square relative">
           <PhotoWithFallback
-            photoPath={song.photo}
+            photoPath={song.photo_url}
             alt={song.name}
             className="w-full aspect-square"
           />
@@ -65,7 +64,7 @@ export const HomePageSong = (song: Song) => {
       </div>
       <h3 className="font-semibold text-white mb-1 truncate">{song.name}</h3>
       <p className="text-sm text-gray-400 truncate">
-        {song.author?.name ? song.author.name : "Unknown Artist"}
+        {song.artist?.name ? song.artist.name : "Unknown Artist"}
       </p>
     </div>
   );

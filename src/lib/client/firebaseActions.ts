@@ -80,12 +80,12 @@ export async function songUse(song_url: string): Promise<File> {
 }
 
 export class Loader {
-  static async loadAuthorImages(authorsData: Artist[]) {
+  static async loadArtistImages(artistData: Artist[]) {
     return loadMediaItems(
-      authorsData,
-      (author) => author.photo_url,
+      artistData,
+      (artist) => artist.photo_url,
       photoUse,
-      (id) => `Failed to load image for author ${id}:`
+      (id) => `Failed to load image for artist ${id}:`
     );
   }
 

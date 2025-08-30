@@ -1,4 +1,10 @@
-import { AlbumFormData, Playlists, User } from "@/lib/shared/types";
+import {
+  AlbumFormData,
+  ArtistFormData,
+  SongFormData,
+  Playlists,
+  User,
+} from "@/lib/shared/types";
 
 const initialUser: Omit<User, "password"> = {
   id: "",
@@ -18,5 +24,22 @@ const initialAlbum: AlbumFormData = {
   photo_url: "",
 };
 
+const initialArtist: ArtistFormData = {
+  name: "",
+  genre: "",
+  bio: "",
+  photo_url: "",
+};
+
+const initialSong: SongFormData = {
+  name: "",
+  artist_id: "",
+  album_id: "",
+  length: 0,
+  genre: "",
+  photo_url: "",
+  audio_url: "",
+};
+
 export default initialUser;
-export { initialAlbum };
+export { initialAlbum, initialArtist };
