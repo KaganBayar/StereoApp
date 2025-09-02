@@ -43,6 +43,7 @@ export type SongFormData = Pick<
   | "song_url"
   | "length"
   | "genre"
+  | "releaseDate"
 >;
 
 export type Album = Prisma.AlbumGetPayload<{
@@ -62,7 +63,7 @@ export type ArtistFormData = Pick<
   "name" | "genre" | "bio" | "photo_url"
 >;
 
-export type Playlists = Prisma.PlaylistGetPayload<{
+export type Playlist = Prisma.PlaylistGetPayload<{
   include: {
     playlistSongs: {
       include: {

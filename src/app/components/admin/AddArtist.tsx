@@ -39,12 +39,7 @@ const AddArtist = () => {
   const [artistImagesDataUrl, setArtistImagesDataUrl] = useState<{
     [key: string]: string;
   }>({});
-  const [updateFormData, setUpdateFormData] = useState<Partial<ArtistFormData>>(
-    {}
-  );
-
-  // name: string |genre: string; bio | string; photo_url | string;
-  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
+  // [NEED UPDATE] dont useEffect for fetching
   useEffect(() => {
     let ignore = false;
     const loadArtists = async () => {
@@ -64,7 +59,7 @@ const AddArtist = () => {
         setError("Failed to load artists");
         console.error("Error loading artists:", err);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
     loadArtists();
@@ -80,7 +75,6 @@ const AddArtist = () => {
     value: string | number
   ) => {
     setFormData({ ...formData, [field]: value });
-    setUpdateFormData({ ...updateFormData, [field]: value });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,8 +109,7 @@ const AddArtist = () => {
       }
       if (editingArtist) {
         // Update existing artist
-        const submitData = updateFormData;
-        const updatedArtist = await updateArtist(editingArtist, submitData);
+        const updatedArtist = await updateArtist(editingArtist, formData);
         await Loader.loadArtistImages([...artists, updatedArtist]);
 
         //Update frontend
@@ -135,7 +128,6 @@ const AddArtist = () => {
       }
 
       setFormData(initialArtist);
-      setUpdateFormData({});
       setError(null);
     } catch (err) {
       setError("Failed to save artist");
@@ -147,7 +139,13 @@ const AddArtist = () => {
 
   const handleEdit = async (artist: Artist) => {
     setEditingArtist(artist.id);
-    setFormData(artist);
+    const editFormData: ArtistFormData = {
+      name: artist.name,
+      genre: artist.genre,
+      bio: artist.bio,
+      photo_url: artist.photo_url,
+    };
+    setFormData(editFormData);
     const photo = artistImagesDataUrl[artist.id];
     setImagePreviewDataUrl(photo || null);
   };
@@ -168,7 +166,6 @@ const AddArtist = () => {
     setEditingArtist(null);
     setShowAddForm(false);
     setFormData(initialArtist);
-    setUpdateFormData({});
     setImagePreviewDataUrl(null);
     setError(null);
   };

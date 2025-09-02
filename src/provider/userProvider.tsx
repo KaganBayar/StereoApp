@@ -52,7 +52,7 @@ export default function UserProvider({
               typeof verifiedAccessToken.id === "string" &&
               typeof verifiedAccessToken.email === "string" &&
               typeof verifiedAccessToken.name === "string" &&
-              typeof verifiedAccessToken.photo === "string" &&
+              typeof verifiedAccessToken.photo_url === "string" &&
               Array.isArray(verifiedAccessToken.playlists) &&
               Array.isArray(verifiedAccessToken.roles)
             ) {
@@ -61,7 +61,7 @@ export default function UserProvider({
                 email: verifiedAccessToken.email,
                 name: verifiedAccessToken.name,
                 password: verifiedAccessToken.password,
-                photo: verifiedAccessToken.photo,
+                photo_url: verifiedAccessToken.photo_url,
                 roles: verifiedAccessToken.roles,
                 playlists: verifiedAccessToken.playlists,
                 created_at: verifiedAccessToken.created_at,
@@ -72,7 +72,7 @@ export default function UserProvider({
                   type: "LOGIN",
                   payload: {
                     id: userDatas.id,
-                    photos: userDatas.photo,
+                    photos: userDatas.photo_url,
                     name: userDatas.name,
                     email: userDatas.email,
                     playlists: userDatas.playlists,

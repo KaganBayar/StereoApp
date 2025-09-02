@@ -7,8 +7,7 @@ import {
   requireValidUser,
   requireAdminUser,
 } from "@/lib/server/serverValidation";
-import { Song } from "@/lib/shared/types";
-import { Playlist } from "@prisma/client";
+import { Song, Playlist } from "@/lib/shared/types";
 import { SongFormData } from "@/lib/shared/types";
 
 //code parts with 0 pagination. should not be used in code
@@ -149,7 +148,7 @@ export async function createPlaylistAction(email: string) {
   return playlistId.id;
 }
 
-export async function findUserPlaylists(id: string) {
+export async function findUserPlaylists(id: string): Promise<Playlist[]> {
   // Then fetch all playlists belonging to this user
   const playlists: Playlist[] = await prisma.playlist.findMany({
     where: {
@@ -287,7 +286,7 @@ export async function createSong(data: SongFormData) {
   return song;
 }
 
-export async function updateSong(id: string, data: SongFormData) {
+export async function updateSong(id: string, data: Partial<SongFormData>) {
   await requireAdminUser();
 
   const song: Song = await prisma.song.update({

@@ -16,23 +16,22 @@ import { createPlaylistAction } from "@/lib/server/dbActions";
 import { useContext } from "react";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
-import { usePlaylistRefresh } from "@/contexts/playlistRefreshed";
 
 export function AddPlaylistButton() {
+  //[UPDATE NEEDED] You shouldnt get user with useContext userContext because if user's informations are not up to date it shouldnt throw an error.
+  //not use requireValidation until error handling is done
   const user = useContext(UserContext);
+  //[UPDATE NEEDED] IF THERE ARE NO USER IT SHOULD ACTIVATE AUTH DIALOG
   const dispatch = useContext(DispatchContext);
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const refreshContext = usePlaylistRefresh();
   const handleSubmit = async () => {
-    const email = user.email;
     setOpen(false);
-    if (!email) {
-      console.error("User email is not available");
+    if (!user) {
+      console.error("User is not available");
       return;
     } else {
-      await createPlaylistAction(email!).then(async (res) => {
-        await refreshContext?.refreshPlaylists();
+      await createPlaylistAction(user.email).then(async (res) => {
         dispatch!({
           type: "ADDPLAYLIST",
           payload: [...user.playlists],

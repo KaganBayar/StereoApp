@@ -14,6 +14,8 @@ import { useContext } from "react";
 import { Loader2 } from "lucide-react";
 const Header: React.FC = () => {
   const dispatch = useContext(DispatchContext);
+  //[UPDATE NEEDED] You shouldnt get user with useContext userContext because if user's informations are not up to date it shouldnt throw an error.
+  //not use requireValidation until error handling is done
   const user = useContext(UserContext);
   const isAuthLoading = useContext(UserInformationLoadingContext);
 

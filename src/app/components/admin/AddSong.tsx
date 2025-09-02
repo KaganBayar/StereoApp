@@ -8,65 +8,86 @@ import { findAllArtists } from "@/lib/server/dbActions";
 import { findAllAlbums } from "@/lib/server/dbActions";
 import { updateSong, createSong, deleteSong } from "@/lib/server/dbActions";
 import { SongFormData } from "@/lib/shared/types";
-import { photoUse, songUse, Loader } from "@/lib/client/firebaseActions";
+import {
+  photoUse,
+  songUse,
+  uploadDataUrlPhoto,
+  uploadFileSong,
+} from "@/lib/client/firebaseActions";
 import { songsRef, storage } from "@/../../config/firebase";
 import { Howl, Howler } from "howler";
 import { ref, uploadBytes, uploadString } from "firebase/storage";
 import { getAudioDuration } from "@/lib/client/audioUtils";
+import { initialSong } from "@/lib/shared/initialState";
+import { Loader } from "@/lib/client/firebaseActions";
 
 const AddSong = () => {
-  const [songs, setSongs] = useState<{ [key: string]: Song }>({});
-  const [artists, setArtists] = useState<{ [key: string]: Artist }>({});
-  const [albums, setAlbums] = useState<{ [key: string]: Album }>({});
+  const [imagePath, setImagePath] = useState<string>("images/songs/");
+  const [songPath, setSongPath] = useState<string>("audio/songs/");
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [artists, setArtists] = useState<Artist[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingSong, setEditingSong] = useState<string | null>(null);
-  const [formData, setFormData] = useState<SongFormData>();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [formData, setFormData] = useState<SongFormData>(initialSong);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null); // not yet implemented
+  const [imagePreviewDataUrl, setImagePreviewDataUrl] = useState<string | null>(
+    null
+  );
   const [selectedSongFile, setSelectedSongFile] = useState<File | null>(null);
-  const [loadedSongs, setLoadedSongs] = useState<{ [key: string]: File }>({});
-  const [songImages, setSongImages] = useState<{ [key: string]: string }>({});
+  const [loadedSongFiles, setLoadedSongFiles] = useState<{
+    [key: string]: File;
+  }>({});
+  const [songImagesDataUrl, setSongImagesDataUrl] = useState<{
+    [key: string]: string;
+  }>({});
+  const [updatedFormData, setUpdatedFormData] = useState<Partial<SongFormData>>(
+    {}
+  );
 
-  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
+  // [NEED UPDATE] dont useEffect for fetching
+  //you should use diffrent effects for images and songs
   useEffect(() => {
+    let ignore = false;
+    const loadData = async () => {
+      try {
+        setLoading(true);
+
+        const [songsData, artistsData, albumsData] = await Promise.all([
+          findAllSongs(),
+          findAllArtists(),
+          findAllAlbums(),
+        ]);
+
+        if (songsData.length > 0) {
+          const loadedSongImages = await Loader.loadSongImages(songsData);
+          if (ignore) return;
+          setSongImagesDataUrl(loadedSongImages);
+          const loadedSongs = await Loader.loadSongs(songsData);
+          setLoadedSongFiles(loadedSongs);
+        }
+        if (ignore) return;
+        setSongs(songsData);
+        setArtists(artistsData);
+        setAlbums(albumsData);
+        setError(null);
+      } catch (err) {
+        setError("Failed to load data");
+        console.error("Error loading data:", err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
     loadData();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-
-      const [songsData, artistsData, albumsData] = await Promise.all([
-        findAllSongs(),
-        findAllArtists(),
-        findAllAlbums(),
-      ]);
-
-      if (songsData.length > 0) {
-        const loadedSongImages = await loadSongImages(songsData);
-        setSongImages(loadedSongImages);
-        const loadedSongs = await loadSongs(songsData);
-        setLoadedSongs(loadedSongs);
-      }
-
-      setSongs(songsData);
-      setArtists(artistsData);
-      setAlbums(albumsData);
-      setError(null);
-    } catch (err) {
-      setError("Failed to load data");
-      console.error("Error loading data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  //bu belki cachelenebilir
-
   const handleInputChange = (
-    field: keyof SongUpdateFormData,
+    field: keyof Partial<SongFormData>,
     value: string | number
   ) => {
     setFormData({ ...formData, [field]: value });
@@ -75,12 +96,12 @@ const AddSong = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
+      setSelectedImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        setImagePreview(result);
-        setFormData({ ...formData, photo: "images/songs/" + file.name });
+        setImagePreviewDataUrl(result);
+        setFormData({ ...formData, photo_url: imagePath + file.name });
       };
       reader.readAsDataURL(file);
     }
@@ -90,59 +111,50 @@ const AddSong = () => {
     e.preventDefault();
     if (
       !formData.name ||
-      !formData.author_id ||
-      !formData.albumsId ||
-      !formData.song_url
+      !formData.album_id ||
+      !formData.artist_id ||
+      !formData.song_url ||
+      !formData.genre ||
+      !formData.releaseDate
     ) {
       setError("Please fill in all required fields (including audio file)");
       return;
     }
 
-    if (formData.photo && typeof formData.photo !== "string") {
+    if (formData.photo_url && typeof formData.photo_url !== "string") {
       setError("Invalid photo URL format");
       return;
     }
     try {
-      if (formData.photo && imagePreview) {
-        const photoRef = ref(storage, formData.photo);
-        const base64 = imagePreview?.split(",")[1];
-        await uploadString(photoRef, base64, "base64");
+      if (formData.photo_url && imagePreviewDataUrl) {
+        await uploadDataUrlPhoto(imagePreviewDataUrl, formData.photo_url);
       }
       if (formData.song_url && selectedSongFile) {
-        const songRef = ref(storage, formData.song_url);
-        await uploadBytes(songRef, selectedSongFile);
+        await uploadFileSong(selectedSongFile, formData.song_url);
         formData.length = (await getAudioDuration(selectedSongFile)) || 0;
       }
 
       if (editingSong) {
         await updateSong(editingSong, formData);
         //all songs + newly updated song
-        const songsAndNewlyUpdated = songs.map((song) =>
-          song.id === editingSong ? { ...song, ...(formData as Songs) } : song
+        const songsAndNewlyUpdated: Song[] = songs.map((song) =>
+          song.id === editingSong ? { ...song, ...formData } : song
         );
         setSongs(songsAndNewlyUpdated);
-        await loadSongImages(songsAndNewlyUpdated);
-        await loadSongs(songsAndNewlyUpdated);
+        await Loader.loadSongImages(songsAndNewlyUpdated);
+        await Loader.loadSongs(songsAndNewlyUpdated);
         setEditingSong(null);
-        setImagePreview(null);
+        setImagePreviewDataUrl(null);
       } else {
-        const songData: SongCreateFormData = {
-          name: formData.name!,
-          author_id: formData.author_id!,
-          song_url: formData.song_url!,
-          albumsId: formData.albumsId!,
-          photo: formData.photo!,
-          length: formData.length!,
-        };
-        const newSong = await createSong(songData);
+        const newSong = await createSong(formData);
         setSongs([...songs, newSong]);
-        await loadSongImages([...songs, newSong]);
-        await loadSongs([...songs, newSong]);
+        await Loader.loadSongImages([...songs, newSong]);
+        await Loader.loadSongs([...songs, newSong]);
         setShowAddForm(false);
       }
-      setFormData({});
+      setFormData(initialSong);
       setSelectedSongFile(null);
-      setImagePreview(null);
+      setImagePreviewDataUrl(null);
       setError(null);
     } catch (err) {
       setError("Failed to save song");
@@ -150,10 +162,23 @@ const AddSong = () => {
     }
   };
 
-  const handleEdit = (song: Songs) => {
+  const handleEdit = (song: Song) => {
     setEditingSong(song.id);
-    setImagePreview(songImages[song.id] || null);
-    setSelectedImage(null);
+
+    const editFormData: SongFormData = {
+      name: song.name,
+      album_id: song.album_id,
+      artist_id: song.artist_id,
+      song_url: song.song_url,
+      genre: song.genre,
+      releaseDate: song.releaseDate,
+      length: song.length,
+      photo_url: song.photo_url,
+    };
+
+    setFormData(editFormData);
+    setImagePreviewDataUrl(songImagesDataUrl[song.id] || null);
+    setSelectedImageFile(null);
   };
 
   const handleDelete = async (songId: string) => {
@@ -171,9 +196,9 @@ const AddSong = () => {
   const handleCancel = () => {
     setEditingSong(null);
     setShowAddForm(false);
-    setFormData({});
-    setSelectedImage(null);
-    setImagePreview(null);
+    setFormData(initialSong);
+    setSelectedImageFile(null);
+    setImagePreviewDataUrl(null);
     setSelectedSongFile(null);
     setError(null);
   };
@@ -232,11 +257,7 @@ const AddSong = () => {
                 </label>
                 <input
                   type="text"
-                  value={
-                    formData.name || "" || editingSong
-                      ? songs[editingSong]?.name
-                      : ""
-                  }
+                  value={formData.name || ""}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
                   required
@@ -248,11 +269,7 @@ const AddSong = () => {
                   Artist *
                 </label>
                 <select
-                  value={
-                    formData.artist_id || "" || editingSong
-                      ? songs[editingSong]?.artist_id
-                      : ""
-                  }
+                  value={formData.artist_id || ""}
                   onChange={(e) =>
                     handleInputChange("artist_id", e.target.value)
                   }
@@ -316,6 +333,40 @@ const AddSong = () => {
 
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Genre *
+                </label>
+                <input
+                  type="text"
+                  value={formData.genre || ""}
+                  onChange={(e) => handleInputChange("genre", e.target.value)}
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Release Date *
+                </label>
+                <input
+                  type="date"
+                  value={
+                    formData.releaseDate
+                      ? new Date(formData.releaseDate)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) =>
+                    handleInputChange("releaseDate", e.target.value)
+                  }
+                  className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
                   Song Cover Image
                 </label>
                 <input
@@ -324,10 +375,10 @@ const AddSong = () => {
                   onChange={handleImageChange}
                   className="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-blue-500 focus:outline-none file:mr-4 file:py-1 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-green-700"
                 />
-                {imagePreview && (
+                {imagePreviewDataUrl && (
                   <div className="mt-2">
                     <Image
-                      src={imagePreview}
+                      src={imagePreviewDataUrl}
                       alt="Song cover preview"
                       width={64}
                       height={64}
@@ -381,6 +432,12 @@ const AddSong = () => {
                   Duration
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Genre
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  Release Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -391,7 +448,7 @@ const AddSong = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Image
                       src={
-                        songImages[song.id] ||
+                        songImagesDataUrl[song.id] ||
                         "https://placehold.co/40x40.png?text=Song"
                       }
                       alt="Song cover"
@@ -411,17 +468,25 @@ const AddSong = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
-                      {getArtistName(song.author_id)}
+                      {getArtistName(song.artist_id)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
-                      {getAlbumName(song.albumsId)}
+                      {getAlbumName(song.album_id)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-300">
                       {formatDuration(song.length)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-300">{song.genre}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-300">
+                      {new Date(song.releaseDate).toLocaleDateString()}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

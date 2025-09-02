@@ -35,9 +35,7 @@ const AddAlbum = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<string | null>(null);
   const [formData, setFormData] = useState<AlbumFormData>(initialAlbum);
-  const [updateFormData, setUpdateFormData] = useState<Partial<AlbumFormData>>(
-    {}
-  );
+
   const [imagePreviewDataUrl, setImagePreviewDataUrl] = useState<string | null>(
     null
   );
@@ -46,8 +44,7 @@ const AddAlbum = () => {
     [key: string]: string;
   }>({});
 
-  // Load album cover images from Firebase storage
-  //dont have caching functionality
+  // [NEED UPDATE] dont useEffect for fetching
 
   useEffect(() => {
     let ignore = false;
@@ -74,7 +71,7 @@ const AddAlbum = () => {
         setError("Failed to load data");
         console.error("Error loading data:", err);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
     loadData();
@@ -88,7 +85,6 @@ const AddAlbum = () => {
     value: string | number | Date
   ) => {
     setFormData({ ...formData, [field]: value });
-    setUpdateFormData({ ...updateFormData, [field]: value });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,11 +122,10 @@ const AddAlbum = () => {
 
       if (editingAlbum) {
         // only includes places where you updated
-        const submitData = updateFormData;
 
-        const updatedAlbum = await updateAlbum(editingAlbum, submitData);
+        const updatedAlbum = await updateAlbum(editingAlbum, formData);
         // Reload album images to include the new/updated image
-
+        //i am not sure if it working or needed?
         await Loader.loadAlbumImages([
           ...albums.filter((a) => a.id !== editingAlbum),
           updatedAlbum,
@@ -160,7 +155,7 @@ const AddAlbum = () => {
       }
 
       setFormData(initialAlbum);
-      setUpdateFormData({});
+
       setImagePreviewDataUrl(null);
       setError(null);
     } catch (err) {
@@ -171,8 +166,16 @@ const AddAlbum = () => {
 
   const handleEdit = (album: Album) => {
     setEditingAlbum(album.id);
+
+    const editFormData: AlbumFormData = {
+      title: album.title,
+      artist_id: album.artist_id,
+      releaseDate: album.releaseDate,
+      photo_url: album.photo_url,
+    };
+
     setFormData({
-      ...album,
+      ...editFormData,
       /*releaseDate:
         album.releaseDate instanceof Date
           ? album.releaseDate.toISOString().split("T")[0]
@@ -199,7 +202,7 @@ const AddAlbum = () => {
     setEditingAlbum(null);
     setShowAddForm(false);
     setFormData(initialAlbum);
-    setUpdateFormData({});
+
     setImagePreviewDataUrl(null);
     setError(null);
   };

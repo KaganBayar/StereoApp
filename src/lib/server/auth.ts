@@ -1,5 +1,5 @@
 import * as jose from "jose";
-import { Playlists, UserPayload } from "../shared/types";
+import { Playlist, UserPayload } from "../shared/types";
 import { refreshAccessTokenAction } from "@/lib/server/actions";
 
 export async function signToken(obj: UserPayload) {

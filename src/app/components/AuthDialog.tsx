@@ -38,19 +38,21 @@ export const AuthDialog = () => {
       await login(formData); //server action login returns access token
 
       const email = formData.get("email") as string;
+      if (!email) {
+        throw new Error("Email not provided");
+      }
       const user = await findUserByEmail(email);
-      const playlist = await findUserPlaylists(user.id);
-
       if (!user) {
         throw new Error("User not found");
       }
+      const playlist = await findUserPlaylists(user.id);
       console.log("USER", user);
       if (dispatch) {
         dispatch({
           type: "LOGIN",
           payload: {
             id: user.id,
-            photos: user.photo,
+            photos: user.photo_url,
             name: user.name,
             email: email,
             playlists: playlist,

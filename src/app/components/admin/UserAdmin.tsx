@@ -8,65 +8,72 @@ import { updateUser } from "@/lib/server/dbActions";
 import { deleteUser } from "@/lib/server/dbActions";
 import { logout, systemLogout } from "@/lib/server/actions";
 import { UserAdminEditForm } from "@/lib/shared/types";
-
+import { Loader } from "@/lib/client/firebaseActions";
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<UserAdminEditForm>({});
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null); // not yet implemented
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
-  useEffect(() => {
-    loadUsers();
-  }, []);
 
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const fetchedUsers = await findAllUsers();
-      setUsers(fetchedUsers);
-      setError(null);
-    } catch (err: any) {
-      if (
-        err.message?.includes("UNAUTHORIZED") ||
-        err.message?.includes("FORBIDDEN")
-      ) {
-        setError(
-          "Session expired or insufficient permissions. Please log in again."
-        );
-      } else {
-        setError("Failed to load users");
+  // [NEED UPDATE] dont useEffect for fetching
+  useEffect(() => {
+    let ignore = false;
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        const fetchedUsers = await findAllUsers();
+        if (ignore) return;
+        setUsers(fetchedUsers);
+        setError(null);
+        //[NEED UPDATE] error handlings havent properly implemented
+      } catch (err: any) {
+        if (
+          err.message?.includes("UNAUTHORIZED") ||
+          err.message?.includes("FORBIDDEN")
+        ) {
+          setError(
+            "Session expired or insufficient permissions. Please log in again."
+          );
+        } else {
+          setError("Failed to load users");
+        }
+        console.error("Error loading users:", err);
+      } finally {
+        if (!ignore) setLoading(false);
       }
-      console.error("Error loading users:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    loadUsers();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleEdit = (user: User) => {
     setEditingUser(user.id);
-    setEditForm({
+    const editForm: UserAdminEditForm = {
       name: user.name,
       email: user.email,
       roles: user.roles,
-      photo: user.photo,
-    });
-    setImagePreview(user.photo || null);
+      photo_url: user.photo_url,
+    };
+    setEditForm(editForm);
+    setImagePreview(user.photo_url || null);
     setSelectedImage(null);
   };
 
   const handleSave = async () => {
     if (!editingUser || !editForm.name || !editForm.email) return;
 
-    if (editForm.photo && typeof editForm.photo !== "string") {
+    if (editForm.photo_url && typeof editForm.photo_url !== "string") {
       setError("Invalid photo URL format");
       return;
     }
 
     try {
-      const updatedUser = await updateUser(editingUser, editForm);
+      const updatedUser: User = await updateUser(editingUser, editForm);
       await systemLogout(editingUser);
       setUsers(
         users.map((user) =>
@@ -123,7 +130,7 @@ const UserAdmin = () => {
     setEditForm({ ...editForm, [field]: value });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedImage(file);
@@ -131,7 +138,7 @@ const UserAdmin = () => {
       reader.onloadend = () => {
         const result = reader.result as string;
         setImagePreview(result);
-        setEditForm({ ...editForm, photo: result });
+        setEditForm({ ...editForm, photo_url: result });
       };
       reader.readAsDataURL(file);
     }
@@ -203,8 +210,9 @@ const UserAdmin = () => {
                       <div className="flex flex-col space-y-2">
                         <Image
                           src={
+                            //[NEED UPDATE]src shouldnt be photo_url but backend havent implemented
                             imagePreview ||
-                            editForm.photo ||
+                            editForm.photo_url ||
                             "https://placehold.co/40x40.png?text=User"
                           }
                           alt="Profile"
@@ -225,9 +233,10 @@ const UserAdmin = () => {
                         />
                       </div>
                     ) : (
+                      //[NEED UPDATE]src shouldnt be photo_url but backend havent implemented
                       <Image
                         src={
-                          user.photo ||
+                          user.photo_url ||
                           "https://placehold.co/40x40.png?text=User"
                         }
                         alt="Profile"

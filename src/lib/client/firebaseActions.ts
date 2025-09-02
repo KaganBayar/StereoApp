@@ -4,6 +4,7 @@ import { storage } from "../../../config/firebase";
 import { getBytes } from "firebase/storage";
 import { Album, Artist, Song } from "../shared/types";
 import { uploadString, getMetadata } from "firebase/storage";
+import { uploadBytes } from "firebase/storage";
 
 export async function photoUse(photo_url: string): Promise<string> {
   try {
@@ -124,6 +125,16 @@ export const uploadDataUrlPhoto = async (dataUrl: string, path: string) => {
     await uploadString(imageRef, base64, "base64");
   } catch (error) {
     console.error("Error uploading photo:", error);
+    throw error;
+  }
+};
+
+export const uploadFileSong = async (file: File, path: string) => {
+  try {
+    const songRef = ref(storage, path);
+    await uploadBytes(songRef, file);
+  } catch (error) {
+    console.error("Error uploading song:", error);
     throw error;
   }
 };

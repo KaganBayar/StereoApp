@@ -1,6 +1,3 @@
-/**
- * isimler çok kötü yazılmış bi ara onları düzelt
- */
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["typedSql"]

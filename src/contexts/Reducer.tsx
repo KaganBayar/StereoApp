@@ -1,6 +1,6 @@
 "use client";
 import { User } from "@/lib/shared/types";
-import { Playlists } from "@/lib/shared/types";
+import { Playlist } from "@/lib/shared/types";
 
 export type actionType =
   | {
@@ -10,7 +10,7 @@ export type actionType =
         name: string;
         email: string;
         photos: string;
-        playlists: Playlists[];
+        playlists: Playlist[];
         roles: string[];
         created_at: Date | null;
         updated_at: Date | null;
@@ -19,7 +19,7 @@ export type actionType =
   | { type: "LOGOUT" }
   | {
       type: "ADDPLAYLIST";
-      payload: Playlists[];
+      payload: Playlist[];
     }
   | {
       type: "REMOVEPLAYLIST";

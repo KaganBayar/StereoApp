@@ -7,7 +7,7 @@ import { signToken } from "@/lib/server/auth";
 import { findUserPlaylists } from "@/lib/server/dbActions";
 import { cookies } from "next/headers";
 import * as jose from "jose";
-import { Playlists } from "../shared/types";
+import { Playlist } from "../shared/types";
 import { UserPayload } from "../shared/types";
 import {
   requireValidUser,
@@ -77,7 +77,7 @@ export async function register(formData: FormData) {
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  await prisma.users.create({
+  await prisma.user.create({
     data: {
       email: data.email,
       password: hashedPassword,
@@ -92,7 +92,7 @@ export async function login(formData: FormData) {
   //Parola ve email doğrulama
   const data = formLoginSchema.parse(Object.fromEntries(formData));
 
-  const user = await prisma.users.findFirst({
+  const user = await prisma.user.findFirst({
     where: {
       email: data.email,
     },
@@ -109,13 +109,13 @@ export async function login(formData: FormData) {
   const cookieStore = await cookies();
   const refreshToken = crypto.randomBytes(32).toString("hex");
 
-  await prisma.refreshTokens.deleteMany({
+  await prisma.refreshToken.deleteMany({
     where: {
       user_id: user.id,
     },
   });
 
-  await prisma.refreshTokens.create({
+  await prisma.refreshToken.create({
     data: {
       token: refreshToken,
       user_id: user.id,
@@ -124,14 +124,14 @@ export async function login(formData: FormData) {
   });
 
   //access token oluşturma
-  const playlists: Playlists[] = await findUserPlaylists(user.id);
+  const playlists: Playlist[] = await findUserPlaylists(user.id);
   const accessToken = await signToken({
     id: user.id,
     email: user.email,
     name: user.name,
     password: user.password,
     roles: user.roles,
-    photo: user.photo,
+    photo_url: user.photo_url,
     playlists: playlists,
     created_at: user.created_at,
     updated_at: user.updated_at,
@@ -155,7 +155,7 @@ export async function login(formData: FormData) {
 }
 
 export async function findUserByEmail(email: string) {
-  const user = await prisma.users.findFirst({
+  const user = await prisma.user.findFirst({
     where: {
       email,
     },
@@ -174,7 +174,7 @@ export async function logout(id: string) {
     const cookieStore = await cookies();
     cookieStore.delete("accessToken");
 
-    await prisma.refreshTokens.deleteMany({
+    await prisma.refreshToken.deleteMany({
       where: {
         user_id: id,
       },
@@ -188,7 +188,7 @@ export async function logout(id: string) {
 
 export async function systemLogout(id: string) {
   try {
-    await prisma.refreshTokens.deleteMany({
+    await prisma.refreshToken.deleteMany({
       where: {
         user_id: id,
       },
@@ -210,7 +210,7 @@ export async function refreshAccessTokenAction(token: string) {
     try {
       const cookieStore = await cookies();
       const decodedToken = jose.decodeJwt(token) as UserPayload;
-      const refreshToken = await prisma.refreshTokens.findFirst({
+      const refreshToken = await prisma.refreshToken.findFirst({
         where: {
           user_id: decodedToken.id,
         },
@@ -228,7 +228,7 @@ export async function refreshAccessTokenAction(token: string) {
         email: decodedToken.email,
         name: decodedToken.name,
         roles: decodedToken.roles,
-        photo: decodedToken.photo,
+        photo_url: decodedToken.photo_url,
         playlists: decodedToken.playlists,
         updated_at: decodedToken.updated_at,
         created_at: decodedToken.created_at,
