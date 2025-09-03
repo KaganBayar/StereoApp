@@ -3,7 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./components/Header";
 import UserProvider from "@/provider/userProvider";
-import initialUser from "@/lib/shared/initialState";
+import { initialUser } from "@/lib/shared/initialState";
+import { ENV } from "@/lib/server/Errors/env";
 import reducer from "@/contexts/Reducer";
 
 const geistSans = localFont({

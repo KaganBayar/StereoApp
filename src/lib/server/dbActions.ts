@@ -275,7 +275,7 @@ export async function createSong(data: SongFormData) {
       song_url: data.song_url,
       photo_url: data.photo_url || "",
       length: data.length || 0,
-      releaseDate: data.releaseDate || new Date(), // you should provide relasedate in frontend but not needed for now
+      releaseDate: data.releaseDate || new Date(),
       genre: data.genre || "", //you should provide genre in frontend but not needed for now
     },
     include: {

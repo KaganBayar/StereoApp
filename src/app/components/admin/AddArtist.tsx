@@ -105,24 +105,27 @@ const AddArtist = () => {
 
     try {
       if (formData.photo_url && imagePreviewDataUrl) {
-        uploadDataUrlPhoto(imagePreviewDataUrl, formData.photo_url);
+        await uploadDataUrlPhoto(imagePreviewDataUrl, formData.photo_url);
       }
       if (editingArtist) {
         // Update existing artist
         const updatedArtist = await updateArtist(editingArtist, formData);
-        await Loader.loadArtistImages([...artists, updatedArtist]);
-
-        //Update frontend
         setArtists(
           artists.map((artist) =>
             artist.id === editingArtist ? updatedArtist : artist
           )
         );
+        const artistImages = await Loader.loadArtistImages(artists);
+        setArtistImagesDataUrl(artistImages);
         setEditingArtist(null);
       } else {
         // Add new artist logic
         const newArtist: Artist = await createArtist(formData);
-        await Loader.loadArtistImages([...artists, newArtist]);
+        const artistImages = await Loader.loadArtistImages([
+          ...artists,
+          newArtist,
+        ]);
+        setArtistImagesDataUrl(artistImages);
         setArtists([...artists, newArtist]);
         setShowAddForm(false);
       }

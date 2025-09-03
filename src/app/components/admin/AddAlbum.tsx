@@ -121,21 +121,21 @@ const AddAlbum = () => {
       }
 
       if (editingAlbum) {
-        // only includes places where you updated
-
-        const updatedAlbum = await updateAlbum(editingAlbum, formData);
-        // Reload album images to include the new/updated image
-        //i am not sure if it working or needed?
-        await Loader.loadAlbumImages([
-          ...albums.filter((a) => a.id !== editingAlbum),
-          updatedAlbum,
-        ]);
-
+        const updateFormData = {
+          ...formData,
+          releaseDate:
+            typeof formData.releaseDate === "string"
+              ? new Date(formData.releaseDate)
+              : formData.releaseDate,
+        };
+        const updatedAlbum = await updateAlbum(editingAlbum, updateFormData);
         setAlbums(
           albums.map((album) =>
             album.id === editingAlbum ? updatedAlbum : album
           )
         );
+        const albumImages = await Loader.loadAlbumImages(albums);
+        setAlbumImagesDataUrl(albumImages);
 
         setEditingAlbum(null);
       } else {
@@ -149,7 +149,8 @@ const AddAlbum = () => {
 
         const newAlbum: Album = await createAlbum(submitData);
         // Reload album images to include the new album's image
-        await Loader.loadAlbumImages([...albums, newAlbum]);
+        const albumImages = await Loader.loadAlbumImages([...albums, newAlbum]);
+        setAlbumImagesDataUrl(albumImages);
         setAlbums([...albums, newAlbum]);
         setShowAddForm(false);
       }

@@ -42,5 +42,4 @@ const initialSong: SongFormData = {
   releaseDate: new Date(),
 };
 
-export default initialUser;
-export { initialAlbum, initialArtist, initialSong };
+export { initialUser, initialAlbum, initialArtist, initialSong };

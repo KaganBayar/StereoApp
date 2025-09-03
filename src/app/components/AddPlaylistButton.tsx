@@ -22,24 +22,24 @@ export function AddPlaylistButton() {
   //not use requireValidation until error handling is done
   const user = useContext(UserContext);
   //[UPDATE NEEDED] IF THERE ARE NO USER IT SHOULD ACTIVATE AUTH DIALOG
+  console.log("add playlist button rendered");
   const dispatch = useContext(DispatchContext);
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     setOpen(false);
     if (!user) {
       console.error("User is not available");
       return;
     } else {
-      await createPlaylistAction(user.email).then(async (res) => {
+      createPlaylistAction(user.email).then(async (res) => {
         dispatch!({
           type: "ADDPLAYLIST",
           payload: [...user.playlists],
         });
-        router.push(`/playlist/${res}`);
+        router.push(`/playlist/${res}`); //router cause bug about playlists
+        console.log("Playlist created successfully");
       });
-
-      console.log("Playlist created successfully");
     }
   };
 

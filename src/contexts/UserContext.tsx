@@ -7,8 +7,8 @@ const selectedSongByUserContext = createContext<
 >([null, () => {}]);
 
 const UserContext = createContext<User | null>(null);
-const DispatchContext = createContext<React.Dispatch<actionType> | null>(null);
 const UserInformationLoadingContext = createContext<boolean>(false);
+const DispatchContext = createContext<React.Dispatch<actionType> | null>(null);
 
 export default UserContext;
 export { DispatchContext };

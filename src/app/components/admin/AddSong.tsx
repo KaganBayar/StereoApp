@@ -1,3 +1,4 @@
+//şarkı eklediğin zaman eklendiğini görebiliyorsun ama ekleme formu sonradan kapanıyor
 "use client";
 import { useState, useEffect } from "react";
 import { Song, Artist, Album } from "@/lib/shared/types";
@@ -135,20 +136,36 @@ const AddSong = () => {
       }
 
       if (editingSong) {
-        await updateSong(editingSong, formData);
+        const updateFormData = {
+          ...formData,
+          releaseDate:
+            typeof formData.releaseDate === "string"
+              ? new Date(formData.releaseDate)
+              : formData.releaseDate,
+        };
+        const updatedSong = await updateSong(editingSong, updateFormData);
         //all songs + newly updated song
         const songsAndNewlyUpdated: Song[] = songs.map((song) =>
-          song.id === editingSong ? { ...song, ...formData } : song
+          song.id === editingSong ? updatedSong : song
         );
         setSongs(songsAndNewlyUpdated);
-        await Loader.loadSongImages(songsAndNewlyUpdated);
+        const songImages = await Loader.loadSongImages(songsAndNewlyUpdated);
+        setSongImagesDataUrl(songImages);
         await Loader.loadSongs(songsAndNewlyUpdated);
         setEditingSong(null);
         setImagePreviewDataUrl(null);
       } else {
-        const newSong = await createSong(formData);
+        const submitFormData = {
+          ...formData,
+          releaseDate:
+            typeof formData.releaseDate === "string"
+              ? new Date(formData.releaseDate)
+              : formData.releaseDate,
+        };
+        const newSong = await createSong(submitFormData);
         setSongs([...songs, newSong]);
-        await Loader.loadSongImages([...songs, newSong]);
+        const songImages = await Loader.loadSongImages([...songs, newSong]);
+        setSongImagesDataUrl(songImages);
         await Loader.loadSongs([...songs, newSong]);
         setShowAddForm(false);
       }

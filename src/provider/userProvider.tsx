@@ -72,7 +72,7 @@ export default function UserProvider({
                   type: "LOGIN",
                   payload: {
                     id: userDatas.id,
-                    photos: userDatas.photo_url,
+                    photo_url: userDatas.photo_url,
                     name: userDatas.name,
                     email: userDatas.email,
                     playlists: userDatas.playlists,

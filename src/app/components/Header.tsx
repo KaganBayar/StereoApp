@@ -12,6 +12,7 @@ import {
 } from "@/contexts/UserContext";
 import { useContext } from "react";
 import { Loader2 } from "lucide-react";
+import { checkUser } from "@/lib/client/utils";
 const Header: React.FC = () => {
   const dispatch = useContext(DispatchContext);
   //[UPDATE NEEDED] You shouldnt get user with useContext userContext because if user's informations are not up to date it shouldnt throw an error.
@@ -20,12 +21,14 @@ const Header: React.FC = () => {
   const isAuthLoading = useContext(UserInformationLoadingContext);
 
   const handleLogout = async () => {
-    if (dispatch && user) {
+    if (dispatch && checkUser(user)) {
       dispatch({ type: "LOGOUT" });
-      const userID = user.id;
+      const userID = user!.id;
       await logout(userID);
     } else {
-      throw new Error("Global Dispatch not found");
+      throw new Error(
+        "Global Dispatch not found or User is invalid but you can still manually log out"
+      );
     }
   };
   return (
@@ -61,7 +64,7 @@ const Header: React.FC = () => {
             <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
             <span className="text-sm text-gray-300">Logging in...</span>
           </div>
-        ) : user.email ? (
+        ) : user?.email ? (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold border-2 border-blue-900">
               {user?.name ? user.name.charAt(0).toUpperCase() : "U"}

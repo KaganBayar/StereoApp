@@ -52,7 +52,7 @@ export const AuthDialog = () => {
           type: "LOGIN",
           payload: {
             id: user.id,
-            photos: user.photo_url,
+            photo_url: user.photo_url,
             name: user.name,
             email: email,
             playlists: playlist,

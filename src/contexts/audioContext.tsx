@@ -58,13 +58,22 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   const [prevVolume, setPrevVolumeState] = useState<number>(0); //private
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isLooping, setIsLooping] = useState<boolean>(false);
+
   const howlRef = useRef<Howl | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+      }
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+      if (howlRef.current) {
+        howlRef.current.stop();
+        howlRef.current.unload();
       }
     };
   }, []);
@@ -97,9 +106,13 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       howlRef.current.unload();
       stopTimeUpdate();
     }
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+    }
     const audioUrl = URL.createObjectURL(audioFile);
+    objectUrlRef.current = audioUrl;
     const howl = new Howl({
-      src: [audioUrl],
+      src: [objectUrlRef.current],
       format: ["mp3", "wav", "ogg"],
       loop: isLooping,
       volume: volume,

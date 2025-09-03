@@ -290,11 +290,13 @@ const UserAdmin = () => {
                             ? editForm.roles.join(", ")
                             : ""
                         }
-                        onChange={(e) =>
-                          handleInputChange(
-                            "roles",
-                            e.target.value.split(", ").filter((r) => r.trim())
-                          )
+                        onChange={
+                          (e) =>
+                            handleInputChange(
+                              "roles",
+                              e.target.value.split(", ").filter((r) => r.trim())
+                            )
+                          //[UPDATE NEEDED] INPUTING ROLES ARE BUGGY
                         }
                         placeholder="admin, user"
                         className="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"

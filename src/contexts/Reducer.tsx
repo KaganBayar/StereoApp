@@ -1,6 +1,7 @@
 "use client";
 import { User } from "@/lib/shared/types";
 import { Playlist } from "@/lib/shared/types";
+import { initialUser } from "@/lib/shared/initialState";
 
 export type actionType =
   | {
@@ -9,7 +10,7 @@ export type actionType =
         id: string;
         name: string;
         email: string;
-        photos: string;
+        photo_url: string;
         playlists: Playlist[];
         roles: string[];
         created_at: Date | null;
@@ -31,18 +32,7 @@ export default function reducer(state: User, action: actionType) {
     case "LOGIN":
       return action.payload;
     case "LOGOUT":
-      return {
-        ...state,
-        user: {
-          name: "",
-          email: "",
-          photo: "",
-          id: "",
-          playlists: [],
-          created_at: null,
-          updated_at: null,
-        },
-      };
+      return initialUser;
     case "ADDPLAYLIST":
       return {
         ...state,
