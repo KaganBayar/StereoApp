@@ -7,8 +7,8 @@ import { signToken } from "@/lib/server/auth";
 import { findUserPlaylists } from "@/lib/server/dbActions";
 import { cookies } from "next/headers";
 import * as jose from "jose";
-import { Playlist } from "../shared/types";
-import { UserPayload } from "../shared/types";
+import { Playlist } from "@/lib/Types/playlistTypes";
+import { UserPayload } from "@/lib/Types/userTypes";
 import {
   requireValidUser,
   requireAdminUser,

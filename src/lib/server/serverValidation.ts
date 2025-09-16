@@ -1,7 +1,7 @@
 "use server";
 import { cookies } from "next/headers";
 import prisma from "@/lib/server/db";
-import { User, UserPayload } from "@/lib/shared/types";
+import { User, UserPayload } from "@/lib/Types/userTypes";
 import { verifyAuthTokenAction } from "@/lib/server/actions";
 
 export async function validateUserSession(): Promise<User> {

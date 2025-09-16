@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react";
 import { findUserPlaylists } from "@/lib/server/dbActions";
 import { useContext } from "react";
 import UserContext from "@/contexts/UserContext";
-import { Playlist as PlaylistType } from "@/lib/shared/types";
+import { Playlist as PlaylistType } from "@/lib/Types/playlistTypes";
 import Link from "next/link";
 import { AddPlaylistButton } from "./AddPlaylistButton";
+import { checkUser } from "@/lib/client/utils";
 
 export default function PlaylistBar() {
   console.log("playlistBar rendered");
@@ -32,7 +33,7 @@ export default function PlaylistBar() {
   return (
     <div className="mb-4">
       <div className="absolute top-3 right-8">
-        {user.id ? <AddPlaylistButton /> : <></>}
+        {checkUser(user) ? <AddPlaylistButton /> : <></>}
       </div>
       <div>
         {playlist.map((playlist, index) => {

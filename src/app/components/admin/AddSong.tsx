@@ -1,14 +1,15 @@
 //şarkı eklediğin zaman eklendiğini görebiliyorsun ama ekleme formu sonradan kapanıyor
 "use client";
 import { useState, useEffect } from "react";
-import { Song, Artist, Album } from "@/lib/shared/types";
+import { Song, SongFormData } from "@/lib/Types/songTypes";
+import { Artist } from "@/lib/Types/artistTypes";
+import { Album } from "@/lib/Types/albumTypes";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import { findAllSongs } from "@/lib/server/dbActions";
 import { findAllArtists } from "@/lib/server/dbActions";
 import { findAllAlbums } from "@/lib/server/dbActions";
 import { updateSong, createSong, deleteSong } from "@/lib/server/dbActions";
-import { SongFormData } from "@/lib/shared/types";
 import {
   photoUse,
   songUse,

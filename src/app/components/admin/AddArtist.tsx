@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Artist } from "@/lib/shared/types";
+import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
 import {
   findAllArtists,
   createArtist,
@@ -16,7 +16,7 @@ import {
   FaMusic,
 } from "react-icons/fa";
 import Image from "next/image";
-import { ArtistFormData } from "@/lib/shared/types";
+
 import { musicImagesRef } from "../../../../config/firebase";
 import { uploadString, getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../../../../config/firebase";

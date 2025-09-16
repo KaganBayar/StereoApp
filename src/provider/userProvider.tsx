@@ -7,17 +7,16 @@ import {
 } from "@/contexts/UserContext";
 import { useReducer } from "react";
 import { actionType } from "@/contexts/Reducer";
-
-import { User } from "@/lib/shared/types";
 import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/server/actions";
 import { useState } from "react";
 import { AudioProvider } from "@/contexts/audioContext";
+import { UserFrontend } from "@/lib/Types/userTypes";
 
 interface UserProviderProps {
-  User: User;
+  User: UserFrontend;
   children: React.ReactNode;
-  reduce: React.Reducer<User, actionType>;
+  reduce: React.Reducer<UserFrontend, actionType>;
 }
 export default function UserProvider({
   User,
@@ -56,11 +55,10 @@ export default function UserProvider({
               Array.isArray(verifiedAccessToken.playlists) &&
               Array.isArray(verifiedAccessToken.roles)
             ) {
-              const userDatas: User = {
+              const userDatas: UserFrontend = {
                 id: verifiedAccessToken.id,
                 email: verifiedAccessToken.email,
                 name: verifiedAccessToken.name,
-                password: verifiedAccessToken.password,
                 photo_url: verifiedAccessToken.photo_url,
                 roles: verifiedAccessToken.roles,
                 playlists: verifiedAccessToken.playlists,

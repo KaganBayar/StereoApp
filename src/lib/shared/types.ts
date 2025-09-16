@@ -67,7 +67,12 @@ export type Playlist = Prisma.PlaylistGetPayload<{
   include: {
     playlistSongs: {
       include: {
-        song: true;
+        song: {
+          include: {
+            artist: true;
+            album: true;
+          };
+        };
       };
     };
   };
@@ -75,7 +80,11 @@ export type Playlist = Prisma.PlaylistGetPayload<{
 
 export type PlaylistSong = Prisma.PlaylistSongGetPayload<{
   include: {
-    song: true;
-    playlist: true;
+    song: {
+      include: {
+        artist: true;
+        album: true;
+      };
+    };
   };
 }>;

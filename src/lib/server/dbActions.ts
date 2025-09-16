@@ -1,14 +1,15 @@
 "use server";
-import { Artist, User, UserAdminEditForm } from "@/lib/shared/types";
-import { Album } from "@/lib/shared/types";
 import prisma from "@/lib/server/db";
-import { AlbumFormData, ArtistFormData } from "@/lib/shared/types";
+import { AlbumFormData } from "@/lib/Types/albumTypes";
 import {
   requireValidUser,
   requireAdminUser,
 } from "@/lib/server/serverValidation";
-import { Song, Playlist } from "@/lib/shared/types";
-import { SongFormData } from "@/lib/shared/types";
+import { Playlist } from "@/lib/Types/playlistTypes";
+import { User, UserAdminEditForm } from "@/lib/Types/userTypes";
+import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
+import { Album } from "@/lib/Types/albumTypes";
+import { SongFormData, Song } from "@/lib/Types/songTypes";
 
 //code parts with 0 pagination. should not be used in code
 export async function findAllAlbums() {
@@ -81,6 +82,27 @@ export async function findUserByEmail(email: string) {
   return user;
 }
 
+export async function findPlaylistById(id: string) {
+  const playlist: Playlist | null = await prisma.playlist.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      playlistSongs: {
+        include: {
+          song: {
+            include: {
+              album: true,
+              artist: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  return playlist;
+}
+
 export async function updateUser(id: string, dataForm: UserAdminEditForm) {
   // Require admin access
   await requireAdminUser();
@@ -138,7 +160,7 @@ export async function createPlaylistAction(email: string) {
       user_id: userId,
       created_at: new Date(),
       updated_at: new Date(),
-      photo_url: "default.jpg", // Assuming a default photo
+      photo_url: "", // Assuming a default photo
     },
     select: {
       id: true,
@@ -157,7 +179,12 @@ export async function findUserPlaylists(id: string): Promise<Playlist[]> {
     include: {
       playlistSongs: {
         include: {
-          song: true,
+          song: {
+            include: {
+              artist: true,
+              album: true,
+            },
+          },
         },
       },
     },

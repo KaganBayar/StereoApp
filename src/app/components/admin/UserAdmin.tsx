@@ -1,13 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { User } from "@/lib/shared/types";
+import { User, UserAdminEditForm } from "@/lib/Types/userTypes";
 import { findAllUsers } from "@/lib/server/dbActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import { updateUser } from "@/lib/server/dbActions";
 import { deleteUser } from "@/lib/server/dbActions";
 import { logout, systemLogout } from "@/lib/server/actions";
-import { UserAdminEditForm } from "@/lib/shared/types";
 import { Loader } from "@/lib/client/firebaseActions";
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -158,12 +157,6 @@ const UserAdmin = () => {
       <div className="pt-6 p-4">
         <div className="text-neutral-200 text-xl mb-4">Users</div>
         <div className="text-red-500 mb-4">{error}</div>
-        <button
-          onClick={loadUsers}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          Retry
-        </button>
       </div>
     );
   }

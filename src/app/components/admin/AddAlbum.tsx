@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Album, Artist } from "@/lib/shared/types";
+import { Album, AlbumFormData } from "@/lib/Types/albumTypes";
+import { Artist } from "@/lib/Types/artistTypes";
 import {
   FaPlus,
   FaEdit,
@@ -16,7 +17,6 @@ import {
   updateAlbum,
   createAlbum,
 } from "@/lib/server/dbActions";
-import { AlbumFormData } from "@/lib/shared/types";
 import { uploadString, ref } from "firebase/storage";
 import { storage } from "../../../../config/firebase";
 import { photoUse, Loader } from "@/lib/client/firebaseActions";

@@ -1,10 +1,8 @@
-import {
-  AlbumFormData,
-  ArtistFormData,
-  SongFormData,
-  Playlist,
-  User,
-} from "@/lib/shared/types";
+import { User } from "@/lib/Types/userTypes";
+import { ArtistFormData } from "@/lib/Types/artistTypes";
+import { AlbumFormData } from "@/lib/Types/albumTypes";
+import { SongFormData } from "@/lib/Types/songTypes";
+import { Playlist } from "@/lib/Types/playlistTypes";
 
 const initialUser: Omit<User, "password"> = {
   id: "",
@@ -42,4 +40,21 @@ const initialSong: SongFormData = {
   releaseDate: new Date(),
 };
 
-export { initialUser, initialAlbum, initialArtist, initialSong };
+const initialPlaylist = {
+  id: "",
+  name: "",
+  description: "",
+  user_id: "",
+  totalSongs: 0,
+  totalDuration: "0 seconds",
+  isFollowed: false,
+  photo_url: "",
+};
+
+export {
+  initialUser,
+  initialAlbum,
+  initialArtist,
+  initialSong,
+  initialPlaylist,
+};

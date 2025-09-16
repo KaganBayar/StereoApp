@@ -5,30 +5,23 @@ import { storage } from "../../../config/firebase";
 import { getBytes } from "firebase/storage";
 import { Howl, Howler } from "howler";
 import { photoUse, songUse } from "./firebaseActions";
-import { Album, Artist, Song, User } from "../shared/types";
+import { Album } from "../Types/albumTypes";
+import { Artist } from "../Types/artistTypes";
+import { Song } from "../Types/songTypes";
+import { User } from "../Types/userTypes";
+
 import { object } from "zod";
+import { UserFrontend } from "../Types/userTypes";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function checkUser(user: User) {
+export function checkUser(user: UserFrontend | null): boolean {
   if (!user) {
     return false;
   }
-  if (user.email === "") {
-    return false;
-  }
-  if (user.name === "") {
-    return false;
-  }
-  /*if (user.photo_url === "") {
-    return false;
-  }*/
   if (user.id === "") {
-    return false;
-  }
-  if (Object.is(user.roles, [])) {
     return false;
   }
   return true;

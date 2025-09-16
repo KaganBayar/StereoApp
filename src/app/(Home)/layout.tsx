@@ -1,6 +1,7 @@
 import Sidebar from "../components/Sidebar";
 import Box from "../components/misc/Box";
 import MusicPlayer from "../components/MusicPlayer";
+import ReactQueryProvider from "@/lib/client/reactQueryDevtools";
 
 interface Props {
   children: React.ReactNode;
@@ -9,11 +10,13 @@ interface Props {
 export default function HomeLayout({ children }: Props) {
   return (
     <div className="flex">
-      <Sidebar />
-      <Box className="ml-40 mt-16 p-4 w-full mr-1 rounded-md mb-20">
-        {children}
-      </Box>
-      <MusicPlayer />
+      <ReactQueryProvider>
+        <Sidebar />
+        <Box className="ml-40 mt-16 p-4 w-full mr-1 rounded-md mb-20">
+          {children}
+        </Box>
+        <MusicPlayer />
+      </ReactQueryProvider>
     </div>
   );
 }
