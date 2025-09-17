@@ -1,15 +1,14 @@
 import { Prisma } from "@prisma/client";
 
+export type BasePlaylist = Prisma.PlaylistGetPayload<{
+  include: { playlistSongs: { include: { song: true } } };
+}>;
+
 export type Playlist = Prisma.PlaylistGetPayload<{
   include: {
     playlistSongs: {
       include: {
-        song: {
-          include: {
-            artist: true;
-            album: true;
-          };
-        };
+        song: true;
       };
     };
   };
@@ -17,11 +16,6 @@ export type Playlist = Prisma.PlaylistGetPayload<{
 
 export type PlaylistSong = Prisma.PlaylistSongGetPayload<{
   include: {
-    song: {
-      include: {
-        artist: true;
-        album: true;
-      };
-    };
+    song: true;
   };
 }>;
