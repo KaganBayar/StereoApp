@@ -1,3 +1,4 @@
+//[UPDATE NEEDED] Bulamadığında error ver
 "use client";
 import React, { use, useEffect } from "react";
 import Image from "next/image";
