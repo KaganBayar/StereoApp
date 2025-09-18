@@ -13,6 +13,7 @@ const initialUser: Omit<User, "password"> = {
   roles: ["member"],
   created_at: new Date(),
   updated_at: new Date(),
+  favorites: [],
 }; // [UPDATE NEEDED] Backendden gelen user tipinde daha fazla bilgi var. ama frontend için bu kadar bilgi yeterli bunu değiştirmen gerek
 
 const initialAlbum: AlbumFormData = {
@@ -42,8 +43,8 @@ const initialSong: SongFormData = {
 
 const initialPlaylist = {
   id: "",
-  name: "",
-  description: "",
+  name: "My Playlist",
+  description: "This is My Playlist",
   user_id: "",
   totalSongs: 0,
   totalDuration: "0 seconds",

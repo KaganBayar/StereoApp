@@ -19,3 +19,8 @@ export type PlaylistSong = Prisma.PlaylistSongGetPayload<{
     song: true;
   };
 }>;
+
+export type PlaylistFormData = Pick<
+  Playlist,
+  "name" | "description" | "photo_url" | "user_id"
+>;

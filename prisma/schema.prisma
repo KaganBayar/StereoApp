@@ -19,6 +19,17 @@ model User {
   updated_at    DateTime       @updatedAt @db.Timestamp(6)
   playlists     Playlist[]
   refreshTokens RefreshToken[]
+  favorites     UserFavorite[]
+}
+
+model UserFavorite {
+  id         String   @id @default(cuid())
+  user_id    String
+  song_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  song       Song     @relation(fields: [song_id], references: [id])
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
 }
 
 model Playlist {
@@ -58,6 +69,7 @@ model Song {
   album        Album          @relation(fields: [album_id], references: [id])
   artist       Artist         @relation(fields: [artist_id], references: [id])
   releaseDate  DateTime
+  UserFavorite UserFavorite[]
 }
 
 model Artist {

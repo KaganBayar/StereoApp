@@ -57,6 +57,7 @@ export async function findAllUsers() {
           },
         },
       },
+      favorites: { include: { song: true } },
     },
   });
   return users;
@@ -77,6 +78,7 @@ export async function findUserByEmail(email: string) {
           },
         },
       },
+      favorites: { include: { song: true } },
     },
   });
   return user;
@@ -125,6 +127,7 @@ export async function updateUser(id: string, dataForm: UserAdminEditForm) {
           },
         },
       },
+      favorites: { include: { song: true } },
     },
   });
   return updatedUser;

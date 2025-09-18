@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 
 export function AddPlaylistButton() {
   //[UPDATE NEEDED] You shouldnt get user with useContext userContext because if user's informations are not up to date it shouldnt throw an error.
+  //[UPDATE NEEDED] i changed the logic of playlist create action. now it doesnt create the playlist with default data. it needs data parameter.
   //not use requireValidation until error handling is done
   const user = useContext(UserContext);
   //[UPDATE NEEDED] IF THERE ARE NO USER IT SHOULD ACTIVATE AUTH DIALOG

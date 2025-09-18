@@ -9,17 +9,26 @@ type genericModel = {
 };
 export abstract class BaseRepository<T extends genericModel> {
   protected abstract model: any;
+  protected abstract baseOptions: object;
 
+  //
   async findById(id: string, options?: object): Promise<T["type"] | null> {
-    return this.model.findUnique({ where: { id }, ...options });
+    return this.model.findUnique({
+      where: { id },
+      ...options,
+      ...this.baseOptions,
+    });
   }
 
   async findMany(options?: object): Promise<T["type"][]> {
-    return this.model.findMany(options);
+    return this.model.findMany({
+      ...options,
+      ...this.baseOptions,
+    });
   }
 
   async create(data: T["formData"], options?: object): Promise<T["type"]> {
-    return this.model.create({ data, ...options });
+    return this.model.create({ data, ...options, ...this.baseOptions });
   }
 
   async update(
@@ -31,10 +40,15 @@ export abstract class BaseRepository<T extends genericModel> {
       where: { id },
       data: { ...data },
       ...options,
+      ...this.baseOptions,
     });
   }
 
   async delete(id: string, options?: object): Promise<T["type"]> {
-    return this.model.delete({ where: { id }, ...options });
+    return this.model.delete({
+      where: { id },
+      ...options,
+      ...this.baseOptions,
+    });
   }
 }

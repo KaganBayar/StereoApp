@@ -30,6 +30,7 @@ export default function UserProvider({
     async function fetchUser() {
       try {
         const accessToken = await access_cookie();
+
         if (accessToken) {
           if (accessToken === "No access token found") {
             console.log("No access token found");

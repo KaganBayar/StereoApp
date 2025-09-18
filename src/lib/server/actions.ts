@@ -57,7 +57,7 @@ export async function verifyAuthTokenAction(
           if (!newAccessToken) {
             throw new Error("No access token outputed by refresh action");
           }
-          return newAccessToken as UserPayload;
+          return newAccessToken;
         } catch (error) {
           throw new Error("Failed to refresh access token: " + error);
         }
@@ -93,6 +93,9 @@ export async function login(formData: FormData) {
   const data = formLoginSchema.parse(Object.fromEntries(formData));
 
   const user = await prisma.user.findFirst({
+    include: {
+      favorites: { include: { song: true } },
+    },
     where: {
       email: data.email,
     },
@@ -108,7 +111,7 @@ export async function login(formData: FormData) {
   //refresh token oluşturma
   const cookieStore = await cookies();
   const refreshToken = crypto.randomBytes(32).toString("hex");
-
+  //[UPDATE NEEDED] You shouldnt do a database queery
   await prisma.refreshToken.deleteMany({
     where: {
       user_id: user.id,
@@ -129,12 +132,12 @@ export async function login(formData: FormData) {
     id: user.id,
     email: user.email,
     name: user.name,
-    password: user.password,
     roles: user.roles,
     photo_url: user.photo_url,
     playlists: playlists,
     created_at: user.created_at,
     updated_at: user.updated_at,
+    favorites: user.favorites,
   });
 
   try {
@@ -152,15 +155,6 @@ export async function login(formData: FormData) {
   } catch (e) {
     throw new Error("Token verification failed");
   }
-}
-
-export async function findUserByEmail(email: string) {
-  const user = await prisma.user.findFirst({
-    where: {
-      email,
-    },
-  });
-  return user;
 }
 
 export async function logout(id: string) {
@@ -224,7 +218,6 @@ export async function refreshAccessTokenAction(token: string) {
       //sign new token
       const newAccessToken = await signToken({
         id: decodedToken.id,
-        password: decodedToken.password,
         email: decodedToken.email,
         name: decodedToken.name,
         roles: decodedToken.roles,
@@ -232,6 +225,7 @@ export async function refreshAccessTokenAction(token: string) {
         playlists: decodedToken.playlists,
         updated_at: decodedToken.updated_at,
         created_at: decodedToken.created_at,
+        favorites: decodedToken.favorites,
       });
       //verify new token
       const decodedPayload = jose.decodeJwt(newAccessToken) as UserPayload;
