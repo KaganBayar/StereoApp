@@ -1,5 +1,5 @@
 "use server";
-import { BaseRepository } from "./baseRepositories";
+import { BaseRepository } from "./baseRepository";
 import { User, UserAdminEditForm } from "@/lib/Types/userTypes";
 import prisma from "@/lib/server/db";
 import { formDataList, TypeList } from "@/lib/Types/commonTypes";
@@ -16,6 +16,7 @@ export class UserRepository extends BaseRepository<UserModel> {
       favorites: { include: { song: true } },
     },
   };
+
   async findUserByEmail(email: string): Promise<User | null> {
     const user: User | null = await prisma.user.findFirst({
       where: {

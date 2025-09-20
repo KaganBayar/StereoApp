@@ -10,8 +10,8 @@ type genericModel = {
 export abstract class BaseRepository<T extends genericModel> {
   protected abstract model: any;
   protected abstract baseOptions: object;
-
   //
+
   async findById(id: string, options?: object): Promise<T["type"] | null> {
     return this.model.findUnique({
       where: { id },

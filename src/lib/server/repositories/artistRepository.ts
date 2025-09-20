@@ -1,6 +1,6 @@
 "use server";
 import { Artist, ArtistFormData } from "../../Types/artistTypes";
-import { BaseRepository } from "./baseRepositories";
+import { BaseRepository } from "./baseRepository";
 import prisma from "@/lib/server/db";
 
 type ArtistModel = {
@@ -8,7 +8,7 @@ type ArtistModel = {
   formData: ArtistFormData;
 };
 
-export class ArtistRepositories extends BaseRepository<ArtistModel> {
+export class ArtistRepository extends BaseRepository<ArtistModel> {
   protected model = prisma.artist;
   protected baseOptions = {
     include: { albums: true, songs: true },

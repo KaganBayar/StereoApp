@@ -33,6 +33,7 @@ export async function validateUserSession(): Promise<User> {
             },
           },
         },
+        favorites: { include: { song: true } },
       },
     });
 
