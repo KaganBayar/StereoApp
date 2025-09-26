@@ -1,14 +1,8 @@
-"use server";
 import { BaseRepository } from "./baseRepository";
 import { Song, SongFormData } from "@/lib/Types/songTypes";
 import prisma from "@/lib/server/db";
 
-type SongModel = {
-  type: Song;
-  formData: SongFormData;
-};
-
-export class SongRepository extends BaseRepository<SongModel> {
+export class SongRepository extends BaseRepository<Song> {
   protected model = prisma.song;
   protected baseOptions = {
     include: { album: true, artist: true },

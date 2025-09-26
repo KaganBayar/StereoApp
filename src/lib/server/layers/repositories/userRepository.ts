@@ -1,14 +1,9 @@
-"use server";
 import { BaseRepository } from "./baseRepository";
 import { User, UserAdminEditForm } from "@/lib/Types/userTypes";
 import prisma from "@/lib/server/db";
 import { formDataList, TypeList } from "@/lib/Types/commonTypes";
 
-type UserModel = {
-  type: User;
-  formData: UserAdminEditForm;
-};
-export class UserRepository extends BaseRepository<UserModel> {
+export class UserRepository extends BaseRepository<User> {
   protected model = prisma.user;
   protected baseOptions = {
     include: {

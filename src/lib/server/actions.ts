@@ -108,10 +108,11 @@ export async function login(formData: FormData) {
   }
 
   console.log("logged in");
-  //refresh token oluşturma
+
+  //cookie oluşturma
   const cookieStore = await cookies();
+  //refresh token oluşturma
   const refreshToken = crypto.randomBytes(32).toString("hex");
-  //[UPDATE NEEDED] You shouldnt do a database queery
   await prisma.refreshToken.deleteMany({
     where: {
       user_id: user.id,
@@ -128,6 +129,7 @@ export async function login(formData: FormData) {
 
   //access token oluşturma
   const playlists: Playlist[] = await findUserPlaylists(user.id);
+  //id email name roles photo_url playlists created_at updated_at favorites
   const accessToken = await signToken({
     id: user.id,
     email: user.email,

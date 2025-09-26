@@ -17,8 +17,9 @@ export type User = Prisma.UserGetPayload<{
 export type UserFrontend = Omit<User, "password">;
 
 export type UserPayload = jose.JWTPayload & UserFrontend;
+//i should also pick password here. but not now
 export type UserAdminEditForm = Partial<
-  Pick<User, "name" | "email" | "photo_url" | "roles">
+  Pick<User, "name" | "email" | "photo_url" | "roles"> & { password?: string }
 >;
 
 export type UserCreateInput = Prisma.UserCreateInput;

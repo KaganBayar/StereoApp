@@ -1,18 +1,11 @@
-"use server";
-import prisma from "@/lib/server/db";
-import { Prisma } from "@prisma/client";
 import { formDataList, TypeList } from "@/lib/Types/commonTypes";
 
-type genericModel = {
-  type: TypeList;
-  formData: formDataList;
-};
-export abstract class BaseRepository<T extends genericModel> {
+export abstract class BaseRepository<T extends TypeList> {
   protected abstract model: any;
   protected abstract baseOptions: object;
   //
 
-  async findById(id: string, options?: object): Promise<T["type"] | null> {
+  async findById(id: string, options?: object): Promise<T | null> {
     return this.model.findUnique({
       where: { id },
       ...options,
@@ -20,22 +13,18 @@ export abstract class BaseRepository<T extends genericModel> {
     });
   }
 
-  async findMany(options?: object): Promise<T["type"][]> {
+  async findMany(options?: object): Promise<T[]> {
     return this.model.findMany({
       ...options,
       ...this.baseOptions,
     });
   }
 
-  async create(data: T["formData"], options?: object): Promise<T["type"]> {
+  async create(data: Partial<T>, options?: object): Promise<T> {
     return this.model.create({ data, ...options, ...this.baseOptions });
   }
 
-  async update(
-    id: string,
-    data: T["formData"],
-    options?: object
-  ): Promise<T["type"]> {
+  async update(id: string, data: Partial<T>, options?: object): Promise<T> {
     return this.model.update({
       where: { id },
       data: { ...data },
@@ -44,8 +33,16 @@ export abstract class BaseRepository<T extends genericModel> {
     });
   }
 
-  async delete(id: string, options?: object): Promise<T["type"]> {
+  async delete(id: string, options?: object): Promise<T> {
     return this.model.delete({
+      where: { id },
+      ...options,
+      ...this.baseOptions,
+    });
+  }
+
+  async deleteMany(id: string, options?: object): Promise<void> {
+    await this.model.deleteMany({
       where: { id },
       ...options,
       ...this.baseOptions,
