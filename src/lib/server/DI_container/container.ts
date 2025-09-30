@@ -19,30 +19,35 @@ export class Container {
     }
     return this.services.get("userRepository");
   }
+
   get artistRepository(): ArtistRepository {
     if (!this.services.has("artistRepository")) {
       this.services.set("artistRepository", new ArtistRepository());
     }
     return this.services.get("artistRepository");
   }
+
   get playlistRepository(): PlaylistRepository {
     if (!this.services.has("playlistRepository")) {
       this.services.set("playlistRepository", new PlaylistRepository());
     }
     return this.services.get("playlistRepository");
   }
+
   get albumRepository(): AlbumRepository {
     if (!this.services.has("albumRepository")) {
       this.services.set("albumRepository", new AlbumRepository());
     }
     return this.services.get("albumRepository");
   }
+
   get songRepository(): SongRepository {
     if (!this.services.has("songRepository")) {
       this.services.set("songRepository", new SongRepository());
     }
     return this.services.get("songRepository");
   }
+
   get refreshTokenRepository(): RefreshTokenRepository {
     if (!this.services.has("refreshTokenRepository")) {
       this.services.set("refreshTokenRepository", new RefreshTokenRepository());
@@ -56,6 +61,7 @@ export class Container {
     }
     return this.services.get("cookieService");
   }
+
   get userService(): UserService {
     if (!this.services.has("userService")) {
       this.services.set(
@@ -65,6 +71,7 @@ export class Container {
     }
     return this.services.get("userService");
   }
+
   get tokenService(): TokenServices {
     if (!this.services.has("tokenService")) {
       this.services.set(
@@ -72,13 +79,13 @@ export class Container {
         new TokenServices(
           this.userRepository,
           this.cookieService,
-          this.refreshTokenRepository,
-          this.authService
+          this.refreshTokenRepository
         )
       );
     }
     return this.services.get("tokenService");
   }
+
   get authService(): AuthService {
     if (!this.services.has("authService")) {
       this.services.set(
@@ -93,6 +100,7 @@ export class Container {
     }
     return this.services.get("authService");
   }
+
   get musicService(): MusicService {
     if (!this.services.has("musicService")) {
       this.services.set(
@@ -108,6 +116,7 @@ export class Container {
     }
     return this.services.get("musicService");
   }
+
   get playlistService(): PlaylistService {
     if (!this.services.has("playlistService")) {
       this.services.set(

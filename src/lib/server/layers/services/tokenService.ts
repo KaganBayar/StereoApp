@@ -17,18 +17,15 @@ export class TokenServices {
   private userRepository: UserRepository;
   private cookieService: CookieService;
   private refreshRepository: RefreshTokenRepository;
-  private authService: AuthService;
 
   constructor(
     userRepository: UserRepository,
     cookieService: CookieService,
-    refreshRepository: RefreshTokenRepository,
-    authService: AuthService
+    refreshRepository: RefreshTokenRepository
   ) {
     this.userRepository = userRepository;
     this.cookieService = cookieService;
     this.refreshRepository = refreshRepository;
-    this.authService = authService;
   }
   public async signToken(
     obj: { id: string },
@@ -83,13 +80,9 @@ export class TokenServices {
       throw new Error("Token is required for verification");
     } else {
       try {
-        const verifiedToken = await jose.jwtVerify(
-          token,
-          new TextEncoder().encode(process.env.JWT_SECRET_KEY),
-          {
-            algorithms: ["HS256"],
-          }
-        );
+        const verifiedToken = await jose.jwtVerify(token, this.JWT_SECRET, {
+          algorithms: ["HS256"],
+        });
         const tokenPayload = verifiedToken.payload;
         const UserPayload = userTokenSchema.parse(tokenPayload) as UserPayload; // Validate the decoded token
         const refreshToken = await this.refreshRepository.findByUserId(
@@ -113,19 +106,11 @@ export class TokenServices {
             throw new Error("Failed to refresh access token: " + error);
           }
         } else {
-          this.cookieService.deleteCookie("accessToken");
+          await this.cookieService.deleteCookie("accessToken");
           throw new Error("Access Token verification failed: " + e);
         }
       }
     }
-  }
-  //dont use in client
-  public async findRefreshTokenByUserId(
-    UserPayload: UserPayload,
-    user_id: string
-  ): Promise<RefreshToken | null> {
-    await this.authService.requireAdminUser(UserPayload);
-    return this.refreshRepository.findByUserId(user_id);
   }
 
   public async refreshAccessToken(token: string): Promise<string> {
@@ -152,7 +137,7 @@ export class TokenServices {
         const newAccessToken = await this.createJWTAccessToken(decodedToken);
 
         console.log("COOKIE", newAccessToken);
-        this.cookieService.setAccessCookie(newAccessToken);
+        await this.cookieService.setAccessCookie(newAccessToken);
         //send refresh page order to client
         return newAccessToken;
       } catch (error) {
