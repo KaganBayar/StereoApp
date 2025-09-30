@@ -9,10 +9,29 @@ import bcrypt from "bcrypt";
 import prisma from "./db";
 import { RefreshTokenRepository } from "./layers/repositories/refreshTokenRepository";
 import { time } from "../Types/commonTypes";
+import { container } from "./DI_container/container";
+import { UserFrontendSchema } from "./Schemas/userFrontend";
+
+const cookieService = container.cookieService;
+const authService = container.authService;
+const tokenService = container.tokenService;
 
 export function hashPassword(password: string): Promise<string> {
   const saltRounds = 10;
   return bcrypt.hash(password, saltRounds);
+}
+
+export function disstillUserPayloadToFrontend(
+  UserPayload: UserPayload
+): UserFrontend {
+  const aa = UserFrontendSchema.transform(() => {
+    const { iss, iat, exp, ...UserFrontend } = UserPayload;
+    return UserFrontend;
+  })
+    .pipe(UserFrontendSchema)
+    .parse(UserPayload);
+
+  return aa as UserFrontend;
 }
 
 export async function signToken(obj: UserPayload) {
@@ -26,9 +45,23 @@ export async function signToken(obj: UserPayload) {
     .sign(secret);
   return jwt;
 }
+
 export async function comparePassword(
   plainTextPassword: string,
   hashedPassword: string
 ): Promise<boolean> {
   return bcrypt.compare(plainTextPassword, hashedPassword);
+}
+
+export async function getCurrentUser(): Promise<UserPayload | null> {
+  const token = await cookieService.getAccessCookie();
+
+  if (!token) return null;
+
+  try {
+    const verifiedToken = await tokenService.verifyAuthToken(token);
+    return verifiedToken;
+  } catch (error) {
+    throw new Error("getCurrentUser() : Invalid token or user not found ");
+  }
 }

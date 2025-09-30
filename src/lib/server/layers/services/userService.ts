@@ -1,7 +1,7 @@
 import { deleteUser } from "firebase/auth";
 import { UserRepository } from "../repositories/userRepository";
 import { AuthService } from "./authService";
-import { User } from "@/lib/Types/userTypes";
+import { User, UserPayload } from "@/lib/Types/userTypes";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -10,39 +10,40 @@ export class UserService {
     this.userRepository = userRepository;
     this.authService = authService;
   }
-  createUser(data: User): Promise<User> {
-    this.authService.validateUserSession();
+  async createUser(UserPayload: UserPayload, data: User): Promise<User> {
+    await this.authService.requireAdminUser(UserPayload);
     return this.userRepository.create(data);
   }
-  updateUser(id: string, data: Partial<User>): Promise<User> {
-    this.authService.validateUserSession();
-    return this.userRepository.update(id, data);
+  async updateUser(
+    UserPayload: UserPayload,
+    user_id: string,
+    data: Partial<User>
+  ): Promise<User> {
+    await this.authService.requireAdminUser(UserPayload);
+    return this.userRepository.update(user_id, data);
   }
-  deleteUser(id: string): Promise<User> {
-    this.authService.validateUserSession();
+  async deleteUser(UserPayload: UserPayload, id: string): Promise<User> {
+    await this.authService.requireAdminUser(UserPayload);
     return this.userRepository.delete(id);
   }
-  deleteManyUsers(id: string): Promise<void> {
-    this.authService.validateUserSession();
-    return this.userRepository.deleteMany(id);
+  async deleteManyUsers(
+    UserPayload: UserPayload,
+    ids: string[]
+  ): Promise<void> {
+    await this.authService.requireAdminUser(UserPayload);
+    return this.userRepository.deleteMany(ids);
   }
 
-  getUserById(id: string): Promise<User | null> {
-    this.authService.validateUserSession();
+  async getUserById(
+    UserPayload: UserPayload,
+    id: string
+  ): Promise<User | null> {
     return this.userRepository.findById(id);
   }
-  findById(id: string): Promise<User | null> {
-    this.authService.validateUserSession();
-    return this.userRepository.findById(id);
-  }
-
-  getAllUsers(): Promise<User[]> {
-    this.authService.validateUserSession();
+  async getAllUsers(): Promise<User[]> {
     return this.userRepository.findMany();
   }
-  findUserByEmail(email: string): Promise<User | null> {
-    this.authService.validateUserSession();
+  async findUserByEmail(email: string): Promise<User | null> {
     return this.userRepository.findUserByEmail(email);
   }
-  
 }

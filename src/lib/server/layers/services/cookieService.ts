@@ -20,7 +20,7 @@ export class CookieService {
     cookieStore.set(name, value, options);
   }
 
-  public async setAcessCookie(token: string): Promise<void> {
+  public async setAccessCookie(token: string): Promise<void> {
     const cookieStore = await cookies();
     const options: CookieOptions = {
       httpOnly: true,
@@ -36,5 +36,11 @@ export class CookieService {
     const cookieStore = await cookies();
     cookieStore.delete(name);
   }
-  
+
+  public async getAccessCookie(): Promise<string | null> {
+    const cookieStore = await cookies();
+    const data = cookieStore.get("accessToken");
+    if (!data) throw new Error("Cookie not found");
+    return data.value;
+  }
 }

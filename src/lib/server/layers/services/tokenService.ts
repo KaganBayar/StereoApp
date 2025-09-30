@@ -1,29 +1,34 @@
 import { UserRepository } from "../repositories/userRepository";
 import { CookieService } from "./cookieService";
 import { RefreshTokenRepository } from "../repositories/refreshTokenRepository";
-import { CookieServiceInterface } from "./Interfaces/cookieService";
+
 import * as jose from "jose";
-import { UserFrontend, UserPayload } from "@/lib/Types/userTypes";
+import { User, UserFrontend, UserPayload } from "@/lib/Types/userTypes";
 import { time } from "@/lib/Types/commonTypes";
 import crypto from "crypto";
 import { userTokenSchema } from "../../Schemas/userToken";
+import { RefreshToken } from "@/lib/Types/refreshTokenTypes";
+import { AuthService } from "./authService";
 
 export class TokenServices {
   private readonly JWT_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET_KEY
   );
   private userRepository: UserRepository;
-  private cookieService: CookieServiceInterface;
+  private cookieService: CookieService;
   private refreshRepository: RefreshTokenRepository;
+  private authService: AuthService;
 
   constructor(
     userRepository: UserRepository,
-    cookieService: CookieServiceInterface,
-    refreshRepository: RefreshTokenRepository
+    cookieService: CookieService,
+    refreshRepository: RefreshTokenRepository,
+    authService: AuthService
   ) {
     this.userRepository = userRepository;
     this.cookieService = cookieService;
     this.refreshRepository = refreshRepository;
+    this.authService = authService;
   }
   public async signToken(
     obj: { id: string },
@@ -48,21 +53,31 @@ export class TokenServices {
     return jwt;
   }
 
-  public async createRefreshToken(userId: string) {
-    const refreshToken = crypto.randomBytes(32).toString("hex");
+  public async createJWTRefreshToken(userId: string) {
+    const refreshToken = await new jose.SignJWT({ user_id: userId })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setIssuer(userId)
+      .setExpirationTime("30d")
+      .sign(this.JWT_SECRET);
     const createdToken = await this.refreshRepository.create({
       token: refreshToken,
-      userId: userId,
-      expiresAt: new Date(Date.now() + time.MONTH), // 30 days
+      user_id: userId,
+      expires_at: new Date(Date.now() + time.MONTH), // 30 days
     });
     return createdToken;
   }
+
+  public deleteAllUsersRefreshTokens = async (userId: string) => {
+    await this.refreshRepository.deleteAllByUserId(userId);
+  };
 
   public async decodeUserToken(token: string): Promise<UserPayload> {
     const decoded = jose.decodeJwt(token);
     userTokenSchema.parse(decoded); // Validate the decoded token
     return decoded as UserPayload;
   }
+
   public async verifyAuthToken(token: string): Promise<UserPayload> {
     if (!token) {
       throw new Error("Token is required for verification");
@@ -76,9 +91,16 @@ export class TokenServices {
           }
         );
         const tokenPayload = verifiedToken.payload;
-        userTokenSchema.parse(tokenPayload); // Validate the decoded token
+        const UserPayload = userTokenSchema.parse(tokenPayload) as UserPayload; // Validate the decoded token
+        const refreshToken = await this.refreshRepository.findByUserId(
+          UserPayload.id
+        );
+        if (!refreshToken) {
+          throw new Error("Refresh token not found for user");
+        }
+
         console.log("VERIFIED");
-        return tokenPayload as UserPayload;
+        return UserPayload;
       } catch (e) {
         if (e instanceof jose.errors.JWTExpired) {
           try {
@@ -91,11 +113,21 @@ export class TokenServices {
             throw new Error("Failed to refresh access token: " + error);
           }
         } else {
-          throw new Error("Token verification failed: " + e);
+          this.cookieService.deleteCookie("accessToken");
+          throw new Error("Access Token verification failed: " + e);
         }
       }
     }
   }
+  //dont use in client
+  public async findRefreshTokenByUserId(
+    UserPayload: UserPayload,
+    user_id: string
+  ): Promise<RefreshToken | null> {
+    await this.authService.requireAdminUser(UserPayload);
+    return this.refreshRepository.findByUserId(user_id);
+  }
+
   public async refreshAccessToken(token: string): Promise<string> {
     if (!token) {
       throw new Error("No token provided");
@@ -103,7 +135,7 @@ export class TokenServices {
       try {
         const decodedToken = await this.decodeUserToken(token);
 
-        const refreshToken = await this.refreshRepository.findById(
+        const refreshToken = await this.refreshRepository.findByUserId(
           decodedToken.id
         );
 
@@ -112,15 +144,15 @@ export class TokenServices {
             throw new Error("Refresh token not found");
           }
           throw new Error("Refresh token expired");
+          //sign new token
         }
-        //sign new token
 
         userTokenSchema.parse(decodedToken);
 
         const newAccessToken = await this.createJWTAccessToken(decodedToken);
 
         console.log("COOKIE", newAccessToken);
-        this.cookieService.setAcessCookie(newAccessToken);
+        this.cookieService.setAccessCookie(newAccessToken);
         //send refresh page order to client
         return newAccessToken;
       } catch (error) {

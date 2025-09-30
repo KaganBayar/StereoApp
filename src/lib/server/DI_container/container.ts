@@ -7,7 +7,6 @@ import { UserService } from "../layers/services/userService";
 import { AlbumRepository } from "../layers/repositories/albumRepository";
 import { SongRepository } from "../layers/repositories/songRepository";
 import { MusicService } from "../layers/services/musicService";
-import { CookieServiceInterface } from "../layers/services/Interfaces/cookieService";
 import { PlaylistRepository } from "../layers/repositories/playlistRepository";
 import { ArtistRepository } from "../layers/repositories/artistRepository";
 import { PlaylistService } from "../layers/services/playlistService";
@@ -50,7 +49,8 @@ export class Container {
     }
     return this.services.get("refreshTokenRepository");
   }
-  get cookieService(): CookieServiceInterface {
+
+  get cookieService(): CookieService {
     if (!this.services.has("cookieService")) {
       this.services.set("cookieService", new CookieService());
     }
@@ -72,7 +72,8 @@ export class Container {
         new TokenServices(
           this.userRepository,
           this.cookieService,
-          this.refreshTokenRepository
+          this.refreshTokenRepository,
+          this.authService
         )
       );
     }

@@ -41,9 +41,9 @@ export abstract class BaseRepository<T extends TypeList> {
     });
   }
 
-  async deleteMany(id: string, options?: object): Promise<void> {
+  async deleteMany(id: string[], options?: object): Promise<void> {
     await this.model.deleteMany({
-      where: { id },
+      where: { id: { in: id } },
       ...options,
       ...this.baseOptions,
     });

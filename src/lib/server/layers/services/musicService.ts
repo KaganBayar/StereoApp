@@ -6,6 +6,7 @@ import { Album, AlbumFormData } from "@/lib/Types/albumTypes";
 import { Song, SongFormData } from "@/lib/Types/songTypes";
 import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
 import { ArtistRepository } from "../repositories/artistRepository";
+import { UserPayload } from "@/lib/Types/userTypes";
 
 export class MusicService {
   private userRepository: UserRepository;
@@ -28,112 +29,132 @@ export class MusicService {
     this.artistRepository = artistRepository;
   }
   // album related methods
-  createAlbum(data: Partial<Album>): Promise<Album> {
-    this.authService.validateUserSession();
-    return this.albumRepository.create(data);
+  async createAlbum(
+    requestingUserToken: UserPayload,
+    data: Partial<Album>
+  ): Promise<Album> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.albumRepository.create(data);
   }
-  updateAlbum(id: string, data: Partial<Album>): Promise<Album> {
-    this.authService.validateUserSession();
-    return this.albumRepository.update(id, data);
+  async updateAlbum(
+    requestingUserToken: UserPayload,
+    album_id: string,
+    data: Partial<Album>
+  ): Promise<Album> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.albumRepository.update(album_id, data);
   }
-  deleteAlbum(id: string): Promise<Album> {
-    this.authService.validateUserSession();
-    return this.albumRepository.delete(id);
+  async deleteAlbum(
+    requestingUserToken: UserPayload,
+    album_id: string
+  ): Promise<Album> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.albumRepository.delete(album_id);
   }
-  deleteManyAlbums(id: string): Promise<void> {
-    this.authService.validateUserSession();
-    return this.albumRepository.deleteMany(id);
+  async deleteManyAlbums(
+    requestingUserToken: UserPayload,
+    album_ids: string[]
+  ): Promise<void> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.albumRepository.deleteMany(album_ids);
   }
-  getAlbumById(id: string): Promise<Album | null> {
-    this.authService.validateUserSession();
-    return this.albumRepository.findById(id);
+  async findAlbumById(album_id: string): Promise<Album | null> {
+    return await this.albumRepository.findById(album_id);
   }
-  findById(id: string): Promise<Album | null> {
-    this.authService.validateUserSession();
-    return this.albumRepository.findById(id);
+  async findById(album_id: string): Promise<Album | null> {
+    return await this.albumRepository.findById(album_id);
   }
-  getAllAlbums(): Promise<Album[]> {
-    this.authService.validateUserSession();
-    return this.albumRepository.findMany();
+  async getAllAlbums(): Promise<Album[]> {
+    return await this.albumRepository.findMany();
   }
   // song related methods
-  createSong(data: Partial<Song>): Promise<Song> {
-    this.authService.validateUserSession();
-    return this.songRepository.create(data);
+  async createSong(
+    requestingUserToken: UserPayload,
+    data: Partial<Song>
+  ): Promise<Song> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.songRepository.create(data);
   }
 
-  updateSong(id: string, data: Partial<Song>): Promise<Song> {
-    this.authService.validateUserSession();
-    return this.songRepository.update(id, data);
+  async updateSong(
+    requestingUserToken: UserPayload,
+    song_id: string,
+    data: Partial<Song>
+  ): Promise<Song> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.songRepository.update(song_id, data);
   }
 
-  deleteSong(id: string): Promise<Song> {
-    this.authService.validateUserSession();
-    return this.songRepository.delete(id);
+  async deleteSong(
+    requestingUserToken: UserPayload,
+    song_id: string
+  ): Promise<Song> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.songRepository.delete(song_id);
   }
 
-  deleteManySongs(id: string): Promise<void> {
-    this.authService.validateUserSession();
-    return this.songRepository.deleteMany(id);
+  async deleteManySongs(
+    requestingUserToken: UserPayload,
+    song_ids: string[]
+  ): Promise<void> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.songRepository.deleteMany(song_ids);
   }
 
-  getSongById(id: string): Promise<Song | null> {
-    this.authService.validateUserSession();
-    return this.songRepository.findById(id);
+  async findSongById(song_id: string): Promise<Song | null> {
+    return await this.songRepository.findById(song_id);
+  }
+  async findSongByArtistId(artist_id: string): Promise<Song[] | null> {
+    return await this.songRepository.findByArtistId(artist_id);
   }
 
-  findSongById(id: string): Promise<Song | null> {
-    this.authService.validateUserSession();
-    return this.songRepository.findById(id);
-  }
-  findSongByArtistId(artist_id: string): Promise<Song[] | null> {
-    this.authService.validateUserSession();
-    return this.songRepository.findByArtistId(artist_id);
+  async getAllSongs(): Promise<Song[]> {
+    return await this.songRepository.findMany();
   }
 
-  getAllSongs(): Promise<Song[]> {
-    this.authService.validateUserSession();
-    return this.songRepository.findMany();
-  }
-
-  getSongsByArtistId(artistId: string): Promise<Song[] | null> {
-    this.authService.validateUserSession();
-    return this.songRepository.findByArtistId(artistId);
+  async findSongsByArtistId(artist_id: string): Promise<Song[] | null> {
+    return await this.songRepository.findByArtistId(artist_id);
   }
 
   //Artist Part
-  createArtist(data: Partial<Artist>): Promise<Artist> {
-    this.authService.validateUserSession();
-    return this.artistRepository.create(data);
+  async createArtist(
+    requestingUserToken: UserPayload,
+    data: Partial<Artist>
+  ): Promise<Artist> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.artistRepository.create(data);
   }
 
-  updateArtist(id: string, data: Partial<Artist>): Promise<Artist> {
-    this.authService.validateUserSession();
-    return this.artistRepository.update(id, data);
+  async updateArtist(
+    requestingUserToken: UserPayload,
+    artist_id: string,
+    data: Partial<Artist>
+  ): Promise<Artist> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.artistRepository.update(artist_id, data);
   }
 
-  deleteArtist(id: string): Promise<Artist> {
-    this.authService.validateUserSession();
-    return this.artistRepository.delete(id);
+  async deleteArtist(
+    requestingUserToken: UserPayload,
+    artist_id: string
+  ): Promise<Artist> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.artistRepository.delete(artist_id);
   }
 
-  deleteManyArtists(id: string): Promise<void> {
-    this.authService.validateUserSession();
-    return this.artistRepository.deleteMany(id);
+  async deleteManyArtists(
+    requestingUserToken: UserPayload,
+    artist_ids: string[]
+  ): Promise<void> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.artistRepository.deleteMany(artist_ids);
   }
 
-  getArtistById(id: string): Promise<Artist | null> {
-    this.authService.validateUserSession();
-    return this.artistRepository.findById(id);
+  async findArtistById(artist_id: string): Promise<Artist | null> {
+    return await this.artistRepository.findById(artist_id);
   }
 
-  findArtistById(id: string): Promise<Artist | null> {
-    this.authService.validateUserSession();
-    return this.artistRepository.findById(id);
-  }
-
-  getAllArtists(): Promise<Artist[]> {
-    this.authService.validateUserSession();
-    return this.artistRepository.findMany();
+  async getAllArtists(): Promise<Artist[]> {
+    return await this.artistRepository.findMany();
   }
 }

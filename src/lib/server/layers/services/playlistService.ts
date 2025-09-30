@@ -1,3 +1,4 @@
+import { UserPayload } from "@/lib/Types/userTypes";
 import { PlaylistRepository } from "../repositories/playlistRepository";
 import { AuthService } from "./authService";
 import { Playlist, PlaylistFormData } from "@/lib/Types/playlistTypes";
@@ -14,48 +15,126 @@ export class PlaylistService {
     this.authService = authService;
   }
 
-  createPlaylist(data: Partial<Playlist>): Promise<Playlist> {
-    this.authService.validateUserSession();
-    return this.playlistRepository.create(data);
+  async createPlaylist(
+    requestingUserToken: UserPayload,
+    data: Partial<Playlist>
+  ): Promise<Playlist> {
+    const user = await this.authService.requireValidUser(requestingUserToken);
+    //admin check
+    if (user.roles.includes("admin")) {
+      return await this.playlistRepository.create(data);
+    }
+    if (data.user_id === user.id) {
+      return await this.playlistRepository.create(data);
+    }
+    throw new Error("User not authorized to create playlist for another user");
   }
 
-  updatePlaylist(id: string, data: Partial<Playlist>): Promise<Playlist> {
-    this.authService.validateUserSession();
-    return this.playlistRepository.update(id, data);
+  async updatePlaylist(
+    requestingUserToken: UserPayload,
+    id: string,
+    data: Partial<Playlist>
+  ): Promise<Playlist> {
+    const user = await this.authService.requireValidUser(requestingUserToken);
+    //admin check
+    if (user.roles.includes("admin")) {
+      return await this.playlistRepository.update(id, data);
+    }
+
+    const playlist = await this.playlistRepository.findById(id);
+
+    if (!playlist) {
+      throw new Error("Playlist not found");
+    }
+
+    if (playlist.user_id === user.id) {
+      return await this.playlistRepository.update(id, data);
+    }
+    throw new Error("User not authorized to update playlist for another user");
   }
 
-  deletePlaylist(id: string): Promise<Playlist> {
-    this.authService.validateUserSession();
-    return this.playlistRepository.delete(id);
+  async deletePlaylist(
+    requestingUserToken: UserPayload,
+    id: string
+  ): Promise<Playlist> {
+    const user = await this.authService.requireValidUser(requestingUserToken);
+    if (user.roles.includes("admin")) {
+      return await this.playlistRepository.delete(id);
+    }
+    const playlist = await this.playlistRepository.findById(id);
+    if (!playlist) {
+      throw new Error("Playlist not found");
+    }
+    if (playlist.user_id === user.id) {
+      return await this.playlistRepository.delete(id);
+    }
+    throw new Error("User not authorized to delete playlist for another user");
   }
 
-  deleteManyPlaylists(id: string): Promise<void> {
-    this.authService.validateUserSession();
-    return this.playlistRepository.deleteMany(id);
+  async deleteManyPlaylists(
+    requestingUserToken: UserPayload,
+    ids: string[]
+  ): Promise<void> {
+    await this.authService.requireAdminUser(requestingUserToken);
+    return await this.playlistRepository.deleteMany(ids);
   }
 
-  getPlaylistById(id: string): Promise<Playlist | null> {
-    this.authService.validateUserSession();
-    return this.playlistRepository.findById(id);
+  async getPlaylistById(id: string): Promise<Playlist | null> {
+    return await this.playlistRepository.findById(id);
   }
 
-  getAllPlaylists(): Promise<Playlist[]> {
-    this.authService.validateUserSession();
-    return this.playlistRepository.findMany();
+  async getAllPlaylists(): Promise<Playlist[]> {
+    return await this.playlistRepository.findMany();
   }
 
-  getUserPlaylists(userId: string): Promise<Playlist[]> {
-    this.authService.validateUserSession();
-    return this.playlistRepository.findUserPlaylists(userId);
+  async getUserPlaylists(userId: string): Promise<Playlist[]> {
+    return await this.playlistRepository.findUserPlaylists(userId);
   }
 
-  addSongToPlaylist(playlistId: string, songId: string) {
-    this.authService.validateUserSession();
-    return this.playlistRepository.addSongToPlaylist(playlistId, songId);
+  async addSongToPlaylist(
+    requestingUserToken: UserPayload,
+    playlistId: string,
+    songId: string
+  ) {
+    const user = await this.authService.requireValidUser(requestingUserToken);
+    if (user.roles.includes("admin")) {
+      return await this.playlistRepository.addSongToPlaylist(
+        playlistId,
+        songId
+      );
+    }
+    const playlist = await this.playlistRepository.findById(playlistId);
+    if (!playlist) {
+      throw new Error("Playlist not found");
+    }
+    if (playlist.user_id !== user.id) {
+      throw new Error("User not authorized to modify this playlist");
+    }
+    return await this.playlistRepository.addSongToPlaylist(playlistId, songId);
   }
 
-  removeSongFromPlaylist(playlistId: string, songId: string) {
-    this.authService.validateUserSession();
-    return this.playlistRepository.removeSongFromPlaylist(playlistId, songId);
+  async removeSongFromPlaylist(
+    requestingUserToken: UserPayload,
+    playlistId: string,
+    songId: string
+  ) {
+    const user = await this.authService.requireValidUser(requestingUserToken);
+    if (user.roles.includes("admin")) {
+      return await this.playlistRepository.removeSongFromPlaylist(
+        playlistId,
+        songId
+      );
+    }
+    const playlist = await this.playlistRepository.findById(playlistId);
+    if (!playlist) {
+      throw new Error("Playlist not found");
+    }
+    if (playlist.user_id !== user.id) {
+      throw new Error("User not authorized to modify this playlist");
+    }
+    return await this.playlistRepository.removeSongFromPlaylist(
+      playlistId,
+      songId
+    );
   }
 }
