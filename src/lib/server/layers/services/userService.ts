@@ -10,34 +10,20 @@ export class UserService {
     this.userRepository = userRepository;
     this.authService = authService;
   }
-  async createUser(UserPayload: UserPayload, data: User): Promise<User> {
-    await this.authService.requireAdminUser(UserPayload);
+  async createUser(data: User): Promise<User> {
     return this.userRepository.create(data);
   }
-  async updateUser(
-    UserPayload: UserPayload,
-    user_id: string,
-    data: Partial<User>
-  ): Promise<User> {
-    await this.authService.requireAdminUser(UserPayload);
+  async updateUser(user_id: string, data: Partial<User>): Promise<User> {
     return this.userRepository.update(user_id, data);
   }
-  async deleteUser(UserPayload: UserPayload, id: string): Promise<User> {
-    await this.authService.requireAdminUser(UserPayload);
+  async deleteUser(id: string): Promise<User> {
     return this.userRepository.delete(id);
   }
-  async deleteManyUsers(
-    UserPayload: UserPayload,
-    ids: string[]
-  ): Promise<void> {
-    await this.authService.requireAdminUser(UserPayload);
+  async deleteManyUsers(ids: string[]): Promise<void> {
     return this.userRepository.deleteMany(ids);
   }
 
-  async getUserById(
-    UserPayload: UserPayload,
-    id: string
-  ): Promise<User | null> {
+  async getUserById(id: string): Promise<User | null> {
     return this.userRepository.findById(id);
   }
   async getAllUsers(): Promise<User[]> {
@@ -45,5 +31,8 @@ export class UserService {
   }
   async findUserByEmail(email: string): Promise<User | null> {
     return this.userRepository.findUserByEmail(email);
+  }
+  async isUserAdmin(userId: string): Promise<boolean> {
+    return this.userRepository.checkIfUserIsAdmin(userId);
   }
 }

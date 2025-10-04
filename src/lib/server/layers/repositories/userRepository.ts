@@ -22,4 +22,11 @@ export class UserRepository extends BaseRepository<User> {
 
     return user;
   }
+  async checkIfUserIsAdmin(userId: string): Promise<boolean> {
+    const user = await this.model.findUnique({
+      where: { id: userId },
+    });
+    if (!user) return false;
+    return user.roles.includes("admin");
+  }
 }

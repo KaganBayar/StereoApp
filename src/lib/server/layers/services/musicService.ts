@@ -29,33 +29,16 @@ export class MusicService {
     this.artistRepository = artistRepository;
   }
   // album related methods
-  async createAlbum(
-    requestingUserToken: UserPayload,
-    data: Partial<Album>
-  ): Promise<Album> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async createAlbum(data: Partial<Album>): Promise<Album> {
     return await this.albumRepository.create(data);
   }
-  async updateAlbum(
-    requestingUserToken: UserPayload,
-    album_id: string,
-    data: Partial<Album>
-  ): Promise<Album> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async updateAlbum(album_id: string, data: Partial<Album>): Promise<Album> {
     return await this.albumRepository.update(album_id, data);
   }
-  async deleteAlbum(
-    requestingUserToken: UserPayload,
-    album_id: string
-  ): Promise<Album> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async deleteAlbum(album_id: string): Promise<Album> {
     return await this.albumRepository.delete(album_id);
   }
-  async deleteManyAlbums(
-    requestingUserToken: UserPayload,
-    album_ids: string[]
-  ): Promise<void> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async deleteManyAlbums(album_ids: string[]): Promise<void> {
     return await this.albumRepository.deleteMany(album_ids);
   }
   async findAlbumById(album_id: string): Promise<Album | null> {
@@ -68,36 +51,19 @@ export class MusicService {
     return await this.albumRepository.findMany();
   }
   // song related methods
-  async createSong(
-    requestingUserToken: UserPayload,
-    data: Partial<Song>
-  ): Promise<Song> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async createSong(data: Partial<Song>): Promise<Song> {
     return await this.songRepository.create(data);
   }
 
-  async updateSong(
-    requestingUserToken: UserPayload,
-    song_id: string,
-    data: Partial<Song>
-  ): Promise<Song> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async updateSong(song_id: string, data: Partial<Song>): Promise<Song> {
     return await this.songRepository.update(song_id, data);
   }
 
-  async deleteSong(
-    requestingUserToken: UserPayload,
-    song_id: string
-  ): Promise<Song> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async deleteSong(song_id: string): Promise<Song> {
     return await this.songRepository.delete(song_id);
   }
 
-  async deleteManySongs(
-    requestingUserToken: UserPayload,
-    song_ids: string[]
-  ): Promise<void> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async deleteManySongs(song_ids: string[]): Promise<void> {
     return await this.songRepository.deleteMany(song_ids);
   }
 
@@ -117,36 +83,22 @@ export class MusicService {
   }
 
   //Artist Part
-  async createArtist(
-    requestingUserToken: UserPayload,
-    data: Partial<Artist>
-  ): Promise<Artist> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async createArtist(data: Partial<Artist>): Promise<Artist> {
     return await this.artistRepository.create(data);
   }
 
   async updateArtist(
-    requestingUserToken: UserPayload,
     artist_id: string,
     data: Partial<Artist>
   ): Promise<Artist> {
-    await this.authService.requireAdminUser(requestingUserToken);
     return await this.artistRepository.update(artist_id, data);
   }
 
-  async deleteArtist(
-    requestingUserToken: UserPayload,
-    artist_id: string
-  ): Promise<Artist> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async deleteArtist(artist_id: string): Promise<Artist> {
     return await this.artistRepository.delete(artist_id);
   }
 
-  async deleteManyArtists(
-    requestingUserToken: UserPayload,
-    artist_ids: string[]
-  ): Promise<void> {
-    await this.authService.requireAdminUser(requestingUserToken);
+  async deleteManyArtists(artist_ids: string[]): Promise<void> {
     return await this.artistRepository.deleteMany(artist_ids);
   }
 

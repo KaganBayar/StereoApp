@@ -17,7 +17,8 @@ import { initialPlaylist } from "@/lib/shared/initialState";
 import { findPlaylistById } from "@/lib/server/dbActions";
 import { useRef } from "react";
 import { photoUse } from "@/lib/client/firebaseActions";
-
+import { Album } from "@/lib/Types/albumTypes";
+import { Artist } from "@/lib/Types/artistTypes";
 type PagePlaylist = {
   id: string;
   name: string;
@@ -40,6 +41,8 @@ export default function PlaylistPage({
   const [tracks, setTracks] = React.useState<PlaylistSong[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [image, setImage] = React.useState<string | null>(null);
+  const [albums, setAlbums] = React.useState<Album[]>([]);
+  const [artists, setArtists] = React.useState<Artist[]>([]);
 
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);

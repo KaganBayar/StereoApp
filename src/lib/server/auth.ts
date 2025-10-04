@@ -52,16 +52,3 @@ export async function comparePassword(
 ): Promise<boolean> {
   return bcrypt.compare(plainTextPassword, hashedPassword);
 }
-
-export async function getCurrentUser(): Promise<UserPayload | null> {
-  const token = await cookieService.getAccessCookie();
-
-  if (!token) return null;
-
-  try {
-    const verifiedToken = await tokenService.verifyAuthToken(token);
-    return verifiedToken;
-  } catch (error) {
-    throw new Error("getCurrentUser() : Invalid token or user not found ");
-  }
-}

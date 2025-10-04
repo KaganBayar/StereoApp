@@ -1,7 +1,7 @@
 "use server";
 import { container } from "../../DI_container/container";
 import { formRegisterSchema } from "../../Schemas/register";
-import { getCurrentUser } from "../../auth";
+import { authMiddleware } from "@/lib/middleware/authMiddleware";
 import { formLoginSchema } from "../../Schemas/login";
 
 export class AuthActions {
@@ -20,11 +20,13 @@ export class AuthActions {
       formLoginSchema.parse(Object.fromEntries(formdata));
     return await this.authService.login(email, password);
   }
-  async logout() {
-    const user = await getCurrentUser();
-    if (!user) {
-      throw new Error("User not logged in");
-    }
-    return await this.authService.logout(user.id);
+
+  async logout(id: string) {
+    const user = await authMiddleware.requireValidUser();
+    if (!user) throw new Error("User not authenticated");
+
+    return await this.authService.logout(id);
   }
 }
+
+export const authActions = new AuthActions();

@@ -79,53 +79,6 @@ export class AuthService {
     console.log("logged out");
   }
 
-  private async validateUserSession(
-    UserPayload: UserPayload
-  ): Promise<UserPayload> {
-    try {
-      const currentUser: User | null = await this.userRepository.findById(
-        UserPayload.id
-      );
-      //check if user still exists and is active in database
-      if (!currentUser) {
-        throw new Error("UNAUTHORIZED: User no longer exists");
-      }
-      //token check
-      const tokenIssuedAt = new Date((UserPayload.iat || 0) * 1000);
-      const userLastUpdated = currentUser.updated_at || currentUser.created_at;
-      if (userLastUpdated && userLastUpdated > tokenIssuedAt) {
-        await this.refreshRepository.deleteAllByUserId(currentUser.id);
-        throw new Error(
-          "UNAUTHORIZED: User data has been modified. Please re-authenticate."
-        );
-      }
-      return UserPayload;
-    } catch (error) {
-      cookieStore.delete("accessToken");
-      throw error;
-    }
-  }
-  public async requireValidUser(
-    UserPayload: UserPayload
-  ): Promise<UserPayload> {
-    this.validateUserSession(UserPayload);
-    try {
-      return await this.validateUserSession(UserPayload);
-    } catch (error) {
-      throw new Error("UNAUTHORIZED: Invalid user session");
-    }
-  }
-
-  public async requireAdminUser(
-    UserPayload: UserPayload
-  ): Promise<UserPayload> {
-    const currentUser = await this.requireValidUser(UserPayload);
-    if (!currentUser.roles.includes("admin")) {
-      throw new Error("FORBIDDEN: Admin access required");
-    }
-    return currentUser;
-  }
-
   public async refreshAccessTokenAction(token: string) {
     if (!token) {
       throw new Error("No token provided");
