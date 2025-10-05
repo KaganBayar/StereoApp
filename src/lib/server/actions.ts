@@ -113,6 +113,7 @@ export async function login(formData: FormData) {
   const cookieStore = await cookies();
   //refresh token oluşturma
   const refreshToken = crypto.randomBytes(32).toString("hex");
+
   await prisma.refreshToken.deleteMany({
     where: {
       user_id: user.id,
@@ -130,6 +131,7 @@ export async function login(formData: FormData) {
   //access token oluşturma
   const playlists: Playlist[] = await findUserPlaylists(user.id);
   //id email name roles photo_url playlists created_at updated_at favorites
+
   const accessToken = await signToken({
     id: user.id,
     email: user.email,
@@ -149,7 +151,7 @@ export async function login(formData: FormData) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       //csrf'yi araştır bidaha
-      expires: new Date(Date.now() + 60 * 1000), // 1 minute
+      expires: new Date(Date.now() + 5 * 1000), // 5 seconds
       path: "/",
     });
 
@@ -200,6 +202,7 @@ export async function access_cookie() {
 }
 
 export async function refreshAccessTokenAction(token: string) {
+  console.log("Refreshing access token...");
   if (!token) {
     throw new Error("No token provided");
   } else {

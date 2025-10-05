@@ -1,8 +1,8 @@
-import Image from "next/image"
+import Image from "next/image";
 export default function PlaylistPhoto() {
-    return(
-        <div>
-            <Image src="/playlist.jpg" alt="Playlist" width={300} height={300} />
-        </div>
-    )
+  return (
+    <div>
+      <Image src="/playlist.jpg" alt="Playlist" width={300} height={300} />
+    </div>
+  );
 }

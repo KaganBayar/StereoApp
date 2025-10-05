@@ -6,6 +6,7 @@ import UserProvider from "@/provider/userProvider";
 import { initialUser } from "@/lib/shared/initialState";
 import { ENV } from "@/lib/server/Errors/env";
 import reducer from "@/contexts/Reducer";
+import { QueryClient } from "@tanstack/react-query";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

@@ -47,5 +47,3 @@ export enum time {
   MONTH = 2592000000,
   YEAR = 31536000000,
 }
-
-export class queue 

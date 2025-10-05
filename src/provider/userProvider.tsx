@@ -18,15 +18,18 @@ interface UserProviderProps {
   children: React.ReactNode;
   reduce: React.Reducer<UserFrontend, actionType>;
 }
+
 export default function UserProvider({
   User,
   children,
   reduce,
 }: UserProviderProps) {
   const [user, dispatch] = useReducer(reduce, User);
+
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-  //you should confirm if var a's value chanegd between fetches it should use new value of var a. also you shouldnt fetch in effect
+
   useEffect(() => {
+    //take access token verify it then dispatch login
     async function fetchUser() {
       try {
         const accessToken = await access_cookie();

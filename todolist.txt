@@ -1,0 +1,6 @@
+            YAPILACAKLAR                                       ETKİLENECEKLER
+1-global user state management tamamen kaldırılmalı yerine   USER PROVIDER  REDUCER.TS 
+tanstack ile server state management yapılmalı serverden       UserContext initialState
+             
+2-user bilgisi serverdan çekilmeli layouttan provider olarak dağıtılabilir
+

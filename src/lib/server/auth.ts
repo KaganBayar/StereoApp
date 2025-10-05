@@ -41,7 +41,7 @@ export async function signToken(obj: UserPayload) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setIssuer(obj.id)
-    .setExpirationTime("20m")
+    .setExpirationTime("20h") //temporary
     .sign(secret);
   return jwt;
 }

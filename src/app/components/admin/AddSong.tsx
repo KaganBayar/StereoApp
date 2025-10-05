@@ -1,4 +1,4 @@
-//şarkı eklediğin zaman eklendiğini görebiliyorsun ama ekleme formu sonradan kapanıyor
+//[UPDATE NEEDED] şarkı eklediğin zaman eklendiğini görebiliyorsun ama ekleme formu sonradan kapanıyor
 "use client";
 import { useState, useEffect } from "react";
 import { Song, SongFormData } from "@/lib/Types/songTypes";
