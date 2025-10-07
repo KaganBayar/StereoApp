@@ -67,6 +67,7 @@ export class AuthService {
       user.id
     );
     this.cookieService.setAccessCookie(accessToken);
+    this.cookieService.setRefreshCookie(refreshToken.token);
 
     return { accessToken, refreshToken };
   }

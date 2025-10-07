@@ -4,5 +4,3 @@ export const formLoginSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 });
-
-

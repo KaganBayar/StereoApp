@@ -42,7 +42,7 @@ export async function validateUserSession(): Promise<User> {
     }
 
     // Check if user data has been modified after token was issued
-    const tokenIssuedAt = new Date((tokenPayload.iat || 0) * 1000);
+    const tokenIssuedAt = tokenPayload.iat;
     const userLastUpdated = currentUser.updated_at || currentUser.created_at;
 
     if (userLastUpdated && userLastUpdated > tokenIssuedAt) {

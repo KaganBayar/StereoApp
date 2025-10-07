@@ -4,12 +4,17 @@ export class AuthMiddleware {
   private refreshRepository = container.refreshTokenRepository;
   private userRepository = container.userRepository;
   private cookieService = container.cookieService;
+  private tokenService = container.tokenService;
 
   private async validateUserSession(): Promise<UserPayload> {
     try {
-      const token = await this.cookieService.getAccessCookie();
-
-      if (!token) throw new Error("UNAUTHORIZED: No token provided");
+      const token = await this.cookieService
+        .getAccessCookie()
+        .catch(async (e) => {
+          return await this.tokenService.refreshAccessToken().catch((e) => {
+            throw new Error("UNAUTHORIZED: No valid session");
+          });
+        });
 
       const UserPayload = await container.tokenService.verifyAuthToken(token);
 
@@ -21,7 +26,7 @@ export class AuthMiddleware {
         throw new Error("UNAUTHORIZED: User no longer exists");
       }
       //token check
-      const tokenIssuedAt = new Date((UserPayload.iat || 0) * 1000);
+      const tokenIssuedAt = UserPayload.iat;
       const userLastUpdated = currentUser.updated_at || currentUser.created_at;
       if (userLastUpdated && userLastUpdated > tokenIssuedAt) {
         await this.refreshRepository.deleteAllByUserId(currentUser.id);

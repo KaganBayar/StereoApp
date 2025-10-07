@@ -11,7 +11,7 @@ import { RefreshTokenRepository } from "./layers/repositories/refreshTokenReposi
 import { time } from "../Types/commonTypes";
 import { container } from "./DI_container/container";
 import { UserFrontendSchema } from "./Schemas/userFrontend";
-
+import { User } from "../Types/userTypes";
 const cookieService = container.cookieService;
 const authService = container.authService;
 const tokenService = container.tokenService;
@@ -34,7 +34,12 @@ export function disstillUserPayloadToFrontend(
   return aa as UserFrontend;
 }
 
-export async function signToken(obj: UserPayload) {
+export function distillUserToFrontend(User: User): UserFrontend {
+  const { password, ...userFrontend } = User;
+  return userFrontend as UserFrontend;
+}
+
+export async function signToken(obj: UserFrontend) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
   const jwt = await new jose.SignJWT(obj)
