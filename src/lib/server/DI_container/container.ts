@@ -11,7 +11,7 @@ import { PlaylistRepository } from "../layers/repositories/playlistRepository";
 import { ArtistRepository } from "../layers/repositories/artistRepository";
 import { PlaylistService } from "../layers/services/playlistService";
 
-export class Container {
+class Container {
   private services = new Map();
   get userRepository(): UserRepository {
     if (!this.services.has("userRepository")) {

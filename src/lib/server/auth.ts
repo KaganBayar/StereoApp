@@ -12,9 +12,6 @@ import { time } from "../Types/commonTypes";
 import { container } from "./DI_container/container";
 import { UserFrontendSchema } from "./Schemas/userFrontend";
 import { User } from "../Types/userTypes";
-const cookieService = container.cookieService;
-const authService = container.authService;
-const tokenService = container.tokenService;
 
 export function hashPassword(password: string): Promise<string> {
   const saltRounds = 10;

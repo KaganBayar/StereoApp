@@ -12,5 +12,53 @@
       "program": "${workspaceFolder}\\vitest.config.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"]
     }
+     {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Vitest Tests",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test", "--", "--run"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current Test File",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test",
+        "--",
+        "--run",
+        "${relativeFile}"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Single Test",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test",
+        "--",
+        "--run",
+        "-t",
+        "${input:testName}"
+      ],
+      "console": "integratedTerminal"
+    }
+  ],
+   "inputs": [
+    {
+      "id": "testName",
+      "type": "promptString",
+      "description": "Test name pattern to debug"
+    }
   ]
+  
 }

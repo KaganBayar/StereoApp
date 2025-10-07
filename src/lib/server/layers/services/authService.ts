@@ -79,36 +79,4 @@ export class AuthService {
 
     console.log("logged out");
   }
-
-  public async refreshAccessTokenAction(token: string) {
-    if (!token) {
-      throw new Error("No token provided");
-    } else {
-      try {
-        const decodedToken = await this.tokenRepository.decodeUserToken(token);
-
-        const refreshToken = await this.refreshRepository.findById(
-          decodedToken.id
-        );
-
-        if (!refreshToken || refreshToken.expires_at < new Date()) {
-          if (!refreshToken) {
-            throw new Error("Refresh token not found");
-          }
-          throw new Error("Refresh token expired");
-        }
-        //sign new token
-        const newAccessToken = await this.tokenRepository.createJWTAccessToken({
-          ...decodedToken,
-        });
-
-        console.log("COOKIE", newAccessToken);
-        this.cookieService.setAccessCookie(newAccessToken);
-        //send refresh page order to client
-        return newAccessToken;
-      } catch (error) {
-        throw new Error("Failed to refresh access token: " + error);
-      }
-    }
-  }
 }
