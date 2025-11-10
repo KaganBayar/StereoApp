@@ -5,94 +5,118 @@ import { Song, SongFormData } from "@/lib/Types/songTypes";
 import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
 import { authMiddleware } from "@/lib/middleware/authMiddleware";
 
-export class MusicActions {
-  private musicService = container.musicService;
+const musicService = container.musicService;
 
-  // Album Actions
-  async createAlbum(data: AlbumFormData): Promise<Album> {
-    await authMiddleware.requireAdminUser();
+// Album Actions
+export async function createAlbum(data: AlbumFormData): Promise<Album> {
+  await authMiddleware.requireAdminUser();
 
-    return this.musicService.createAlbum(data);
-  }
-
-  async updateAlbum(id: string, data: AlbumFormData): Promise<Album> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.updateAlbum(id, data);
-  }
-  async deleteAlbum(id: string): Promise<Album> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.deleteAlbum(id);
-  }
-  async deleteManyAlbums(ids: string[]): Promise<void> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.deleteManyAlbums(ids);
-  }
-  async getAlbumById(id: string): Promise<Album | null> {
-    return this.musicService.findAlbumById(id);
-  }
-  async getAllAlbums(): Promise<Album[]> {
-    return this.musicService.getAllAlbums();
-  }
-  // Song Actions
-  async createSong(data: SongFormData): Promise<Song> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.createSong(data);
-  }
-  async updateSong(id: string, data: SongFormData): Promise<Song> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.updateSong(id, data);
-  }
-  async deleteSong(id: string): Promise<Song> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.deleteSong(id);
-  }
-  async deleteManySongs(ids: string[]): Promise<void> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.deleteManySongs(ids);
-  }
-  async getSongById(id: string): Promise<Song | null> {
-    return this.musicService.findSongById(id);
-  }
-  async getAllSongs(): Promise<Song[]> {
-    return this.musicService.getAllSongs();
-  }
-  async getSongsByArtistId(artistId: string): Promise<Song[] | null> {
-    return this.musicService.findSongsByArtistId(artistId);
-  }
-  // Artist Actions
-  async createArtist(data: ArtistFormData): Promise<Artist> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.createArtist(data);
-  }
-  async updateArtist(id: string, data: ArtistFormData): Promise<Artist> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.updateArtist(id, data);
-  }
-  async deleteArtist(id: string): Promise<Artist> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.deleteArtist(id);
-  }
-  async deleteManyArtists(ids: string[]): Promise<void> {
-    await authMiddleware.requireAdminUser();
-
-    return this.musicService.deleteManyArtists(ids);
-  }
-  async getArtistById(id: string): Promise<Artist | null> {
-    return this.musicService.findArtistById(id);
-  }
-  async getAllArtists(): Promise<Artist[]> {
-    return this.musicService.getAllArtists();
-  }
+  return musicService.createAlbum(data);
 }
 
-export const musicActions = new MusicActions();
+export async function updateAlbum(
+  id: string,
+  data: AlbumFormData
+): Promise<Album> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.updateAlbum(id, data);
+}
+
+export async function deleteAlbum(id: string): Promise<Album> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.deleteAlbum(id);
+}
+
+export async function deleteManyAlbums(ids: string[]): Promise<void> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.deleteManyAlbums(ids);
+}
+
+export async function getAlbumById(id: string): Promise<Album | null> {
+  return musicService.findAlbumById(id);
+}
+
+export async function getAllAlbums(): Promise<Album[]> {
+  return musicService.getAllAlbums();
+}
+
+// Song Actions
+export async function createSong(data: SongFormData): Promise<Song> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.createSong(data);
+}
+
+export async function updateSong(
+  id: string,
+  data: SongFormData
+): Promise<Song> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.updateSong(id, data);
+}
+
+export async function deleteSong(id: string): Promise<Song> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.deleteSong(id);
+}
+
+export async function deleteManySongs(ids: string[]): Promise<void> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.deleteManySongs(ids);
+}
+
+export async function getSongById(id: string): Promise<Song | null> {
+  return musicService.findSongById(id);
+}
+
+export async function getAllSongs(): Promise<Song[]> {
+  return musicService.getAllSongs();
+}
+
+export async function getSongsByArtistId(
+  artistId: string
+): Promise<Song[] | null> {
+  return musicService.findSongsByArtistId(artistId);
+}
+
+// Artist Actions
+export async function createArtist(data: ArtistFormData): Promise<Artist> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.createArtist(data);
+}
+
+export async function updateArtist(
+  id: string,
+  data: ArtistFormData
+): Promise<Artist> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.updateArtist(id, data);
+}
+
+export async function deleteArtist(id: string): Promise<Artist> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.deleteArtist(id);
+}
+
+export async function deleteManyArtists(ids: string[]): Promise<void> {
+  await authMiddleware.requireAdminUser();
+
+  return musicService.deleteManyArtists(ids);
+}
+
+export async function getArtistById(id: string): Promise<Artist | null> {
+  return musicService.findArtistById(id);
+}
+
+export async function getAllArtists(): Promise<Artist[]> {
+  return musicService.getAllArtists();
+}
