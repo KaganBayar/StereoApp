@@ -10,6 +10,7 @@ const playlistService = container.playlistService;
 const userService = container.userService;
 
 export async function createPlaylist(
+  id: string,
   data: Partial<Playlist>
 ): Promise<Playlist> {
   const user = await authMiddleware.requireValidUser();
@@ -19,7 +20,7 @@ export async function createPlaylist(
     return playlistService.createPlaylist(data);
   }
 
-  if (data.user_id !== user.id) {
+  if (id !== user.id) {
     throw new Error("You can only create playlists for yourself");
   }
   return playlistService.createPlaylist(data);
