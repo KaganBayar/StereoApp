@@ -35,17 +35,18 @@ export const AuthDialog = () => {
   async function handleLogin(previousState: void, formData: FormData) {
     try {
       console.log("logining");
-      await login(formData); //server action login returns access token
+      //[UPDATE NEEDED] Deal with these in implementing auth actions phase
+      await login(formData); //in new auth action it should return user payload directly
 
       const email = formData.get("email") as string;
       if (!email) {
         throw new Error("Email not provided");
       }
-      const user = await findUserByEmail(email);
+      const user = await findUserByEmail(email); //this shouldnt be here in new auth action
       if (!user) {
         throw new Error("User not found");
       }
-      const playlist = await findUserPlaylists(user.id);
+      const playlist = await findUserPlaylists(user.id); //user data should include playlists in new auth action
       console.log("USER", user);
       if (dispatch) {
         dispatch({

@@ -14,7 +14,6 @@ import {
 import { FaPlay } from "react-icons/fa";
 import { Playlist, PlaylistSong } from "@/lib/Types/playlistTypes";
 import { initialPlaylist } from "@/lib/shared/initialState";
-import { findPlaylistById } from "@/lib/server/dbActions";
 import { useRef } from "react";
 import { photoUse } from "@/lib/client/firebaseActions";
 import { Album } from "@/lib/Types/albumTypes";

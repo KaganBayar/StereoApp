@@ -2,15 +2,18 @@ import { FaPlay, FaHeart, FaEllipsisH } from "react-icons/fa";
 import { MdAlbum } from "react-icons/md";
 import { Song } from "@/lib/Types/songTypes";
 import { Album } from "@/lib/Types/albumTypes";
-import { findAllSongs, findAllAlbums } from "@/lib/server/dbActions";
+import {
+  getAllSongs,
+  getAllAlbums,
+} from "@/lib/server/layers/actions/musicActions";
 import { Loader, photoUse } from "@/lib/client/firebaseActions";
 import Image from "next/image";
 import { HomePageSong } from "../components/HomePageSong";
 import { PhotoWithFallback } from "../components/photoWithFallback";
 
 export default async function Home() {
-  const songs = await findAllSongs();
-  const albums = await findAllAlbums();
+  const songs = await getAllSongs();
+  const albums = await getAllAlbums();
 
   return (
     <div className="space-y-8 w-full h-full">

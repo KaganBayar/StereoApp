@@ -12,11 +12,11 @@ import {
 } from "react-icons/fa";
 import Image from "next/image";
 import {
-  findAllAlbums,
-  findAllArtists,
-  updateAlbum,
+  getAllAlbums,
+  getAllArtists,
   createAlbum,
-} from "@/lib/server/dbActions";
+  updateAlbum,
+} from "@/lib/server/layers/actions/musicActions";
 import { uploadString, ref } from "firebase/storage";
 import { storage } from "../../../../config/firebase";
 import { photoUse, Loader } from "@/lib/client/firebaseActions";
@@ -53,8 +53,8 @@ const AddAlbum = () => {
         setLoading(true);
 
         const [albumsData, artistsData] = await Promise.all([
-          findAllAlbums(),
-          findAllArtists(),
+          getAllAlbums(),
+          getAllArtists(),
         ]);
         // Load album cover images from Firebase if albums exist
 

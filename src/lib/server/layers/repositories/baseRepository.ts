@@ -45,7 +45,7 @@ export abstract class BaseRepository<T extends TypeList> {
     await this.model.deleteMany({
       where: { id: { in: id } },
       ...options,
-      ...this.baseOptions,
+      //this.baseOptions omit include
     });
   }
 }

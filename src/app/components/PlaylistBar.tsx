@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { findUserPlaylists } from "@/lib/server/dbActions";
+import { getUserPlaylists } from "@/lib/server/layers/actions/playlistActions";
 import { useContext } from "react";
 import UserContext from "@/contexts/UserContext";
 import { Playlist as PlaylistType } from "@/lib/Types/playlistTypes";
@@ -18,7 +18,7 @@ export default function PlaylistBar() {
     let ignore = false;
     if (user) {
       console.log("playlistBar Fetch");
-      findUserPlaylists(user.id).then((playlists) => {
+      getUserPlaylists(user.id).then((playlists) => {
         if (!ignore) {
           setPlaylist(playlists);
         }

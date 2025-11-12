@@ -28,9 +28,9 @@ export default function UserProvider({
 
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  useEffect(() => {
+  /*useEffect(() => {
     //take access token verify it then dispatch login
-    async function fetchUser() {
+   async function fetchUser() {
       try {
         const accessToken = await access_cookie();
 
@@ -100,6 +100,7 @@ export default function UserProvider({
     }
     fetchUser();
   }, [dispatch]);
+  */
   return (
     <UserContext.Provider value={user}>
       <DispatchContext.Provider value={dispatch}>

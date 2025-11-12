@@ -2,11 +2,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
 import {
-  findAllArtists,
+  getAllArtists,
   createArtist,
   updateArtist,
   deleteArtist,
-} from "@/lib/server/dbActions";
+} from "@/lib/server/layers/actions/musicActions";
 import {
   FaPlus,
   FaEdit,
@@ -46,7 +46,7 @@ const AddArtist = () => {
       try {
         setLoading(true);
         console.log("ArtistLoading");
-        const artistsData = await findAllArtists();
+        const artistsData = await getAllArtists();
         if (artistsData.length > 0) {
           const artistImages = await Loader.loadArtistImages(artistsData);
           if (ignore) return;

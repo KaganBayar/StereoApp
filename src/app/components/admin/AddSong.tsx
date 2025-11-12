@@ -6,10 +6,14 @@ import { Artist } from "@/lib/Types/artistTypes";
 import { Album } from "@/lib/Types/albumTypes";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
-import { findAllSongs } from "@/lib/server/dbActions";
-import { findAllArtists } from "@/lib/server/dbActions";
-import { findAllAlbums } from "@/lib/server/dbActions";
-import { updateSong, createSong, deleteSong } from "@/lib/server/dbActions";
+import {
+  updateSong,
+  createSong,
+  deleteSong,
+  getAllAlbums,
+  getAllArtists,
+  getAllSongs,
+} from "@/lib/server/layers/actions/musicActions";
 import {
   photoUse,
   songUse,
@@ -58,9 +62,9 @@ const AddSong = () => {
         setLoading(true);
 
         const [songsData, artistsData, albumsData] = await Promise.all([
-          findAllSongs(),
-          findAllArtists(),
-          findAllAlbums(),
+          getAllSongs(),
+          getAllArtists(),
+          getAllAlbums(),
         ]);
 
         if (songsData.length > 0) {

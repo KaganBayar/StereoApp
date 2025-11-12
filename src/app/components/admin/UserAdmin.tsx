@@ -1,13 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import { User, UserAdminEditForm } from "@/lib/Types/userTypes";
-import { findAllUsers } from "@/lib/server/dbActions";
+import {
+  getAllUsers,
+  updateUser,
+  deleteUser,
+} from "@/lib/server/layers/actions/userManagementActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
-import { updateUser } from "@/lib/server/dbActions";
-import { deleteUser } from "@/lib/server/dbActions";
 import { logout, systemLogout } from "@/lib/server/actions";
-import { Loader } from "@/lib/client/firebaseActions";
+
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const UserAdmin = () => {
     const loadUsers = async () => {
       try {
         setLoading(true);
-        const fetchedUsers = await findAllUsers();
+        const fetchedUsers = await getAllUsers();
         if (ignore) return;
         setUsers(fetchedUsers);
         setError(null);
