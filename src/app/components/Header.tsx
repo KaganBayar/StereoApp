@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BiHome } from "react-icons/bi";
 import { FaMusic, FaSearch } from "react-icons/fa";
 import { VscArchive } from "react-icons/vsc";
-import { logout } from "../../lib/server/actions";
+import { logout } from "../../lib/server/layers/actions/authActions";
 import { AuthDialog } from "./AuthDialog";
 import UserContext from "@/contexts/UserContext";
 import {

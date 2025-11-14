@@ -1,31 +1,32 @@
 import { UserRepository } from "../repositories/userRepository";
-import { CookieService } from "./cookieService";
 import { UserAdminEditForm, UserPayload } from "@/lib/Types/userTypes";
 import * as jose from "jose";
 import { User } from "@/lib/Types/userTypes";
 import { formRegisterSchema } from "../../Schemas/register";
 import { formLoginSchema } from "../../Schemas/login";
-import { comparePassword, hashPassword } from "../../auth";
+import {
+  comparePassword,
+  distillUserToFrontend,
+  hashPassword,
+} from "../../auth";
 import prisma from "../../db";
 import { RefreshTokenRepository } from "../repositories/refreshTokenRepository";
 import { TokenServices } from "./tokenService";
 import { requireAdminUser } from "../../serverValidation";
-
+import { use } from "react";
+import { cookies } from "next/headers";
 export class AuthService {
   private tokenRepository: TokenServices;
   private userRepository: UserRepository;
-  private cookieService: CookieService;
   private refreshRepository: RefreshTokenRepository;
 
   // you can change constructor parameters if you want to allow inject alternative repositories
   constructor(
     userRepository: UserRepository,
-    cookieService: CookieService,
     refreshRepository: RefreshTokenRepository,
     tokenRepository: TokenServices
   ) {
     this.userRepository = userRepository;
-    this.cookieService = cookieService;
     this.refreshRepository = refreshRepository;
     this.tokenRepository = tokenRepository;
   }
@@ -60,23 +61,28 @@ export class AuthService {
       throw new Error("Invalid password");
     }
 
+    //send only useful user data
+    const userFrontend = distillUserToFrontend(user);
+
     // If login is successful, generate and return tokens
-    const accessToken = await this.tokenRepository.createJWTAccessToken(user);
+    const accessToken = await this.tokenRepository.createJWTAccessToken(
+      userFrontend
+    );
+
     await this.refreshRepository.deleteAllByUserId(user.id); // Invalidate existing refresh tokens
     const refreshToken = await this.tokenRepository.createJWTRefreshToken(
       user.id
     );
-    this.cookieService.setAccessCookie(accessToken);
-    this.cookieService.setRefreshCookie(refreshToken.token);
 
-    return { accessToken, refreshToken };
+    return {
+      user: userFrontend,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
   }
 
   public async logout(userId: string): Promise<void> {
     await this.refreshRepository.deleteAllByUserId(userId);
-
-    await this.cookieService.deleteCookie("accessToken");
-
     console.log("logged out");
   }
 }

@@ -1,7 +1,6 @@
 import { UserRepository } from "../layers/repositories/userRepository";
 import { AuthService } from "../layers/services/authService";
 import { TokenServices } from "../layers/services/tokenService";
-import { CookieService } from "../layers/services/cookieService";
 import { RefreshTokenRepository } from "../layers/repositories/refreshTokenRepository";
 import { UserService } from "../layers/services/userService";
 import { AlbumRepository } from "../layers/repositories/albumRepository";
@@ -55,13 +54,6 @@ class Container {
     return this.services.get("refreshTokenRepository");
   }
 
-  get cookieService(): CookieService {
-    if (!this.services.has("cookieService")) {
-      this.services.set("cookieService", new CookieService());
-    }
-    return this.services.get("cookieService");
-  }
-
   get userService(): UserService {
     if (!this.services.has("userService")) {
       this.services.set(
@@ -76,11 +68,7 @@ class Container {
     if (!this.services.has("tokenService")) {
       this.services.set(
         "tokenService",
-        new TokenServices(
-          this.userRepository,
-          this.cookieService,
-          this.refreshTokenRepository
-        )
+        new TokenServices(this.userRepository, this.refreshTokenRepository)
       );
     }
     return this.services.get("tokenService");
@@ -92,7 +80,6 @@ class Container {
         "authService",
         new AuthService(
           this.userRepository,
-          this.cookieService,
           this.refreshTokenRepository,
           this.tokenService
         )

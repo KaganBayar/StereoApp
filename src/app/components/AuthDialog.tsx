@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/app/components/ui/dialog";
-import { login, register } from "@/lib/server/actions";
+import { login, register } from "@/lib/server/layers/actions/authActions";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useContext } from "react";
 import { DispatchContext } from "@/contexts/UserContext";
@@ -35,32 +35,20 @@ export const AuthDialog = () => {
   async function handleLogin(previousState: void, formData: FormData) {
     try {
       console.log("logining");
-      //[UPDATE NEEDED] Deal with these in implementing auth actions phase
-      await login(formData); //in new auth action it should return user payload directly
+      const user = await login(formData);
+      if (!user) {
+        throw new Error("User not found");
+      }
 
       const email = formData.get("email") as string;
       if (!email) {
         throw new Error("Email not provided");
       }
-      const user = await findUserByEmail(email); //this shouldnt be here in new auth action
-      if (!user) {
-        throw new Error("User not found");
-      }
-      const playlist = await findUserPlaylists(user.id); //user data should include playlists in new auth action
       console.log("USER", user);
       if (dispatch) {
         dispatch({
           type: "LOGIN",
-          payload: {
-            id: user.id,
-            photo_url: user.photo_url,
-            name: user.name,
-            email: email,
-            playlists: playlist,
-            roles: user.roles,
-            created_at: user.created_at,
-            updated_at: user.updated_at,
-          },
+          payload: user,
         });
       }
       setOpen(false);
@@ -71,6 +59,7 @@ export const AuthDialog = () => {
     }
   }
 
+  //[UPDATE NEEDED] firebase auth doesnt allow password less than 6 chars but database allow
   async function handleRegister(prevState: void, formData: FormData) {
     try {
       console.log("registering");
@@ -89,7 +78,6 @@ export const AuthDialog = () => {
         .catch((error) => {
           const errorMessage = error.message;
           throw new Error(errorMessage);
-          // ..
         });
 
       setOpen(false);

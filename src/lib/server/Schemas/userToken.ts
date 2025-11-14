@@ -6,7 +6,7 @@ export const userTokenSchema = zod.object({
   email: zod.string().email(),
   name: zod.string().min(2).max(100),
   roles: zod.array(zod.string()),
-  photo_url: zod.string().url(),
+  photo_url: zod.string().optional(), // temporary optional
   playlists: zod.array(zod.any()),
   favorites: zod.array(zod.any()),
   updated_at: zod.coerce.date(),

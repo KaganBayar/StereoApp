@@ -1,20 +1,28 @@
 import { container } from "../server/DI_container/container";
 import { User, UserPayload } from "../Types/userTypes";
-export class AuthMiddleware {
+import {
+  getAccessCookie,
+  getRefreshCookie,
+  deleteAccessCookie,
+  deleteRefreshCookie,
+} from "../server/cookie";
+import { get } from "http";
+
+class AuthMiddleware {
   private refreshRepository = container.refreshTokenRepository;
   private userRepository = container.userRepository;
-  private cookieService = container.cookieService;
   private tokenService = container.tokenService;
-
   private async validateUserSession(): Promise<UserPayload> {
     try {
-      const token = await this.cookieService
-        .getAccessCookie()
-        .catch(async (e) => {
-          return await this.tokenService.refreshAccessToken().catch((e) => {
+      const refreshToken = await getRefreshCookie();
+      const token = await getAccessCookie().catch(async (e) => {
+        const payload = await this.tokenService
+          .refreshAccessToken(refreshToken)
+          .catch((e) => {
             throw new Error("UNAUTHORIZED: No valid session");
           });
-        });
+        return payload.newAccessToken;
+      });
 
       const UserPayload = await container.tokenService.verifyAuthToken(token);
 
@@ -36,15 +44,16 @@ export class AuthMiddleware {
       }
       return UserPayload;
     } catch (error) {
-      this.cookieService.deleteCookie("accessToken");
+      deleteAccessCookie();
+      deleteRefreshCookie();
       throw error;
     }
   }
 
   public async requireValidUser(): Promise<UserPayload> {
-    const userPayload = await this.validateUserSession();
     try {
-      return await this.validateUserSession();
+      const userPayload = await this.validateUserSession();
+      return userPayload;
     } catch (error) {
       throw new Error("UNAUTHORIZED: Invalid user session");
     }

@@ -1,5 +1,5 @@
 import { UserRepository } from "../repositories/userRepository";
-import { CookieService } from "./cookieService";
+
 import { RefreshTokenRepository } from "../repositories/refreshTokenRepository";
 
 import * as jose from "jose";
@@ -21,16 +21,14 @@ export class TokenServices {
     process.env.JWT_REFRESH_KEY
   );
   private userRepository: UserRepository;
-  private cookieService: CookieService;
+
   private refreshRepository: RefreshTokenRepository;
 
   constructor(
     userRepository: UserRepository,
-    cookieService: CookieService,
     refreshRepository: RefreshTokenRepository
   ) {
     this.userRepository = userRepository;
-    this.cookieService = cookieService;
     this.refreshRepository = refreshRepository;
   }
   public async signToken(
@@ -56,7 +54,7 @@ export class TokenServices {
     return jwt;
   }
 
-  public async createJWTRefreshToken(userId: string) {
+  public async createJWTRefreshToken(userId: string): Promise<string> {
     const refreshToken = await new jose.SignJWT({ user_id: userId })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
@@ -68,7 +66,7 @@ export class TokenServices {
       user_id: userId,
       expires_at: new Date(Date.now() + time.MONTH), // 30 days
     });
-    return createdToken;
+    return refreshToken;
   }
 
   public deleteAllUsersRefreshTokens = async (userId: string) => {
@@ -101,7 +99,6 @@ export class TokenServices {
         console.log("VERIFIED");
         return UserPayload;
       } catch (e) {
-        await this.cookieService.deleteCookie("accessToken");
         throw new Error("Access Token verification failed: " + e);
       }
     }
@@ -129,14 +126,14 @@ export class TokenServices {
       }
       return refreshToken as RefreshTokenPayload;
     } catch (e) {
-      await this.cookieService.deleteRefreshCookie();
       throw new Error("Refresh Token verification failed: " + e);
     }
   }
 
-  public async refreshAccessToken(): Promise<string> {
+  public async refreshAccessToken(
+    refreshToken: string
+  ): Promise<{ newAccessToken: string; newRefreshToken: string }> {
     try {
-      const refreshToken = await this.cookieService.getRefreshCookie();
       if (!refreshToken) {
         throw new Error("No refresh token provided");
       }
@@ -158,8 +155,7 @@ export class TokenServices {
         throw new Error("User not found for the given refresh token");
       }
       //delete all cookies and tokens
-      this.cookieService.deleteAccessCookie();
-      this.cookieService.deleteRefreshCookie();
+
       this.refreshRepository.deleteAllByUserId(user.id);
       //get user frontend data
       const userFrontend = distillUserToFrontend(user);
@@ -168,12 +164,7 @@ export class TokenServices {
       //sign new Refresh token
       const newRefreshToken = await this.createJWTRefreshToken(user.id);
 
-      //cookie set
-      console.log("COOKIE", newAccessToken);
-
-      await this.cookieService.setAccessCookie(newAccessToken);
-      await this.cookieService.setRefreshCookie(newRefreshToken.token);
-      return newAccessToken;
+      return { newAccessToken, newRefreshToken };
     } catch (error) {
       throw new Error("Failed to refresh access token: " + error);
     }

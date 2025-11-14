@@ -1,7 +1,6 @@
 import * as jose from "jose";
 import { Playlist } from "@/lib/Types/playlistTypes";
 import { UserFrontend, UserPayload } from "@/lib/Types/userTypes";
-import { CookieService } from "./layers/services/cookieService";
 import { userTokenSchema } from "./Schemas/userToken";
 import { AuthService } from "./layers/services/authService";
 import crypto from "crypto";

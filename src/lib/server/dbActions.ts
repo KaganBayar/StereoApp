@@ -1,3 +1,5 @@
+// LEGACY PART. DO NOT USE IN NEW CODE
+
 "use server";
 import prisma from "@/lib/server/db";
 import { AlbumFormData } from "@/lib/Types/albumTypes";

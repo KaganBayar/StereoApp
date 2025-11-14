@@ -32,6 +32,7 @@ export default function UserProvider({
     //take access token verify it then dispatch login
    async function fetchUser() {
       try {
+      
         const accessToken = await access_cookie();
 
         if (accessToken) {
