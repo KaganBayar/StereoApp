@@ -9,22 +9,7 @@ import { cookies } from "next/headers";
 import * as jose from "jose";
 import { Playlist } from "@/lib/Types/playlistTypes";
 import { UserPayload } from "@/lib/Types/userTypes";
-import {
-  requireValidUser,
-  requireAdminUser,
-} from "@/lib/server/serverValidation";
-
-const formRegisterSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-  name: z.string(),
-});
-
-const formLoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
-
+import { requireValidUser } from "@/lib/server/serverValidation";
 //Auth
 
 export async function createAuthTokenAction(payload: UserPayload) {

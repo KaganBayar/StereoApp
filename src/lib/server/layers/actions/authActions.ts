@@ -11,9 +11,13 @@ import {
   getRefreshCookie,
 } from "../../cookie";
 import { ref } from "firebase/storage";
+import { initialUser } from "@/lib/shared/initialState";
+import { distillUserToFrontend } from "../../auth";
+import { UserFrontend } from "@/lib/Types/userTypes";
 
 const authService = container.authService;
 const tokenService = container.tokenService;
+const userRepository = container.userRepository;
 
 export async function register(formdata: FormData) {
   const {
@@ -44,22 +48,6 @@ export async function logout(id: string) {
   await deleteRefreshCookie();
 }
 
-export async function verifyAccessToken(token: string) {
-  try {
-    return await tokenService.verifyAuthToken(token);
-  } catch (error) {
-    await deleteAccessCookie();
-  }
-}
-
-export async function verifyRefreshToken(token: string) {
-  try {
-    return await tokenService.verifyRefreshToken(token);
-  } catch (error) {
-    await deleteRefreshCookie();
-  }
-}
-
 export async function refreshAccessToken() {
   const refreshToken = await getRefreshCookie();
   if (!refreshToken) {
@@ -78,5 +66,26 @@ export async function refreshAccessToken() {
     await deleteAccessCookie();
     await deleteRefreshCookie();
     throw new Error("Could not refresh tokens: " + error);
+  }
+}
+
+export async function getUserFromSession(): Promise<UserFrontend> {
+  try {
+    // Try to get user from middleware validation
+    const userPayload = await authMiddleware.requireValidUser();
+
+    // Fetch fresh user data from database
+    const user = await userRepository.findById(userPayload.id);
+
+    if (!user) {
+      console.log("initialUser returned");
+      return initialUser;
+    }
+
+    return distillUserToFrontend(user);
+  } catch (error) {
+    // Session invalid, expired, or doesn't exist
+    console.error("failed to fetch user from session:", error);
+    return initialUser;
   }
 }

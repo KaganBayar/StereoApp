@@ -4,10 +4,6 @@ import { Prisma } from "@prisma/client";
 export type RefreshToken = Prisma.RefreshTokenGetPayload<{}>;
 
 export type RefreshTokenFormData = {
-  userId: string;
-  token: string;
-  expiresAt: Date;
+  user_id: string;
+  expires_at: Date;
 };
-
-export type RefreshTokenPayload = RefreshToken &
-  z.infer<typeof refreshTokenSchema>;

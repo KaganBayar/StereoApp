@@ -1,17 +1,19 @@
 import { UserRepository } from "../repositories/userRepository";
-
 import { RefreshTokenRepository } from "../repositories/refreshTokenRepository";
-
 import * as jose from "jose";
 import { User, UserFrontend, UserPayload } from "@/lib/Types/userTypes";
 import { time } from "@/lib/Types/commonTypes";
 import crypto from "crypto";
 import { userTokenSchema } from "../../Schemas/userToken";
-import { RefreshToken } from "@/lib/Types/refreshTokenTypes";
-
-import { refreshTokenSchema } from "../../Schemas/refreshTokenSchema";
-import { RefreshTokenPayload } from "@/lib/Types/refreshTokenTypes";
-import { distillUserToFrontend } from "../../auth";
+import {
+  refreshTokenSchema,
+  RefreshTokenJWTPayload,
+  refreshTokenJWTSchema,
+} from "../../Schemas/refreshTokenSchema";
+import {
+  distillUserToFrontend,
+  compareRefreshTokenJWTPayloadWithDB,
+} from "../../auth";
 
 export class TokenServices {
   private readonly JWT_ACCESS_SECRET = new TextEncoder().encode(
@@ -54,18 +56,18 @@ export class TokenServices {
     return jwt;
   }
 
-  public async createJWTRefreshToken(userId: string): Promise<string> {
-    const refreshToken = await new jose.SignJWT({ user_id: userId })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setIssuer(userId)
-      .setExpirationTime("30d")
-      .sign(this.JWT_REFRESH_SECRET);
+  public async createJWTRefreshToken(user_id: string): Promise<string> {
     const createdToken = await this.refreshRepository.create({
-      token: refreshToken,
-      user_id: userId,
+      user_id: user_id,
       expires_at: new Date(Date.now() + time.MONTH), // 30 days
     });
+    const refreshToken = await new jose.SignJWT(createdToken)
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setIssuer(user_id)
+      .setExpirationTime("30d")
+      .sign(this.JWT_REFRESH_SECRET);
+
     return refreshToken;
   }
 
@@ -106,7 +108,10 @@ export class TokenServices {
 
   //refresh Token verification
 
-  public async verifyRefreshToken(token: string): Promise<RefreshTokenPayload> {
+  public async verifyRefreshToken(
+    token: string
+  ): Promise<RefreshTokenJWTPayload> {
+    //verification and decode
     try {
       const verifiedToken = await jose.jwtVerify(
         token,
@@ -115,16 +120,27 @@ export class TokenServices {
           algorithms: ["HS256"],
         }
       );
+      //parse
       const tokenPayload = verifiedToken.payload;
-      const refreshToken = refreshTokenSchema.parse(tokenPayload);
+      const refreshToken = refreshTokenJWTSchema.parse(tokenPayload);
+
       //database check
       const storedToken = await this.refreshRepository.findByUserId(
-        refreshToken.id
+        refreshToken.user_id
       );
-      if (token !== storedToken?.token) {
+      if (storedToken && storedToken.expires_at < new Date()) {
+        await this.refreshRepository.deleteAllByUserId(refreshToken.user_id);
+        throw new Error("Refresh token expired");
+      }
+      if (!storedToken) {
+        throw new Error("No refresh token found for the user");
+      }
+
+      if (!compareRefreshTokenJWTPayloadWithDB(refreshToken, storedToken)) {
         throw new Error("Refresh token does not match stored token");
       }
-      return refreshToken as RefreshTokenPayload;
+
+      return refreshToken as RefreshTokenJWTPayload;
     } catch (e) {
       throw new Error("Refresh Token verification failed: " + e);
     }
@@ -156,7 +172,7 @@ export class TokenServices {
       }
       //delete all cookies and tokens
 
-      this.refreshRepository.deleteAllByUserId(user.id);
+      await this.refreshRepository.deleteAllByUserId(user.id);
       //get user frontend data
       const userFrontend = distillUserToFrontend(user);
       //sign new Access token

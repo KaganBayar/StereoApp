@@ -7,6 +7,7 @@ import { initialUser } from "@/lib/shared/initialState";
 import { ENV } from "@/lib/server/Errors/env";
 import reducer from "@/contexts/Reducer";
 import { QueryClient } from "@tanstack/react-query";
+import { getUserFromSession } from "@/lib/server/layers/actions/authActions";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,17 +26,25 @@ export const metadata: Metadata = {
   icons: "/icon.png",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let authenticatedUser = initialUser;
+
+  try {
+    authenticatedUser = await getUserFromSession();
+  } catch (error) {
+    // User not authenticated or session expired
+    console.log("No valid session");
+  }
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        <UserProvider User={initialUser} reduce={reducer}>
+        <UserProvider User={authenticatedUser} reduce={reducer}>
           <Header />
           {children}
         </UserProvider>

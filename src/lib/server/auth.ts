@@ -11,6 +11,10 @@ import { time } from "../Types/commonTypes";
 import { container } from "./DI_container/container";
 import { UserFrontendSchema } from "./Schemas/userFrontend";
 import { User } from "../Types/userTypes";
+import {
+  RefreshTokenJWTPayload,
+  RefreshTokenDB,
+} from "./Schemas/refreshTokenSchema";
 
 export function hashPassword(password: string): Promise<string> {
   const saltRounds = 10;
@@ -34,7 +38,7 @@ export function distillUserToFrontend(User: User): UserFrontend {
   const { password, ...userFrontend } = User;
   return userFrontend as UserFrontend;
 }
-
+//legacy
 export async function signToken(obj: UserFrontend) {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
@@ -45,6 +49,20 @@ export async function signToken(obj: UserFrontend) {
     .setExpirationTime("20h") //temporary
     .sign(secret);
   return jwt;
+}
+
+export async function compareRefreshTokenJWTPayloadWithDB(
+  jwtRefreshToken: RefreshTokenJWTPayload,
+  dbRefreshToken: RefreshTokenDB
+): Promise<boolean> {
+  if (
+    jwtRefreshToken.refreshCount !== dbRefreshToken.refreshCount &&
+    jwtRefreshToken.user_id !== dbRefreshToken.user_id &&
+    jwtRefreshToken.id !== dbRefreshToken.id
+  ) {
+    return false;
+  }
+  return true;
 }
 
 export async function comparePassword(

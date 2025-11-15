@@ -5,6 +5,8 @@ import {
   getRefreshCookie,
   deleteAccessCookie,
   deleteRefreshCookie,
+  setAccessCookie,
+  setRefreshCookie,
 } from "../server/cookie";
 import { get } from "http";
 
@@ -14,38 +16,56 @@ class AuthMiddleware {
   private tokenService = container.tokenService;
   private async validateUserSession(): Promise<UserPayload> {
     try {
-      const refreshToken = await getRefreshCookie();
-      const token = await getAccessCookie().catch(async (e) => {
-        const payload = await this.tokenService
-          .refreshAccessToken(refreshToken)
-          .catch((e) => {
-            throw new Error("UNAUTHORIZED: No valid session");
-          });
-        return payload.newAccessToken;
-      });
+      let token: string;
 
-      const UserPayload = await container.tokenService.verifyAuthToken(token);
+      try {
+        token = await getAccessCookie();
+      } catch (accessError) {
+        // Access token doesn't exist or expired, try refresh
+        const refreshToken = await getRefreshCookie();
+        if (!refreshToken) {
+          throw new Error("No refresh token found");
+        }
+        try {
+          const { newAccessToken, newRefreshToken } =
+            await this.tokenService.refreshAccessToken(refreshToken);
+
+          // Set new cookies
+          await setAccessCookie(newAccessToken);
+          await setRefreshCookie(newRefreshToken);
+
+          token = newAccessToken;
+        } catch (refreshError) {
+          throw new Error("Failed to refresh access token: " + refreshError);
+        }
+      }
+
+      const UserPayload = await this.tokenService.verifyAuthToken(token);
 
       const currentUser: User | null = await this.userRepository.findById(
         UserPayload.id
       );
-      //check if user still exists and is active in database
+
       if (!currentUser) {
         throw new Error("UNAUTHORIZED: User no longer exists");
       }
-      //token check
+
+      // Check if user data changed after token was issued
       const tokenIssuedAt = UserPayload.iat;
       const userLastUpdated = currentUser.updated_at || currentUser.created_at;
+
       if (userLastUpdated && userLastUpdated > tokenIssuedAt) {
         await this.refreshRepository.deleteAllByUserId(currentUser.id);
         throw new Error(
           "UNAUTHORIZED: User data has been modified. Please re-authenticate."
         );
       }
+
       return UserPayload;
     } catch (error) {
-      deleteAccessCookie();
-      deleteRefreshCookie();
+      // Clean up invalid tokens
+      await deleteAccessCookie();
+      await deleteRefreshCookie();
       throw error;
     }
   }
