@@ -16,6 +16,7 @@ import { distillUserToFrontend } from "../../auth";
 import { UserFrontend } from "@/lib/Types/userTypes";
 
 const authService = container.authService;
+const cookieService = container.cookieService;
 const tokenService = container.tokenService;
 const userRepository = container.userRepository;
 
@@ -34,8 +35,8 @@ export async function login(formdata: FormData) {
     formLoginSchema.parse(Object.fromEntries(formdata));
   const loginPayload = await authService.login(email, password);
 
-  await setAccessCookie(loginPayload.accessToken);
-  await setRefreshCookie(loginPayload.refreshToken);
+  await cookieService.setAccessCookie(loginPayload.accessToken);
+  await cookieService.setRefreshCookie(loginPayload.refreshToken);
 
   return loginPayload.user;
 }
@@ -44,12 +45,12 @@ export async function logout(id: string) {
   const user = await authMiddleware.requireValidUser();
   if (!user) throw new Error("User not authenticated");
   await authService.logout(id);
-  await deleteAccessCookie();
-  await deleteRefreshCookie();
+  await cookieService.deleteAccessCookie();
+  await cookieService.deleteRefreshCookie();
 }
 
 export async function refreshAccessToken() {
-  const refreshToken = await getRefreshCookie();
+  const refreshToken = await cookieService.getRefreshCookie();
   if (!refreshToken) {
     throw new Error("No refresh token found");
   }
@@ -57,14 +58,14 @@ export async function refreshAccessToken() {
     const { newRefreshToken, newAccessToken } =
       await tokenService.refreshAccessToken(refreshToken);
 
-    await deleteAccessCookie();
-    await deleteRefreshCookie();
+    await cookieService.deleteAccessCookie();
+    await cookieService.deleteRefreshCookie();
 
-    await setAccessCookie(newAccessToken);
-    await setRefreshCookie(newRefreshToken);
+    await cookieService.setAccessCookie(newAccessToken);
+    await cookieService.setRefreshCookie(newRefreshToken);
   } catch (error) {
-    await deleteAccessCookie();
-    await deleteRefreshCookie();
+    await cookieService.deleteAccessCookie();
+    await cookieService.deleteRefreshCookie();
     throw new Error("Could not refresh tokens: " + error);
   }
 }
