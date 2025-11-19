@@ -1,7 +1,7 @@
 "use client";
-import { Playlist } from "@/lib/Types/playlistTypes";
+import { Playlist } from "@/lib/shared/Types/playlistTypes";
 import { initialUser } from "@/lib/shared/initialState";
-import { UserFrontend } from "@/lib/Types/userTypes";
+import { UserFrontend } from "@/lib/shared/Types/userTypes";
 
 export type actionType =
   | {

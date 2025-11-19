@@ -1,9 +1,9 @@
 //[UPDATE NEEDED] şarkı eklediğin zaman eklendiğini görebiliyorsun ama ekleme formu sonradan kapanıyor
 "use client";
 import { useState, useEffect } from "react";
-import { Song, SongFormData } from "@/lib/Types/songTypes";
-import { Artist } from "@/lib/Types/artistTypes";
-import { Album } from "@/lib/Types/albumTypes";
+import { Song, SongFormData } from "@/lib/shared/Types/songTypes";
+import { Artist } from "@/lib/shared/Types/artistTypes";
+import { Album } from "@/lib/shared/Types/albumTypes";
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import {

@@ -2,16 +2,16 @@
 
 "use server";
 import prisma from "@/lib/server/db";
-import { AlbumFormData } from "@/lib/Types/albumTypes";
+import { AlbumFormData } from "@/lib/shared/Types/albumTypes";
 import {
   requireValidUser,
   requireAdminUser,
 } from "@/lib/server/serverValidation";
-import { Playlist } from "@/lib/Types/playlistTypes";
-import { User, UserAdminEditForm } from "@/lib/Types/userTypes";
-import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
-import { Album } from "@/lib/Types/albumTypes";
-import { SongFormData, Song } from "@/lib/Types/songTypes";
+import { Playlist } from "@/lib/shared/Types/playlistTypes";
+import { User, UserAdminEditForm } from "@/lib/shared/Types/userTypes";
+import { Artist, ArtistFormData } from "@/lib/shared/Types/artistTypes";
+import { Album } from "@/lib/shared/Types/albumTypes";
+import { SongFormData, Song } from "@/lib/shared/Types/songTypes";
 
 //code parts with 0 pagination. should not be used in code
 

@@ -12,12 +12,12 @@ import {
   Share,
 } from "lucide-react";
 import { FaPlay } from "react-icons/fa";
-import { Playlist, PlaylistSong } from "@/lib/Types/playlistTypes";
+import { Playlist, PlaylistSong } from "@/lib/shared/Types/playlistTypes";
 import { initialPlaylist } from "@/lib/shared/initialState";
 import { useRef } from "react";
 import { photoUse } from "@/lib/client/firebaseActions";
-import { Album } from "@/lib/Types/albumTypes";
-import { Artist } from "@/lib/Types/artistTypes";
+import { Album } from "@/lib/shared/Types/albumTypes";
+import { Artist } from "@/lib/shared/Types/artistTypes";
 type PagePlaylist = {
   id: string;
   name: string;

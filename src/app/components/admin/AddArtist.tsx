@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
+import { Artist, ArtistFormData } from "@/lib/shared/Types/artistTypes";
 import {
   getAllArtists,
   createArtist,

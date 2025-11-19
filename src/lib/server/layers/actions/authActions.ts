@@ -9,11 +9,12 @@ import {
   deleteAccessCookie,
   deleteRefreshCookie,
   getRefreshCookie,
+  getAccessCookie,
 } from "../../cookie";
 import { ref } from "firebase/storage";
 import { initialUser } from "@/lib/shared/initialState";
 import { distillUserToFrontend } from "../../auth";
-import { UserFrontend } from "@/lib/Types/userTypes";
+import { UserFrontend } from "@/lib/shared/Types/userTypes";
 
 const authService = container.authService;
 const cookieService = container.cookieService;
@@ -89,4 +90,10 @@ export async function getUserFromSession(): Promise<UserFrontend> {
     console.error("failed to fetch user from session:", error);
     return initialUser;
   }
+}
+
+export async function test() {
+  console.log(getAccessCookie(), "lalala");
+  setAccessCookie("deneme12345");
+  console.log(getAccessCookie(), "lalala2");
 }

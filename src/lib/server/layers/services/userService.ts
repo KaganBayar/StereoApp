@@ -1,7 +1,7 @@
 import { deleteUser } from "firebase/auth";
 import { UserRepository } from "../repositories/userRepository";
 import { AuthService } from "./authService";
-import { User, UserPayload } from "@/lib/Types/userTypes";
+import { User, UserPayload } from "@/lib/shared/Types/userTypes";
 
 export class UserService {
   private userRepository: UserRepository;

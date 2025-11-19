@@ -1,4 +1,4 @@
-import { formDataList, TypeList } from "@/lib/Types/commonTypes";
+import { formDataList, TypeList } from "@/lib/shared/Types/commonTypes";
 
 export abstract class BaseRepository<T extends TypeList> {
   protected abstract model: any;

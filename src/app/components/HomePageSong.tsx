@@ -1,7 +1,7 @@
 "use client";
 import { PhotoWithFallback } from "./photoWithFallback";
 import { FaPlay } from "react-icons/fa";
-import { Song } from "@/lib/Types/songTypes";
+import { Song } from "@/lib/shared/Types/songTypes";
 import { useEffect } from "react";
 import { songUse } from "@/lib/client/firebaseActions";
 import { useState } from "react";

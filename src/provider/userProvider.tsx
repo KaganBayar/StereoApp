@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { access_cookie, verifyAuthTokenAction } from "@/lib/server/actions";
 import { useState } from "react";
 import { AudioProvider } from "@/contexts/audioContext";
-import { UserFrontend } from "@/lib/Types/userTypes";
+import { UserFrontend } from "@/lib/shared/Types/userTypes";
 
 interface UserProviderProps {
   User: UserFrontend;

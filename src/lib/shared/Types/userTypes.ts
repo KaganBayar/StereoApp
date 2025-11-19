@@ -1,6 +1,6 @@
 import { baseType } from "./commonTypes";
 import { Prisma } from "@prisma/client";
-import { Playlist } from "../Types/playlistTypes";
+import { Playlist } from "./playlistTypes";
 import jose from "jose";
 
 export type UserBase = Prisma.UserGetPayload<{

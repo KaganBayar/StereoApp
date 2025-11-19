@@ -2,9 +2,9 @@
 import { ref } from "firebase/storage";
 import { storage } from "../../../config/firebase";
 import { getBytes } from "firebase/storage";
-import { Album } from "../Types/albumTypes";
-import { Artist } from "../Types/artistTypes";
-import { Song } from "../Types/songTypes";
+import { Album } from "../shared/Types/albumTypes";
+import { Artist } from "../shared/Types/artistTypes";
+import { Song } from "../shared/Types/songTypes";
 import { uploadString, getMetadata } from "firebase/storage";
 import { uploadBytes } from "firebase/storage";
 

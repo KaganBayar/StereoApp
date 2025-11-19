@@ -1,8 +1,8 @@
 "use server";
 import { container } from "../../DI_container/container";
-import { Album, AlbumFormData } from "@/lib/Types/albumTypes";
-import { Song, SongFormData } from "@/lib/Types/songTypes";
-import { Artist, ArtistFormData } from "@/lib/Types/artistTypes";
+import { Album, AlbumFormData } from "@/lib/shared/Types/albumTypes";
+import { Song, SongFormData } from "@/lib/shared/Types/songTypes";
+import { Artist, ArtistFormData } from "@/lib/shared/Types/artistTypes";
 import { authMiddleware } from "@/lib/middleware/authMiddleware";
 
 const musicService = container.musicService;

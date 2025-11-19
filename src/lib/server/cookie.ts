@@ -1,7 +1,7 @@
 "use server";
 import { cookies } from "next/headers";
 import { CookieOptions } from "./Types/cookie";
-import { time } from "@/lib/Types/commonTypes";
+import { time } from "@/lib/shared/Types/commonTypes";
 
 export const getCookie = async (name: string): Promise<string> => {
   const cookieStore = await cookies();

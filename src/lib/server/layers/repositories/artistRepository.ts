@@ -1,4 +1,4 @@
-import { Artist, ArtistFormData } from "../../../Types/artistTypes";
+import { Artist, ArtistFormData } from "../../../shared/Types/artistTypes";
 import { BaseRepository } from "./baseRepository";
 import prisma from "@/lib/server/db";
 

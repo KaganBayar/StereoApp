@@ -1,5 +1,5 @@
 import { BaseRepository } from "./baseRepository";
-import { Song, SongFormData } from "@/lib/Types/songTypes";
+import { Song, SongFormData } from "@/lib/shared/Types/songTypes";
 import prisma from "@/lib/server/db";
 
 export class SongRepository extends BaseRepository<Song> {

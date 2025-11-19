@@ -1,4 +1,4 @@
-import { Playlist, PlaylistFormData } from "@/lib/Types/playlistTypes";
+import { Playlist, PlaylistFormData } from "@/lib/shared/Types/playlistTypes";
 import { BaseRepository } from "./baseRepository";
 import { findUserPlaylists } from "../../dbActions";
 import prisma from "@/lib/server/db";

@@ -1,7 +1,7 @@
 "use server";
 
 import { container } from "../../DI_container/container";
-import { User } from "@/lib/Types/userTypes";
+import { User } from "@/lib/shared/Types/userTypes";
 import { authMiddleware } from "@/lib/middleware/authMiddleware";
 
 const userService = container.userService;

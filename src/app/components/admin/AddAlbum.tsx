@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Album, AlbumFormData } from "@/lib/Types/albumTypes";
-import { Artist } from "@/lib/Types/artistTypes";
+import { Album, AlbumFormData } from "@/lib/shared/Types/albumTypes";
+import { Artist } from "@/lib/shared/Types/artistTypes";
 import {
   FaPlus,
   FaEdit,

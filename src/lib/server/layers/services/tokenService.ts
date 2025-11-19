@@ -1,8 +1,8 @@
 import { UserRepository } from "../repositories/userRepository";
 import { RefreshTokenRepository } from "../repositories/refreshTokenRepository";
 import * as jose from "jose";
-import { User, UserFrontend, UserPayload } from "@/lib/Types/userTypes";
-import { time } from "@/lib/Types/commonTypes";
+import { User, UserFrontend, UserPayload } from "@/lib/shared/Types/userTypes";
+import { time } from "@/lib/shared/Types/commonTypes";
 import crypto from "crypto";
 import { userTokenSchema } from "../../Schemas/userToken";
 import {

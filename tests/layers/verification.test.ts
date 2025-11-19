@@ -12,7 +12,7 @@ import { PlaylistRepository } from "@/lib/server/layers/repositories/playlistRep
 import { CookieService } from "@/lib/server/layers/services/cookieService";
 import { UserService } from "@/lib/server/layers/services/userService";
 import prisma from "@/lib/server/db";
-import { User } from "@/lib/Types/userTypes";
+import { User } from "@/lib/shared/Types/userTypes";
 
 // ============================================================================
 // 1. CONTAINER & DEPENDENCY INJECTION TESTS

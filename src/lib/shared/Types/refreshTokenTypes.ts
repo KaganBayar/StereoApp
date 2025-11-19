@@ -1,5 +1,5 @@
 import z from "zod";
-import { refreshTokenSchema } from "../server/Schemas/refreshTokenSchema";
+import { refreshTokenSchema } from "../../server/Schemas/refreshTokenSchema";
 import { Prisma } from "@prisma/client";
 export type RefreshToken = Prisma.RefreshTokenGetPayload<{}>;
 

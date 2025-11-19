@@ -1,7 +1,7 @@
 import { UserRepository } from "../repositories/userRepository";
-import { UserAdminEditForm, UserPayload } from "@/lib/Types/userTypes";
+import { UserAdminEditForm, UserPayload } from "@/lib/shared/Types/userTypes";
 import * as jose from "jose";
-import { User } from "@/lib/Types/userTypes";
+import { User } from "@/lib/shared/Types/userTypes";
 import { formRegisterSchema } from "../../Schemas/register";
 import { formLoginSchema } from "../../Schemas/login";
 import {

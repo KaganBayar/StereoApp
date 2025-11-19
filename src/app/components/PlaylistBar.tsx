@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getUserPlaylists } from "@/lib/server/layers/actions/playlistActions";
 import { useContext } from "react";
 import UserContext from "@/contexts/UserContext";
-import { Playlist as PlaylistType } from "@/lib/Types/playlistTypes";
+import { Playlist as PlaylistType } from "@/lib/shared/Types/playlistTypes";
 import Link from "next/link";
 import { AddPlaylistButton } from "./AddPlaylistButton";
 import { checkUser } from "@/lib/client/utils";

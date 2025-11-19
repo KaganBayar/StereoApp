@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { User, UserAdminEditForm } from "@/lib/Types/userTypes";
+import { User, UserAdminEditForm } from "@/lib/shared/Types/userTypes";
 import {
   getAllUsers,
   updateUser,

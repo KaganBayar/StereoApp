@@ -1,8 +1,8 @@
-import { User } from "@/lib/Types/userTypes";
-import { ArtistFormData } from "@/lib/Types/artistTypes";
-import { AlbumFormData } from "@/lib/Types/albumTypes";
-import { SongFormData } from "@/lib/Types/songTypes";
-import { Playlist } from "@/lib/Types/playlistTypes";
+import { User } from "@/lib/shared/Types/userTypes";
+import { ArtistFormData } from "@/lib/shared/Types/artistTypes";
+import { AlbumFormData } from "@/lib/shared/Types/albumTypes";
+import { SongFormData } from "@/lib/shared/Types/songTypes";
+import { Playlist } from "@/lib/shared/Types/playlistTypes";
 
 const initialUser: Omit<User, "password"> = {
   id: "",

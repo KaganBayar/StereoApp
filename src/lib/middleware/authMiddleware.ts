@@ -1,5 +1,5 @@
 import { container } from "../server/DI_container/container";
-import { User, UserPayload } from "../Types/userTypes";
+import { User, UserPayload } from "../shared/Types/userTypes";
 import {
   getAccessCookie,
   getRefreshCookie,
@@ -15,22 +15,15 @@ class AuthMiddleware {
   private userRepository = container.userRepository;
   private tokenService = container.tokenService;
 
-  /**
-   * Validates user session with automatic token refresh
-   * This method handles the complex flow of token validation and refresh
-   */
   private async validateUserSession(): Promise<UserPayload> {
     try {
       let token: string;
-
+      //Try to get access token
       try {
-        // First, try to get and verify access token
         token = await getAccessCookie();
 
-        // Verify the access token
         const userPayload = await this.tokenService.verifyAuthToken(token);
 
-        // Validate user still exists and data hasn't changed
         const currentUser = await this.userRepository.findById(userPayload.id);
 
         if (!currentUser) {
@@ -52,29 +45,27 @@ class AuthMiddleware {
         return userPayload;
       } catch (accessError) {
         // Access token doesn't exist, expired, or invalid - try refresh flow
-        console.log("Access token validation failed, attempting refresh...");
 
         const refreshToken = await getRefreshCookie();
         if (!refreshToken) {
           throw new Error("UNAUTHORIZED: No refresh token found");
         }
-
+        //refresh flow
         try {
           // Generate new tokens using refresh token
           const { newAccessToken, newRefreshToken } =
             await this.tokenService.refreshAccessToken(refreshToken);
 
-          // Set new cookies - this is why we need server actions/route handlers
           await setAccessCookie(newAccessToken);
           await setRefreshCookie(newRefreshToken);
 
-          // Verify the new access token and return payload
           const userPayload = await this.tokenService.verifyAuthToken(
             newAccessToken
           );
 
           console.log("Token refresh successful");
           return userPayload;
+          //Refresh Error
         } catch (refreshError) {
           console.error("Token refresh failed:", refreshError);
           throw new Error(
@@ -82,6 +73,7 @@ class AuthMiddleware {
           );
         }
       }
+      //General Error
     } catch (error) {
       // Clean up invalid tokens on any authentication failure
       try {
