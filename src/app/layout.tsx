@@ -34,7 +34,7 @@ export default async function RootLayout({
   let authenticatedUser = initialUser;
 
   try {
-    authenticatedUser = await getUserFromSession();
+    /* authenticatedUser = await getUserFromSession(); */
   } catch (error) {
     // User not authenticated or session expired
     console.log("No valid session");

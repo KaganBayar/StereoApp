@@ -10,12 +10,10 @@ import { Loader, photoUse } from "@/lib/client/firebaseActions";
 import Image from "next/image";
 import { HomePageSong } from "../components/HomePageSong";
 import { PhotoWithFallback } from "../components/photoWithFallback";
-import { test } from "@/lib/server/layers/actions/authActions";
 
 export default async function Home() {
   const songs = await getAllSongs();
   const albums = await getAllAlbums();
-  await test();
 
   return (
     <div className="space-y-8 w-full h-full">
