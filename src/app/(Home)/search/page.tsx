@@ -134,7 +134,7 @@ const SearchPage = () => {
                   </div>
                   <div>
                     <div className="text-white font-medium">
-                      Search for "{searchQuery}"
+                      Search for {searchQuery}
                     </div>
                     <div className="text-gray-400 text-sm">
                       Find songs, artists, and more
@@ -201,7 +201,7 @@ const SearchPage = () => {
             <Search className="text-gray-400" size={28} />
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">
-            Searching for "{searchQuery}"
+            Searching for {searchQuery}
           </h3>
           <p className="text-gray-400 max-w-sm">
             Your search results will appear here once you implement the search

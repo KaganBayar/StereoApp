@@ -3,24 +3,19 @@ import { container } from "../../DI_container/container";
 import { formRegisterSchema } from "../../Schemas/register";
 import { authMiddleware } from "@/lib/middleware/authMiddleware";
 import { formLoginSchema } from "../../Schemas/login";
-import {
-  setAccessCookie,
-  setRefreshCookie,
-  deleteAccessCookie,
-  deleteRefreshCookie,
-  getRefreshCookie,
-  getAccessCookie,
-} from "../../cookie";
-import { ref } from "firebase/storage";
 import { initialUser } from "@/lib/shared/initialState";
 import { distillUserToFrontend } from "../../auth";
 import { UserFrontend } from "@/lib/shared/Types/userTypes";
-import { get } from "http";
-import { CookieService } from "../services/cookieService";
-import { set } from "zod";
+
+import {
+  deleteAccessCookie,
+  deleteRefreshCookie,
+  getRefreshCookie,
+  setAccessCookie,
+  setRefreshCookie,
+} from "./cookieActions";
 
 const authService = container.authService;
-const cookieService = container.cookieService;
 const tokenService = container.tokenService;
 const userRepository = container.userRepository;
 
@@ -39,8 +34,8 @@ export async function login(formdata: FormData) {
     formLoginSchema.parse(Object.fromEntries(formdata));
   const loginPayload = await authService.login(email, password);
 
-  await cookieService.setAccessCookie(loginPayload.accessToken);
-  await cookieService.setRefreshCookie(loginPayload.refreshToken);
+  await setAccessCookie(loginPayload.accessToken);
+  await setRefreshCookie(loginPayload.refreshToken);
 
   return loginPayload.user;
 }
@@ -49,12 +44,12 @@ export async function logout(id: string) {
   const user = await authMiddleware.requireValidUser();
   if (!user) throw new Error("User not authenticated");
   await authService.logout(id);
-  await cookieService.deleteAccessCookie();
-  await cookieService.deleteRefreshCookie();
+  await deleteAccessCookie();
+  await deleteRefreshCookie();
 }
 
 export async function refreshAccessToken() {
-  const refreshToken = await cookieService.getRefreshCookie();
+  const refreshToken = await getRefreshCookie();
   if (!refreshToken) {
     throw new Error("No refresh token found");
   }
@@ -62,14 +57,15 @@ export async function refreshAccessToken() {
     const { newRefreshToken, newAccessToken } =
       await tokenService.refreshAccessToken(refreshToken);
 
-    await cookieService.deleteAccessCookie();
-    await cookieService.deleteRefreshCookie();
+    await deleteAccessCookie();
+    await deleteRefreshCookie();
 
-    await cookieService.setAccessCookie(newAccessToken);
-    await cookieService.setRefreshCookie(newRefreshToken);
+    await setAccessCookie(newAccessToken);
+    await setRefreshCookie(newRefreshToken);
   } catch (error) {
-    await cookieService.deleteAccessCookie();
-    await cookieService.deleteRefreshCookie();
+    await deleteAccessCookie();
+    await deleteRefreshCookie();
+
     throw new Error("Could not refresh tokens: " + error);
   }
 }
@@ -90,7 +86,6 @@ export async function getUserFromSession(): Promise<UserFrontend> {
     return distillUserToFrontend(user);
   } catch (error) {
     // Session invalid, expired, or doesn't exist
-    console.error("failed to fetch user from session:", error);
-    return initialUser;
+    throw error;
   }
 }

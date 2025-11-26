@@ -64,7 +64,8 @@ const Header: React.FC = () => {
             <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
             <span className="text-sm text-gray-300">Logging in...</span>
           </div>
-        ) : user?.email ? (
+        ) : /*if user doesnt have an email show login button*/
+        user?.email ? (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold border-2 border-blue-900">
               {user?.name ? user.name.charAt(0).toUpperCase() : "U"}

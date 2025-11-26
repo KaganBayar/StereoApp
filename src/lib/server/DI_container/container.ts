@@ -9,7 +9,6 @@ import { MusicService } from "../layers/services/musicService";
 import { PlaylistRepository } from "../layers/repositories/playlistRepository";
 import { ArtistRepository } from "../layers/repositories/artistRepository";
 import { PlaylistService } from "../layers/services/playlistService";
-import { CookieService } from "../layers/services/cookieService";
 
 class Container {
   private services = new Map();
@@ -53,13 +52,6 @@ class Container {
       this.services.set("refreshTokenRepository", new RefreshTokenRepository());
     }
     return this.services.get("refreshTokenRepository");
-  }
-
-  get cookieService(): CookieService {
-    if (!this.services.has("cookieService")) {
-      this.services.set("cookieService", new CookieService());
-    }
-    return this.services.get("cookieService");
   }
 
   get userService(): UserService {

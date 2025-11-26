@@ -12,6 +12,8 @@ import { access_cookie, verifyAuthTokenAction } from "@/lib/server/actions";
 import { useState } from "react";
 import { AudioProvider } from "@/contexts/audioContext";
 import { UserFrontend } from "@/lib/shared/Types/userTypes";
+import { initialUser } from "@/lib/shared/initialState";
+import { getUserFromSession } from "@/lib/server/layers/actions/authActions";
 
 interface UserProviderProps {
   User: UserFrontend;
@@ -24,8 +26,8 @@ export default function UserProvider({
   children,
   reduce,
 }: UserProviderProps) {
-  const [user, dispatch] = useReducer(reduce, User);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [user, dispatch] = useReducer(reduce, User);
 
   return (
     <UserContext.Provider value={user}>

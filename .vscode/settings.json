@@ -20,5 +20,6 @@
       "username": "postgres",
       "name": "Postgres"
     }
-  ]
+  ],
+  "prisma.pinToPrisma6": true
 }

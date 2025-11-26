@@ -3,11 +3,14 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "./components/Header";
 import UserProvider from "@/provider/userProvider";
-import { initialUser } from "@/lib/shared/initialState";
-import { ENV } from "@/lib/server/Errors/env";
 import reducer from "@/contexts/Reducer";
 import { QueryClient } from "@tanstack/react-query";
 import { getUserFromSession } from "@/lib/server/layers/actions/authActions";
+import { AccessTokenNeedRefreshError } from "@/lib/server/Errors/cookie";
+import { refreshAccessToken } from "@/lib/server/layers/actions/authActions";
+
+import { initialUser } from "@/lib/shared/initialState";
+import { setCookie } from "@/lib/server/layers/actions/cookieActions";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,20 +34,33 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let authenticatedUser = initialUser;
-
+  let user;
   try {
-    /* authenticatedUser = await getUserFromSession(); */
+    user = await getUserFromSession();
   } catch (error) {
-    // User not authenticated or session expired
-    console.log("No valid session");
+    /* if (error instanceof AccessTokenNeedRefreshError) {
+      try {
+        await refreshAccessToken();
+      } catch (refreshError) {
+        throw new Error("Failed to refresh access token: " + refreshError);
+      }
+      try {
+        user = await getUserFromSession();
+      } catch (getUserError) {
+        user = initialUser;
+      }
+    } else {
+      user = initialUser;
+    } */
+    user = initialUser;
+    console.error("test: middleware.js refresh");
   }
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        <UserProvider User={authenticatedUser} reduce={reducer}>
+        <UserProvider User={user} reduce={reducer}>
           <Header />
           {children}
         </UserProvider>

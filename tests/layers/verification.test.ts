@@ -9,7 +9,6 @@ import {
 } from "vitest";
 import { container } from "@/lib/server/DI_container/container";
 import { PlaylistRepository } from "@/lib/server/layers/repositories/playlistRepository";
-import { CookieService } from "@/lib/server/layers/services/cookieService";
 import { UserService } from "@/lib/server/layers/services/userService";
 import prisma from "@/lib/server/db";
 import { User } from "@/lib/shared/Types/userTypes";
