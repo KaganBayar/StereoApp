@@ -9,7 +9,6 @@ async function main() {
     },
   });
 
-  console.log("Total users:", users.length);
   console.log(JSON.stringify(users, null, 2));
 }
 

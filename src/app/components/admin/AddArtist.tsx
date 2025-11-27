@@ -45,7 +45,6 @@ const AddArtist = () => {
     const loadArtists = async () => {
       try {
         setLoading(true);
-        console.log("ArtistLoading");
         const artistsData = await getAllArtists();
         if (artistsData.length > 0) {
           const artistImages = await Loader.loadArtistImages(artistsData);

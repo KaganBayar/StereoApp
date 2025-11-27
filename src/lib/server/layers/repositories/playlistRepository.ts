@@ -1,6 +1,5 @@
-import { Playlist, PlaylistFormData } from "@/lib/shared/Types/playlistTypes";
+import { Playlist } from "@/lib/shared/Types/playlistTypes";
 import { BaseRepository } from "./baseRepository";
-import { findUserPlaylists } from "../../dbActions";
 import prisma from "@/lib/server/db";
 
 export class PlaylistRepository extends BaseRepository<Playlist> {

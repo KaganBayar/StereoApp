@@ -53,7 +53,6 @@ export default async function RootLayout({
       user = initialUser;
     } */
     user = initialUser;
-    console.error("test: middleware.js refresh");
   }
   return (
     <html lang="en">

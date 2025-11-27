@@ -12,10 +12,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
-import { createPlaylistAction } from "@/lib/server/dbActions";
 import { useContext } from "react";
 import UserContext, { DispatchContext } from "@/contexts/UserContext";
 import { useRouter } from "next/navigation";
+import { createPlaylist } from "@/lib/server/layers/actions/playlistActions";
+import { initialPlaylist } from "@/lib/shared/initialState";
 
 export function AddPlaylistButton() {
   //[UPDATE NEEDED] You shouldnt get user with useContext userContext because if user's informations are not up to date it shouldnt throw an error.
@@ -23,23 +24,20 @@ export function AddPlaylistButton() {
   //not use requireValidation until error handling is done
   const user = useContext(UserContext);
   //[UPDATE NEEDED] IF THERE ARE NO USER IT SHOULD ACTIVATE AUTH DIALOG
-  console.log("add playlist button rendered");
   const dispatch = useContext(DispatchContext);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const handleSubmit = () => {
     setOpen(false);
     if (!user) {
-      console.error("User is not available");
       return;
     } else {
-      createPlaylistAction(user.email).then(async (res) => {
+      createPlaylist(user.id, initialPlaylist).then(async (res) => {
         dispatch!({
           type: "ADDPLAYLIST",
           payload: [...user.playlists],
         });
         router.push(`/playlist/${res}`); //router cause bug about playlists
-        console.log("Playlist created successfully");
       });
     }
   };

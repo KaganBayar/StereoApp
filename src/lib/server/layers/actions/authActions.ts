@@ -79,7 +79,6 @@ export async function getUserFromSession(): Promise<UserFrontend> {
     const user = await userRepository.findById(userPayload.id);
 
     if (!user) {
-      console.log("initialUser returned");
       return initialUser;
     }
 

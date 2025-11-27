@@ -98,7 +98,6 @@ export class TokenServices {
         const tokenPayload = verifiedToken.payload;
         const UserPayload = userTokenSchema.parse(tokenPayload) as UserPayload; // Validate the decoded token
 
-        console.log("VERIFIED");
         return UserPayload;
       } catch (e) {
         throw new Error("Access Token verification failed: " + e);

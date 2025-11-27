@@ -1,20 +1,12 @@
 import { UserRepository } from "../repositories/userRepository";
-import { UserAdminEditForm, UserPayload } from "@/lib/shared/Types/userTypes";
-import * as jose from "jose";
-import { User } from "@/lib/shared/Types/userTypes";
-import { formRegisterSchema } from "../../Schemas/register";
-import { formLoginSchema } from "../../Schemas/login";
+import { UserAdminEditForm } from "@/lib/shared/Types/userTypes";
 import {
   comparePassword,
   distillUserToFrontend,
   hashPassword,
 } from "../../auth";
-import prisma from "../../db";
 import { RefreshTokenRepository } from "../repositories/refreshTokenRepository";
 import { TokenServices } from "./tokenService";
-import { requireAdminUser } from "../../serverValidation";
-import { use } from "react";
-import { cookies } from "next/headers";
 export class AuthService {
   private tokenRepository: TokenServices;
   private userRepository: UserRepository;
@@ -45,8 +37,6 @@ export class AuthService {
         name: name,
       } as UserAdminEditForm /*temp*/
     );
-
-    console.log("registered");
   }
 
   public async login(email: string, password: string) {
@@ -83,6 +73,5 @@ export class AuthService {
 
   public async logout(userId: string): Promise<void> {
     await this.refreshRepository.deleteAllByUserId(userId);
-    console.log("logged out");
   }
 }

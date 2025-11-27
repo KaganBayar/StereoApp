@@ -10,14 +10,12 @@ import { AddPlaylistButton } from "./AddPlaylistButton";
 import { checkUser } from "@/lib/client/utils";
 
 export default function PlaylistBar() {
-  console.log("playlistBar rendered");
   const user = useContext(UserContext);
   const [playlist, setPlaylist] = useState<PlaylistType[]>([]);
 
   useEffect(() => {
     let ignore = false;
     if (user) {
-      console.log("playlistBar Fetch");
       getUserPlaylists(user.id).then((playlists) => {
         if (!ignore) {
           setPlaylist(playlists);
@@ -28,7 +26,6 @@ export default function PlaylistBar() {
       ignore = true;
     };
   }, [user]);
-  console.log(playlist);
 
   return (
     <div className="mb-4">

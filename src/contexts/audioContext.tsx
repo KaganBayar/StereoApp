@@ -83,7 +83,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       clearInterval(intervalRef.current);
     }
     intervalRef.current = setInterval(() => {
-      if (howlRef.current && isPlaying) {
+      if (howlRef.current) {
         setCurrentTime(howlRef.current.seek() as number);
       }
     }, 1000);

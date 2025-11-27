@@ -12,14 +12,12 @@ import { login, register } from "@/lib/server/layers/actions/authActions";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useContext } from "react";
 import { DispatchContext } from "@/contexts/UserContext";
-import { findUserByEmail, findUserPlaylists } from "@/lib/server/dbActions";
 import { auth } from "@/../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Loader2 } from "lucide-react";
 import { useActionState } from "react";
 
 export const AuthDialog = () => {
-  const emptyFormData = new FormData();
   const [loginState, loginAction, loginPending] = useActionState(
     handleLogin,
     undefined
@@ -34,7 +32,6 @@ export const AuthDialog = () => {
 
   async function handleLogin(previousState: void, formData: FormData) {
     try {
-      console.log("logining");
       const user = await login(formData);
       if (!user) {
         throw new Error("User not found");
@@ -44,7 +41,7 @@ export const AuthDialog = () => {
       if (!email) {
         throw new Error("Email not provided");
       }
-      console.log("USER", user);
+
       if (dispatch) {
         dispatch({
           type: "LOGIN",
@@ -62,8 +59,6 @@ export const AuthDialog = () => {
   //[UPDATE NEEDED] firebase auth doesnt allow password less than 6 chars but database allow
   async function handleRegister(prevState: void, formData: FormData) {
     try {
-      console.log("registering");
-
       await register(formData); //server action
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;

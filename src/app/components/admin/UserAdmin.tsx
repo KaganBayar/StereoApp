@@ -8,7 +8,6 @@ import {
 } from "@/lib/server/layers/actions/userManagementActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
-import { logout, systemLogout } from "@/lib/server/actions";
 
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
