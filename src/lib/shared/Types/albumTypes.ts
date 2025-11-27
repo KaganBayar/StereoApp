@@ -1,4 +1,3 @@
-import { baseType } from "./commonTypes";
 import { Prisma } from "@prisma/client";
 
 export type Album = Prisma.AlbumGetPayload<{

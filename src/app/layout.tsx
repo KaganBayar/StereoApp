@@ -4,13 +4,8 @@ import "./globals.css";
 import Header from "./components/Header";
 import UserProvider from "@/provider/userProvider";
 import reducer from "@/contexts/Reducer";
-import { QueryClient } from "@tanstack/react-query";
 import { getUserFromSession } from "@/lib/server/layers/actions/authActions";
-import { AccessTokenNeedRefreshError } from "@/lib/server/Errors/cookie";
-import { refreshAccessToken } from "@/lib/server/layers/actions/authActions";
-
 import { initialUser } from "@/lib/shared/initialState";
-import { setCookie } from "@/lib/server/layers/actions/cookieActions";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

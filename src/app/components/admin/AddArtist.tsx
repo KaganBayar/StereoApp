@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Artist, ArtistFormData } from "@/lib/shared/Types/artistTypes";
 import {
   getAllArtists,
@@ -16,11 +16,7 @@ import {
   FaMusic,
 } from "react-icons/fa";
 import Image from "next/image";
-
-import { musicImagesRef } from "../../../../config/firebase";
-import { uploadString, getDownloadURL, ref } from "firebase/storage";
-import { storage } from "../../../../config/firebase";
-import { photoUse, Loader } from "@/lib/client/firebaseActions";
+import { Loader } from "@/lib/client/firebaseActions";
 import { initialArtist } from "@/lib/shared/initialState";
 import { uploadDataUrlPhoto } from "@/lib/client/firebaseActions";
 

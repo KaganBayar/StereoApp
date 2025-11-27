@@ -1,8 +1,5 @@
 import { BaseRepository } from "./baseRepository";
-import {
-  RefreshToken,
-  RefreshTokenFormData,
-} from "@/lib/shared/Types/refreshTokenTypes";
+import { RefreshToken } from "@/lib/shared/Types/refreshTokenTypes";
 import prisma from "@/lib/server/db";
 
 export class RefreshTokenRepository extends BaseRepository<RefreshToken> {

@@ -17,11 +17,7 @@ import {
   createAlbum,
   updateAlbum,
 } from "@/lib/server/layers/actions/musicActions";
-import { uploadString, ref } from "firebase/storage";
-import { storage } from "../../../../config/firebase";
-import { photoUse, Loader } from "@/lib/client/firebaseActions";
-import { albumImagesRef } from "../../../../config/firebase";
-import { z } from "zod";
+import { Loader } from "@/lib/client/firebaseActions";
 import { uploadDataUrlPhoto } from "@/lib/client/firebaseActions";
 import { initialAlbum } from "@/lib/shared/initialState";
 

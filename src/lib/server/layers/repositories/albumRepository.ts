@@ -1,5 +1,5 @@
 import { BaseRepository } from "./baseRepository";
-import { Album, AlbumFormData } from "@/lib/shared/Types/albumTypes";
+import { Album } from "@/lib/shared/Types/albumTypes";
 import prisma from "@/lib/server/db";
 
 export class AlbumRepository extends BaseRepository<Album> {

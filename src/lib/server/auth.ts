@@ -1,14 +1,6 @@
 import * as jose from "jose";
-import { Playlist } from "@/lib/shared/Types/playlistTypes";
 import { UserFrontend, UserPayload } from "@/lib/shared/Types/userTypes";
-import { userTokenSchema } from "./Schemas/userToken";
-import { AuthService } from "./layers/services/authService";
-import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import prisma from "./db";
-import { RefreshTokenRepository } from "./layers/repositories/refreshTokenRepository";
-import { time } from "../shared/Types/commonTypes";
-import { container } from "./DI_container/container";
 import { UserFrontendSchema } from "./Schemas/userFrontend";
 import { User } from "../shared/Types/userTypes";
 import {

@@ -1,5 +1,4 @@
 import zod from "zod";
-import { UserPayload } from "@/lib/shared/Types/userTypes";
 
 export const userTokenSchema = zod.object({
   id: zod.string().cuid(),

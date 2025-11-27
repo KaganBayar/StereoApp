@@ -1,13 +1,8 @@
-import { FaPlay, FaHeart, FaEllipsisH } from "react-icons/fa";
-import { MdAlbum } from "react-icons/md";
-import { Song } from "@/lib/shared/Types/songTypes";
-import { Album } from "@/lib/shared/Types/albumTypes";
+import { FaPlay } from "react-icons/fa";
 import {
   getAllSongs,
   getAllAlbums,
 } from "@/lib/server/layers/actions/musicActions";
-import { Loader, photoUse } from "@/lib/client/firebaseActions";
-import Image from "next/image";
 import { HomePageSong } from "../components/HomePageSong";
 import { PhotoWithFallback } from "../components/photoWithFallback";
 

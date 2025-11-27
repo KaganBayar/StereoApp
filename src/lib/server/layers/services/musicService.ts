@@ -2,11 +2,10 @@ import { UserRepository } from "../repositories/userRepository";
 import { AlbumRepository } from "../repositories/albumRepository";
 import { SongRepository } from "../repositories/songRepository";
 import { AuthService } from "./authService";
-import { Album, AlbumFormData } from "@/lib/shared/Types/albumTypes";
-import { Song, SongFormData } from "@/lib/shared/Types/songTypes";
-import { Artist, ArtistFormData } from "@/lib/shared/Types/artistTypes";
+import { Album } from "@/lib/shared/Types/albumTypes";
+import { Song } from "@/lib/shared/Types/songTypes";
+import { Artist } from "@/lib/shared/Types/artistTypes";
 import { ArtistRepository } from "../repositories/artistRepository";
-import { UserPayload } from "@/lib/shared/Types/userTypes";
 
 export class MusicService {
   private userRepository: UserRepository;

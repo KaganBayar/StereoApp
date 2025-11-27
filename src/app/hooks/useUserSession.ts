@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { getUserFromSession } from "@/lib/server/layers/actions/authActions";
-import { initialUser } from "@/lib/shared/initialState";
 import { UserFrontend } from "@/lib/shared/Types/userTypes";
 
 type UserSession = { user: UserFrontend; hasFetched: boolean };

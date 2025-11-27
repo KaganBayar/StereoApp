@@ -1,7 +1,6 @@
-import { UserPayload } from "@/lib/shared/Types/userTypes";
 import { PlaylistRepository } from "../repositories/playlistRepository";
 import { AuthService } from "./authService";
-import { Playlist, PlaylistFormData } from "@/lib/shared/Types/playlistTypes";
+import { Playlist } from "@/lib/shared/Types/playlistTypes";
 
 export class PlaylistService {
   private playlistRepository: PlaylistRepository;

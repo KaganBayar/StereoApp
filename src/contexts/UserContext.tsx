@@ -1,6 +1,6 @@
 "use client";
 import { actionType } from "@/contexts/Reducer";
-import { createContext, useState } from "react";
+import { createContext } from "react";
 import { UserFrontend } from "@/lib/shared/Types/userTypes";
 
 const selectedSongByUserContext = createContext<

@@ -1,10 +1,7 @@
 "use server";
-
-import { PlaylistService } from "../services/playlistService";
 import { container } from "../../DI_container/container";
 import { Playlist } from "@/lib/shared/Types/playlistTypes";
 import { authMiddleware } from "@/lib/middleware/authMiddleware";
-import { auth } from "../../../../../config/firebase";
 
 const playlistService = container.playlistService;
 const userService = container.userService;

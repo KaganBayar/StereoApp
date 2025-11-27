@@ -1,12 +1,10 @@
 import { UserRepository } from "../repositories/userRepository";
 import { RefreshTokenRepository } from "../repositories/refreshTokenRepository";
 import * as jose from "jose";
-import { User, UserFrontend, UserPayload } from "@/lib/shared/Types/userTypes";
+import { UserFrontend, UserPayload } from "@/lib/shared/Types/userTypes";
 import { time } from "@/lib/shared/Types/commonTypes";
-import crypto from "crypto";
 import { userTokenSchema } from "../../Schemas/userToken";
 import {
-  refreshTokenSchema,
   RefreshTokenJWTPayload,
   refreshTokenJWTSchema,
 } from "../../Schemas/refreshTokenSchema";
@@ -14,7 +12,6 @@ import {
   distillUserToFrontend,
   compareRefreshTokenJWTPayloadWithDB,
 } from "../../auth";
-
 export class TokenServices {
   private readonly JWT_ACCESS_SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET_KEY

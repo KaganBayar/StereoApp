@@ -1,11 +1,9 @@
 import { container } from "../server/DI_container/container";
-import { User, UserPayload } from "../shared/Types/userTypes";
+import { UserPayload } from "../shared/Types/userTypes";
 import {
-  AccessTokenNotFoundError,
   AccessTokenNeedRefreshError,
   RefreshTokenNotFoundError,
 } from "../server/Errors/cookie";
-import { get } from "http";
 import {
   getAccessCookie,
   getRefreshCookie,

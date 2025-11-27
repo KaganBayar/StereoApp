@@ -5,7 +5,6 @@ import { Song } from "@/lib/shared/Types/songTypes";
 import { useEffect } from "react";
 import { songUse } from "@/lib/client/firebaseActions";
 import { useState } from "react";
-import { useContext } from "react";
 import { useAudio } from "@/contexts/audioContext";
 import { photoUse } from "@/lib/client/firebaseActions";
 

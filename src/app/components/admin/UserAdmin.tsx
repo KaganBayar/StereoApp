@@ -8,6 +8,7 @@ import {
 } from "@/lib/server/layers/actions/userManagementActions";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 import Image from "next/image";
+import { logout } from "@/lib/server/layers/actions/authActions";
 
 const UserAdmin = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -74,7 +75,7 @@ const UserAdmin = () => {
 
     try {
       const updatedUser: User = await updateUser(editingUser, editForm);
-      await systemLogout(editingUser);
+      await logout(editingUser); //force logout to refresh session if user updated self
       setUsers(
         users.map((user) =>
           user.id === editingUser ? { ...user, ...editForm } : user
@@ -109,7 +110,7 @@ const UserAdmin = () => {
 
     try {
       await deleteUser(userId);
-      await systemLogout(userId);
+      await logout(userId); //force logout to refresh session if user deleted self
       setUsers(users.filter((user) => user.id !== userId));
     } catch (err: any) {
       if (

@@ -15,14 +15,9 @@ import {
   getAllSongs,
 } from "@/lib/server/layers/actions/musicActions";
 import {
-  photoUse,
-  songUse,
   uploadDataUrlPhoto,
   uploadFileSong,
 } from "@/lib/client/firebaseActions";
-import { songsRef, storage } from "@/../../config/firebase";
-import { Howl, Howler } from "howler";
-import { ref, uploadBytes, uploadString } from "firebase/storage";
 import { getAudioDuration } from "@/lib/client/audioUtils";
 import { initialSong } from "@/lib/shared/initialState";
 import { Loader } from "@/lib/client/firebaseActions";
