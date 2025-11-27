@@ -246,8 +246,7 @@ export default function PlaylistPage({
                     {track.song.name}
                   </p>
                   <p className="text-sm text-gray-400 truncate hover:underline hover:text-white">
-                    {/* @ts-expect-error - TODO: hasnt implemented */}
-                    {track.song.artist.name}
+                    {(track.song as any).artist.name}
                   </p>
                 </div>
               </div>
@@ -255,8 +254,7 @@ export default function PlaylistPage({
               {/* Album */}
               <div className="col-span-4 flex items-center">
                 <p className="text-sm text-gray-400 truncate hover:underline hover:text-white">
-                  {/* @ts-expect-error - TODO: hasnt implemented */}
-                  {track.song.album.title}
+                  {(track.song as any).album.title}
                 </p>
               </div>
 
