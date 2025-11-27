@@ -298,7 +298,7 @@ const UserAdmin = () => {
                       />
                     ) : (
                       <div className="flex flex-wrap gap-1">
-                        {user.roles.map((role, idx) => (
+                        {user.roles.map((role: string, idx) => (
                           <span
                             key={idx}
                             className="px-2 py-1 text-xs bg-blue-600 text-white rounded"
