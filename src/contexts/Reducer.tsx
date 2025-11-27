@@ -33,7 +33,7 @@ export default function reducer(state: UserFrontend, action: actionType) {
       return {
         ...state,
         playlists: state.playlists.filter(
-          (playlist) => playlist.id !== action.payload
+          (playlist: Playlist) => playlist.id !== action.payload
         ),
       };
     default:
