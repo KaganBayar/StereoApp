@@ -3,7 +3,7 @@
 A full-stack music streaming application built with modern web technologies, featuring real-time audio playback, user authentication, playlist management, and an admin panel for content management.
 
 App Link:
-https://stereo-dt4imhgnu-kagan-bayars-projects.vercel.app/
+https://stereo-app.vercel.app
 
 ---
 
