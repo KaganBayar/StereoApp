@@ -3,7 +3,7 @@
 A full-stack music streaming application built with modern web technologies, featuring real-time audio playback, user authentication, playlist management, and an admin panel for content management.
 
 App Link:
-https://stereo-dt4imhgnu-kagan-bayars-projects.vercel.app/
+https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRHD
 
 ---
 
@@ -47,20 +47,17 @@ https://stereo-dt4imhgnu-kagan-bayars-projects.vercel.app/
 ### User Features
 
 - **Authentication System**
-
   - User registration and login with email/password
   - JWT-based session management with automatic token refresh
   - Secure cookie handling for access and refresh tokens
 
 - **Music Playback**
-
   - Real-time audio streaming with Howler.js
   - Play, pause, seek, and volume controls
   - Loop toggle and progress tracking
   - Persistent player bar across navigation
 
 - **Library Management**
-
   - Create and manage personal playlists
   - Browse songs, albums, and artists
   - Search functionality with filters (Songs, Artists, Albums, Playlists)
@@ -74,7 +71,6 @@ https://stereo-dt4imhgnu-kagan-bayars-projects.vercel.app/
 ### Admin Features
 
 - **User Management**
-
   - View all registered users
   - Edit user information and roles
   - Delete users with session invalidation
@@ -143,7 +139,6 @@ NODE_ENV="development"
    ```
 
 4. **Configure Firebase**
-
    - Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
    - Enable Storage and Authentication
    - Create a `config/firebase.ts` file with your Firebase configuration
