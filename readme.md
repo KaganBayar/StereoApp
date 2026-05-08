@@ -2,8 +2,7 @@
 
 A full-stack music streaming application built with modern web technologies, featuring real-time audio playback, user authentication, playlist management, and an admin panel for content management.
 
-App Link:
-https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRHD
+**Live App:** https://stereo-app-pied.vercel.app?_vercel_share=LYHWKNobROxlNpXtexcLThsuIvue4pPH
 
 ---
 
@@ -11,17 +10,18 @@ https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRH
 
 ### Frontend
 
-- **Next.js 14** - React framework with App Router for server-side rendering and client components
-- **TypeScript** - Static typing for improved developer experience and code reliability
+- **Next.js 15** - React framework with App Router, Server Components, and Turbopack
+- **React 19** - UI library
+- **TypeScript 5** - Static typing throughout the codebase
 - **Tailwind CSS** - Utility-first CSS framework for responsive styling
-- **Radix UI** - Headless UI primitives for accessible components (Dialog, Slider, Alert Dialog)
+- **Radix UI** - Headless UI primitives for accessible components (Dialog, Slider, Alert Dialog, Popover)
 - **Howler.js** - Audio library for cross-browser audio playback with advanced controls
-- **Lucide React / React Icons** - Icon libraries for UI elements
+- **Lucide React** - Icon library for UI elements
 - **TanStack React Query** - Server state management and data fetching
 
 ### Backend
 
-- **Next.js Server Actions** - Server-side logic with seamless client integration
+- **Next.js Server Actions** - Server-side logic with seamless client integration (no REST API)
 - **Prisma ORM** - Type-safe database client with schema migrations
 - **PostgreSQL** - Relational database for persistent data storage
 - **JWT (jose)** - JSON Web Token authentication with access/refresh token rotation
@@ -31,14 +31,14 @@ https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRH
 ### Infrastructure
 
 - **Firebase Storage** - Cloud storage for audio files and images
-- **Firebase Authentication** - Supplementary auth for client-side features
+- **Vercel** - Deployment platform
 
 ### Architecture Patterns
 
 - **Layered Architecture** - Separation of concerns with Actions → Services → Repositories
 - **Dependency Injection Container** - Centralized service management for testability
 - **Repository Pattern** - Abstract database operations with base repository class
-- **Context API** - Global state management for user session and audio playback
+- **Context API + Reducer** - Global state management for user session and audio playback
 
 ---
 
@@ -49,7 +49,7 @@ https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRH
 - **Authentication System**
   - User registration and login with email/password
   - JWT-based session management with automatic token refresh
-  - Secure cookie handling for access and refresh tokens
+  - Secure HTTP-only cookie handling for access and refresh tokens
 
 - **Music Playback**
   - Real-time audio streaming with Howler.js
@@ -59,9 +59,11 @@ https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRH
 
 - **Library Management**
   - Create and manage personal playlists
+  - Add/remove songs from playlists
+  - Favorite songs
   - Browse songs, albums, and artists
-  - Search functionality with filters (Songs, Artists, Albums, Playlists)
   - Genre-based music discovery
+  - Search functionality with filters (Songs, Artists, Albums, Playlists)
 
 - **Responsive UI**
   - Sidebar navigation with user library
@@ -76,10 +78,10 @@ https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRH
   - Delete users with session invalidation
 
 - **Content Management**
-  - Add, edit, and delete songs with audio file upload
+  - Add, edit, and delete songs with audio file upload to Firebase Storage
   - Manage albums with cover art
   - Create and update artist profiles
-  - Automatic audio duration detection
+  - Automatic audio duration detection on upload
 
 ---
 
@@ -90,7 +92,7 @@ https://stereo-app-gdg1.vercel.app?_vercel_share=DYLL7ZyusX7v4C4dZo9JdQEDdVJiGRH
 - Node.js 18+
 - PostgreSQL database
 - Firebase project with Storage enabled
-- npm or yarn package manager
+- npm package manager
 
 ### Environment Variables
 
@@ -140,8 +142,8 @@ NODE_ENV="development"
 
 4. **Configure Firebase**
    - Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
-   - Enable Storage and Authentication
-   - Create a `config/firebase.ts` file with your Firebase configuration
+   - Enable Storage
+   - Add your Firebase config to `config/firebase.js`
 
 5. **Run the development server**
 
@@ -154,20 +156,16 @@ NODE_ENV="development"
    - Register a new account or login
    - Access admin panel at `/admin` (requires admin role)
 
-### Database Seeding (Optional)
+### Available Scripts
 
-To create an admin user, run:
-
-```bash
-npx ts-node src/scripts/createAdmin.ts
-```
-
-### Building for Production
-
-```bash
-npm run build
-npm start
-```
+| Command          | Description                             |
+| ---------------- | --------------------------------------- |
+| `npm run dev`    | Start development server with Turbopack |
+| `npm run build`  | Build for production                    |
+| `npm start`      | Start production server                 |
+| `npm run lint`   | Run ESLint                              |
+| `npm test`       | Run Vitest tests                        |
+| `npm run studio` | Open Prisma Studio                      |
 
 ---
 
@@ -176,25 +174,43 @@ npm start
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (Home)/            # Protected routes with layout
+│   ├── (Home)/            # Protected routes with shared layout
 │   │   ├── admin/         # Admin panel
 │   │   ├── genre/         # Genre pages
 │   │   ├── playlist/      # Playlist detail pages
 │   │   └── search/        # Search page
 │   └── components/        # React components
-├── contexts/              # React Context providers
+│       ├── admin/         # Admin-specific components
+│       └── ui/            # shadcn/ui base components
+├── contexts/              # React Context providers (User, Audio, Playlist)
 ├── lib/
 │   ├── client/           # Client-side utilities
 │   ├── server/           # Server-side code
-│   │   ├── DI_container/ # Dependency injection
-│   │   ├── layers/       # Architecture layers
-│   │   │   ├── actions/      # Server actions
-│   │   │   ├── repositories/ # Data access
-│   │   │   └── services/     # Business logic
-│   │   └── Schemas/      # Zod validation schemas
+│   │   ├── DI_container/ # Dependency injection container
+│   │   ├── Errors/       # Custom error classes
+│   │   ├── Schemas/      # Zod validation schemas
+│   │   ├── Types/        # TypeScript type definitions
+│   │   └── layers/       # Architecture layers
+│   │       ├── actions/      # Server Actions (entry points)
+│   │       ├── repositories/ # Data access layer
+│   │       └── services/     # Business logic layer
 │   └── shared/           # Shared types and utilities
 └── provider/             # Context providers
 ```
+
+---
+
+## Database Schema
+
+Key models in the PostgreSQL database (managed via Prisma):
+
+- **User** — email, hashed password, roles (`member` | `admin`)
+- **Song** — name, genre, url, duration, artist/album relations
+- **Artist** — name, bio, genre, photo
+- **Album** — title, release date, cover art, artist relation
+- **Playlist** — user-owned song collections
+- **UserFavorite** — many-to-many user ↔ song favorites
+- **RefreshToken** — stored tokens with rotation count for security
 
 ---
 
